@@ -1,0 +1,171 @@
+body { padding:70px 0 30px 0; }
+
+h1 .child { line-height:50px; padding:0 0 0 50px; background:url(../img/h1_child.png) no-repeat left; }
+
+.content p,
+.content ul,
+.sidebar p,
+.sidebar ul { line-height:150%; }
+
+.sidebar { padding-top:20px; }
+
+footer { border-top:1px solid #ddd; margin-top:50px; padding-top:20px; font-size:13px; text-align:center; color:#808080; }
+footer a { color:#808080; }
+footer li { padding:0 !important; }
+footer li:after { content:"\00a0\00a0|\00a0\00a0"; color:#ccc; }
+footer li:last-child:after { content:none; }
+
+.table .key { width:25%; }
+.table .key .description { font-size:13px; color:#808080; }
+.table thead tr { white-space:nowrap; }
+.table thead .glyphicon { color:#aaa; }
+.table td.options { text-align:right; white-space:nowrap; }
+
+.table tr.section td { font-size:18px; font-weight:bold; background:#e9f5ff !important; }
+.table tr.section .description { font-size:14px; font-weight:normal; font-style:italic; color:#777; }
+.table tr.subsection td { font-weight:bold; background:#fcf8e3 !important; }
+.table tr.subsection .description { font-size:14px; font-weight:normal; font-style:italic; color:#777; }
+
+.navbar-brand { font-weight:bold; background:url(../img/geocre_logo_small.png) no-repeat 15px center; padding-left:47px; }
+
+.jumbotron-world { background:url(../img/jumbotron_world.jpg) no-repeat top center; border:1px solid #ddd; box-shadow:3px 3px 10px #ddd; }
+
+.teaser p { margin:0; padding:0; }
+.teaser .supertitle { font-size:13px; color:#808080; margin:0; padding:0; }
+.teaser h2 { font-size:26px; margin:0; padding:0; }
+.teaser h2 a { color:#333; }
+.teaser .thumbnail { margin-bottom:7px; }
+
+.login-form { max-width:350px; }
+.login-options { margin-top:20px; font-size:13px; }
+
+.alert h3 { margin:0 0 7px 0; padding:0; font-size:20px; font-weight:bold; }
+.alert ul { list-style:none; padding:0; }
+
+.nav-tabs   { margin-bottom:20px; }
+.nav-tabs .active   { font-weight:bold; }
+.nav-tabs a { outline:none; }
+
+.sortable_handle { cursor:move; }
+
+a.data-primary             { font-weight:bold; }
+a.data-child               { background:url(../img/child.png) no-repeat left; padding-left:25px; }
+a.data-draft               { color:#808080; }
+a.data-unavailable         { color:#808080; text-decoration:line-through; }
+
+legend a, legend a:hover { color:#333 !important; text-decoration:none !important; outline:none; }
+
+.btn-top-right             { margin-top:20px; text-align:right; float:right; }
+.btn-fw-xs                 { min-width:60px;  }
+.btn-processing            { padding-left:33px; background-image:url(../img/throbber_small.gif); background-repeat:no-repeat; background-position:10px center; }
+.form-control-inline       { display:inline; }
+.form-control-small        { width:75px; max-width:100%; }
+.form-control-medium       { width:200px; max-width:100%; }
+.form-control-default      { width:400px; max-width:100%; }
+.input-group-addon label   { font-weight:normal; line-height:100%: }
+
+.choices-table th { font-weight:normal !important; background:none !important; padding:0 !important; border:none !important; }
+.choices-table td { font-weight:normal !important; background:none !important; padding:0 5px 0 0 !important; border:none !important; }
+
+.nowrap { white-space:nowrap; }
+.inline { display:inline !important; }
+.nomargin { margin:0; }
+.top-space { margin-top:30px; }
+.bottom-space { margin-bottom:30px; }
+.bottom-space-small { margin-bottom:10px; }
+.image-left { float:left; margin:0 30px 20px 0; }
+.collapse-handle { outline:none !important; text-decoration:none !important; }
+.radio-label { font-weight:bold; }
+.alert-box { padding-bottom:50px; }
+.no-geometry-details { height:150px; background:url(../img/no_geometry_bg.png) no-repeat center; padding-top:60px; }
+.no-geometry-details p { width:250px; margin:0 auto; text-align:center; line-height:30px; color:#000; background:rgba(242, 222, 222, 0.8); border-radius:5px; }
+label.unspecified { color:#808080; font-weight:normal; }
+
+table.items td { padding:5px 10px 3px 0; }
+
+#add_permission label { cursor:pointer; }
+
+th a, th a:hover { color:#333; text-decoration:none;}
+
+td.map { padding:0 !important; }
+
+#mapwrapper              { position:relative; }
+#mapcontainer            { position:relative; background:#fff; }
+.defaultmap           { position:relative; height:550px; border:1px solid #555; box-shadow:3px 3px 10px #ddd; }
+#mapoptions { position:absolute; right:0; width:65px; text-align:center; margin:0 0 20px 0; line-height:12px; padding:5px 0 5px 0; background:#00008b; border-bottom-left-radius:10px; border-bottom-right-radius:10px; }
+
+.fullscreen { position:absolute; top:0; left:0; width:100%; border:none; margin:0; padding:0;  }
+
+#resizemap                { position:absolute; right:0; width:65px; text-align:center; margin:-40px 0 20px 0; line-height:12px; padding:5px 0 5px 0; background:#00008b; border-bottom-left-radius:10px; border-bottom-right-radius:10px; }
+#resetmap                 { position:absolute; top:0px; right:0px; width:26px; height:26px; display:inline-block; text-indent:-999em; background:rgba(255, 255, 255, 0.6) url(../img/close_button_large.png) no-repeat center; border-bottom-left-radius:4px; opacity:0.8; outline:none; z-index:3000; }
+#resetmap:hover           { background:rgba(255, 255, 255, 0.7) url(../img/close_button_large.png) no-repeat center; opacity:1; }
+
+a.close_button_large      {  }
+a.close_button_large:hover { opacity:1; }
+
+#maptoolbar              { position:absolute; top:70px; left:8px; width:24px; z-index:1000; }
+#maptoolbar .buttongroup { margin-bottom:5px; width:28px; padding:2px; background:rgba(255, 255, 255, 0.4); border-radius:4px; }
+#maptoolbar .buttongroup-inactive { display:none; }
+a#point                  { width:24px; height:22px; display:inline-block; text-indent:-999em; background:url(../img/maptoolbar.png) no-repeat 0px 0px; outline:none; }
+a#point.active           { background:url(../img/maptoolbar.png) no-repeat -24px 0px; }
+a#line                   { width:24px; height:22px; display:inline-block; text-indent:-999em; background:url(../img/maptoolbar.png) no-repeat 0px -22px; outline:none; }
+a#line.active            { background:url(../img/maptoolbar.png) no-repeat -24px -22px; }
+a#polygon                { width:24px; height:22px; display:inline-block; text-indent:-999em; background:url(../img/maptoolbar.png) no-repeat 0px -44px; outline:none; }
+a#polygon.active         { background:url(../img/maptoolbar.png) no-repeat -24px -44px; }
+a#snapping               { width:24px; height:22px; display:inline-block; text-indent:-999em; background:url(../img/maptoolbar.png) no-repeat 0px -66px; outline:none; }
+a#snapping.active        { background:url(../img/maptoolbar.png) no-repeat -24px -66px; }
+a#zoomwheel              { width:24px; height:22px; display:inline-block; text-indent:-999em; background:url(../img/maptoolbar.png) no-repeat 0px -88px; outline:none; }
+a#zoomwheel.active       { background:url(../img/maptoolbar.png) no-repeat -24px -88px; }
+a#setposition            { width:24px; height:22px; display:inline-block; text-indent:-999em; background:url(../img/maptoolbar.png) no-repeat 0px -110px; outline:none; }
+a#fullscreenmap          { width:24px; height:22px; display:inline-block; text-indent:-999em; background:url(../img/maptoolbar.png) no-repeat 0px -132px; outline:none; }
+a#reducemap              { width:24px; height:22px; display:inline-block; text-indent:-999em; background:url(../img/maptoolbar.png) no-repeat 0px -154px; outline:none; }
+a#enlargemap             { width:24px; height:22px; display:inline-block; text-indent:-999em; background:url(../img/maptoolbar.png) no-repeat 0px -176px; outline:none; }
+#layerinactivenotice     { width:200px; position:absolute; left:50%; top:0; margin-left:-105px; font-size:11px; padding:3px 5px; color:#000; background:rgba(255, 255, 0, 0.7); text-align:center; z-index:1000; display:none; border-bottom-left-radius:5px; border-bottom-right-radius:5px; }
+#contactmap              { border:1px solid #aaa; height:330px; border-radius:10px; box-shadow:3px 3px 10px #ddd; overflow:hidden; }
+.olControlAttribution    { position:absolute; bottom:0 !important; right:0; background:rgba(255, 255, 255, 0.8); }
+.layersDiv               { border-top-left-radius:10px; border-bottom-left-radius:10px; }
+.layersDiv label         { margin:0px 0 0 5px; cursor:pointer; }
+
+.gallery-wrapper           { margin:30px 0 0 0; overflow:hidden; }
+.gallery                   { clear:left; margin:0 -20px -25px 0; }
+.gallery a.thumbnail       { position:relative; line-height:214px; text-align:center; display:inline-block !important; margin:0px 20px 25px 0; padding:0 0 10px 0; width:214px !important; height:214px; text-align:center; vertical-align:middle; outline:none; background:#f5f5f5; }
+.gallery a.thumbnail span  { position:absolute; bottom:0; left:0; display:block; line-height:25px; width:214px; height:25px; font-size:11px; color:#808080; }
+.gallery img               { display:inline; vertical-align:middle; border:1px solid #808080; margin:0 0 13px 0; }
+
+.gallery .photooptions { position:relative; display:block; margin:0 20px 25px 0; padding:0; width:214px; height:214px; float:left; }
+.gallery .photooptions .drag_button { position:absolute; top:7px; right:7px; cursor:move; }
+.gallery .photooptions .edit_button { position:absolute; top:7px; right:57px; }
+.gallery .photooptions .delete_button { position:absolute; top:7px; right:32px; }
+.gallery .photooptions a[rel='lightbox']:hover { background:#dadada; }
+
+.message { margin:10px 0 0 0; padding: 0 0 0 23px; background:url(../img/quote.png) no-repeat top left; font-style:italic; }
+
+.optionmenu { list-style-type:none; margin:0; padding:0; }
+.optionmenu .glyphicon { margin-right:7px !important; }
+
+.mytab-pane { position:absolute; top:-20000px; left:-20000px; width:100%; }
+.mytab-pane-active { position:relative; top:0; left:0; }
+
+#mylightbox-background        { display:none; position:fixed; height:100%; width:100%; top:0; left:0; background:#000; border:1px solid #cecece; z-index:2000; }
+#mylightbox                   { width:400px; display:none; position:absolute; background:#fff; z-index:2000; padding:3px 10px 0 10px; font-size:13px; border:1px solid #cecece; border-radius:5px; max-width:90%; height:auto; box-shadow:5px 5px 20px #000; }
+#mylightbox img               { max-width:100%; height:auto; }
+#mylightbox-header            { height:25px; font-size:13px; line-height:20px; padding:0 0 10px 0; }
+#mylightbox-title             { position:absolute; top:3px; left:10px; width:90%; margin:0; padding:0; font-weight:bold; }
+#mylightbox-controls          { position:absolute; top:5px; right:10px; width:14px; margin:0; padding:0; }
+#mylightbox #photo            { margin:0; padding:0; }
+#mylightbox-subtitle          { font-size:14px; line-height:150%; margin:0; padding:3px 0 0 0; font-style:italic; color:#808080; }
+#mylightbox-description       { font-size:14px; line-height:150%; margin:0; padding:5px 0 8px 0; }
+#mylightbox-author            { color:#808080; font-size:13px; margin:-8px 0 0 0; padding:0 0 8px 0; }
+#mylightbox-throbber          { width:32px; height:32px; margin:0 auto 0 auto; padding:100px 0; background:url(../img/throbber.gif) no-repeat center; }
+#mylightbox-photo             { position:relative; }
+#mylightbox-prev              { width:25%; position:absolute; top:0; left:0; bottom:0; background:url(../img/prev.png) no-repeat -1000px 0; z-index:10000; text-indent:-999em; outline:none; }
+#mylightbox-prev:hover        { background:url(../img/prev.png) no-repeat 10% center, linear-gradient(to left, rgba(0,0,0,0), rgba(0,0,0,0.2)); }
+#mylightbox-next              { width:25%; position:absolute; top:0; right:0; bottom:0; background:url(../img/next.png) no-repeat 1000px 0; z-index:10000; text-indent:-999em; outline:none; }
+#mylightbox-next:hover        { background:url(../img/next.png) no-repeat 90% center, linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.2));  }
+#mylightbox-close             { width:14px; height:14px; display:inline-block; text-indent:-999em; background:url(../img/close_button.png) no-repeat; opacity:0.8; outline:none; }
+#mylightbox-close:hover       { opacity:1; }
+
+@media screen and (min-width:992px)
+ {
+  .content-sidebar { padding-right:50px; }
+ }
