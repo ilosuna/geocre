@@ -245,7 +245,8 @@ polygonFeature.attributes["id"] = '.$item_data['id'].';
 polygonFeature.attributes["featurelabel"] = "'.$fl.'";
 featureLayer.addFeatures([polygonFeature]);
 
-map'.$table_id.'.zoomToExtent(featureLayer.getDataExtent());';
+map'.$table_id.'.zoomToExtent(featureLayer.getDataExtent());
+if(map'.$table_id.'.zoom > 17) map'.$table_id.'.zoomTo(17);';
 ?>
 
 <?php endif; ?>

@@ -1,11 +1,10 @@
 <?php
 if(!defined('IN_INDEX')) exit;
 
-if(isset($_REQUEST['table']) && ($permission->granted(Permission::DATA_MANAGEMENT) || $permission->granted(Permission::DATA_ACCESS, intval($_REQUEST['table']), Permission::READ)))
+if(isset($_REQUEST['table']))
  {
-  $table_info = get_table_info($_REQUEST['table'], true); // 'true' fetches only overview columns
-  
-  if($table_info && $table_info['table']['type']==1)
+  $table_info = get_table_info($_REQUEST['table'], true); // 'true' fetches only overview columns  
+  if($table_info && $table_info['table']['type']==1 && ($table_info['table']['status']==2 || ($permission->granted(Permission::DATA_MANAGEMENT) || $permission->granted(Permission::DATA_ACCESS, intval($_REQUEST['table']), Permission::READ))))
    {
 
     if(isset($_REQUEST['bbox']))

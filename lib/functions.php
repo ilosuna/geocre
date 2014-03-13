@@ -120,6 +120,27 @@ function get_language_name($string)
   return $name;     
  }
 
+/**
+ * extract template variables given in comma separated string
+ * e.g. "foo, bar=foo"
+ * @param $string $string
+ * @return array
+ */
+function extract_tvs($string)
+ {
+  $tv_array = explode(',', $string);
+  foreach($tv_array as $tv_item)
+   {
+    if($tv_item)
+     {
+      $tv_item_parts = explode('=', $tv_item);
+      $tv[trim($tv_item_parts[0])] = isset($tv_item_parts[1]) ? trim($tv_item_parts[1]) : true;
+     }
+   }
+  if(isset($tv)) return $tv;
+  else return false;
+ }
+
 function get_basemaps($mode=true)
  {
   if(is_array($mode)) // get basemaps by id
@@ -831,7 +852,8 @@ function get_table_info($table, $overview_only=false)
        foreach($dbr as $row)
         {
          #$columns[$i]['id'] = $row['id'];
-         if(!$overview_only || $row['overview']==1)
+         #if($overview_only && $row['overview']==1 && $row['column_type']>0 || !$overview_only)
+         if(!$overview_only || ($overview_only && $row['column_type']>0))
           {
            $columns[$i]['id'] = $row['id'];
            $columns[$i]['name'] = $row['name'];

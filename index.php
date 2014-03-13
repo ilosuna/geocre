@@ -4,7 +4,7 @@
  *
  * @author Mark Hoschek <mail at mark-hoschek dot de>
  * @copyright 2014 Mark Hoschek, Department of Physical Geography, University of Freiburg, Germany
- * @version 2014-01-15-1
+ * @version 2014-03-13-1
  * @link http://geocre.net/
  */
 

@@ -457,6 +457,7 @@ if($permission->granted(Permission::USER))
        $row = $dbr->fetch();
        if(isset($row['id']))
         {
+         $model_item['item_type'] = 0;
          $model_item['section_type'] = 0;
          $template->assign('model_item', $model_item);         
          $template->assign('data_id', $row['id']); 
@@ -509,6 +510,10 @@ if($permission->granted(Permission::USER))
        $model_item['relation_column'] = intval($row['relation_column']);
        $model_item['required'] = intval($row['required']);
        $model_item['overview'] = intval($row['overview']);
+       
+       if($model_item['column_type']>0) $model_item['item_type'] = 0;
+       else $model_item['item_type'] = 1;
+       
        $model_item['section_type'] = intval($row['section_type']);
        $model_item['range_from'] = $row['range_from'];
        $model_item['range_to'] = $row['range_to'];
@@ -566,6 +571,7 @@ if($permission->granted(Permission::USER))
          $template->assign('column_types', $column_types);
 
          $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+         $item_type = isset($_POST['item_type']) && $_POST['item_type']==1 ? 1 : 0;
          $column_type = isset($_POST['column_type']) ? intval($_POST['column_type']) : 0;
          $column_length = isset($_POST['column_length']) ? intval($_POST['column_length']) : 0;
          $label = isset($_POST['label']) ? trim($_POST['label']) : '';
@@ -618,6 +624,13 @@ if($permission->granted(Permission::USER))
             } 
           }
       
+        if(empty($_REQUEST['id']) && $item_type==0 && $column_type==0)
+         {
+          $errors[] = 'error_no_column_type'; 
+          $error_fields[] = 'type';
+         }
+        
+        
         if(empty($column_types[$column_type]))
          {
           $errors[] = 'error_column_type_invalid'; 
@@ -778,6 +791,7 @@ if($permission->granted(Permission::USER))
             $template->assign('data_id', $data_id);
             $lang['edit_data_model_title'] = str_replace('[name]', $data_title, $lang['edit_data_model_title']);
             $model_item['name'] = htmlspecialchars($name);
+            $model_item['item_type'] = intval($item_type);
             $model_item['column_type'] = intval($column_type);
             $model_item['label'] = htmlspecialchars($label);
             $model_item['description'] = htmlspecialchars($description);

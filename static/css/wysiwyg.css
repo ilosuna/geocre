@@ -1,13 +1,1 @@
-body     {  }
-h1              { color:#479b1d; text-shadow:2px 2px 3px #ddd; }
-h2              { font-size:18px; color:#479b1d; }
-p               { font-size:13px; line-height:175%; }
-
-img.teaser  { float:left; margin:7px 20px 10px 0; }
-img.border  { border:1px solid #000; }
-img.teaser-r  { float:right; margin:7px 0 10px 20px; }
-
-a:link                   { color:#0000cc; text-decoration:none; }
-a:visited                { color:#0000cc; text-decoration:none; }
-a:hover                  { color:#0000ff; text-decoration:underline; }
-a:active                 { color:#0000ff; text-decoration:none; }
+body     { font-size:100% !important; }

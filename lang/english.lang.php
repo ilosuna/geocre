@@ -135,6 +135,7 @@ $lang['exception_message'] =         'An error occurred while processing your re
 // menu
 $lang['home_link'] =                 'Home';
 $lang['home_title'] =                'Home';
+$lang['pages_label'] =               'Pages';
 $lang['user_account_link'] =         'User account';
 $lang['admin_title'] =               'Administration';
 $lang['admin_link'] =                'Admin';
@@ -264,14 +265,11 @@ $lang['delete_db_table_title'] = 'Delete database table';
 $lang['db_table_status_active'] = 'active';
 $lang['db_table_sql_subtitle'] = 'SQL schema';
 #$lang['edit_db_table_items'] = 'Items';
-
 $lang['data_properties_title'] = 'Properties';
 $lang['data_structure_title'] = 'Structure';
-
 $lang['data_properties_general_label'] = 'General';
 $lang['data_properties_spatial_label'] = 'Spatial data properties';
 $lang['data_properties_metadata_label'] = 'Metadata';
-
 $lang['db_table_items_name_column_label'] = 'Name';
 $lang['db_table_items_type_column_label'] = 'Type';
 $lang['db_table_items_length_column_label'] = 'Length';
@@ -279,17 +277,18 @@ $lang['db_table_items_required_column_label'] = 'Required';
 $lang['db_table_items_overview_column_label'] = 'Overview';
 $lang['db_table_items_label_column_label'] = 'Label';
 $lang['no_db_table_items_available'] = 'No data model items available.';
-
-
 $lang['db_tabel_item_name_label'] = 'Identifier:';
 $lang['db_tabel_item_name_description'] = 'must begin with a lowercase letter and consist of lowercase letters, numbers and underscores';
 $lang['db_tabel_item_label_description'] = 'item label';
-$lang['db_tabel_item_type_label'] = 'Data type/length:';
-$lang['db_tabel_item_type_description'] = 'Data type and optional length:';
-$lang['db_tabel_item_length_label'] = 'Length:';
-$lang['db_tabel_item_label_label'] = 'Label:';
 $lang['db_tabel_item_description_label'] = 'Description:';
 $lang['db_tabel_item_description_description'] = 'item description';
+$lang['db_tabel_item_type_label'] = 'Item type:';
+$lang['db_tabel_item_type_description'] = 'Type of item';
+$lang['db_tabel_item_type'][0] = 'data';
+$lang['db_tabel_item_type'][1] = 'section';
+$lang['db_tabel_data_type_label'] = 'Data type/length:';
+$lang['db_tabel_data_type_description'] = 'Data type and optional length:';
+$lang['db_tabel_item_label_label'] = 'Label:';
 $lang['db_tabel_item_input_type_label'] = 'Input type:';
 $lang['input_type_default_label'] = 'default';
 $lang['input_type_checkbox_label'] = 'checkbox';
@@ -313,7 +312,7 @@ $lang['db_tabel_item_overview_label'] = 'Display in overview:';
 $lang['db_tabel_item_overview_description'] = 'check if item should be displayed in data overviews';
 $lang['db_tabel_item_section_label'] = 'Section type:';
 $lang['db_tabel_item_section_description'] = 'section type (if no data type is specified)';
-$lang['data_model_section_type'][0] = 'default';
+$lang['data_model_section_type'][0] = '';
 $lang['data_model_section_type'][1] = 'main section';
 $lang['data_model_section_type'][2] = 'subsection';
 $lang['db_tabel_item_additional_options_link'] = 'Additional options';
@@ -329,6 +328,7 @@ $lang['data_item_details_title'] = 'Item details';
 $lang['create_db_table_subtitle'] = 'Create database table';
 $lang['create_db_table_message'] = 'Are you sure you want to create the database table <strong>[table]</strong>?';
 
+$lang['error_no_column_type'] = 'No column type specified';
 $lang['error_column_name_already_exists'] = 'Identifier already exists';
 $lang['error_column_name_invalid'] = 'Identifier invalid';
 $lang['error_relation_invalid'] = 'Invalid relation';

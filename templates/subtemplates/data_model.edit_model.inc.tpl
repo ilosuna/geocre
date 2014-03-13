@@ -264,7 +264,7 @@
 <th><?php echo $lang['db_table_items_type_column_label']; ?></th>
 <?php /*<th><?php echo $lang['db_table_items_length_column_label']; ?></th>*/ ?>
 <th><?php echo $lang['db_table_items_required_column_label']; ?></th>
-<th><?php echo $lang['db_table_items_overview_column_label']; ?></th>
+<?php /* TODO <th><?php echo $lang['db_table_items_overview_column_label']; ?></th>*/ ?>
 <th>&nbsp;</th>
 </tr>
 </thead>
@@ -275,14 +275,14 @@
 <tr id="item_<?php echo $db_item['id']; ?>"<?php if($db_item['column_type']==0): ?> class="<?php if($db_item['section_type']==1): ?>section<?php else: ?>subsection<?php endif; ?>"<?php endif; ?>>
 
 <?php if($db_item['column_type']==0): ?>
-<td colspan="5"><?php if($db_item['label']): ?><?php echo $db_item['label']; ?><?php else: ?><?php echo $db_item['name']; ?><?php endif; ?></td>
+<td colspan="4"><?php if($db_item['label']): ?><?php echo $db_item['label']; ?><?php else: ?><?php echo $db_item['name']; ?><?php endif; ?></td>
 <?php else: ?>
 <td><?php if(isset($db_item['column_exists'])): ?><?php echo $db_item['name']; ?><?php else: ?><span class="text-danger" title="<?php echo $lang['column_doesnt_exist']; ?>"><?php echo $db_item['name']; ?></span><?php endif; ?></td>
 <td><?php echo $db_item['label']; ?></td>
 <td><?php if(isset($db_item['relation'])): ?><span class="text-danger"><?php echo $db_item['relation']; ?></span><?php elseif(isset($column_types[$db_item['column_type']])): ?><?php echo $column_types[$db_item['column_type']]['label']; ?><?php else: ?><?php echo $db_item['column_type']; ?><?php endif; ?></td>
 <?php /*<td><?php echo $db_item['column_length']; ?></td>*/ ?>
 <td><?php if($db_item['required']): ?><span class="glyphicon glyphicon-ok text-success" title="<?php echo $lang['yes']; ?>"></span><?php endif; ?></td>
-<td><?php if($db_item['overview']): ?><span class="glyphicon glyphicon-ok text-success" title="<?php echo $lang['yes']; ?>"></span><?php endif; ?></td>
+<?php /* TODO <td><?php if($db_item['overview']): ?><span class="glyphicon glyphicon-ok text-success" title="<?php echo $lang['yes']; ?>"></span><?php endif; ?></td>*/ ?>
 <?php endif; ?>
 
 <td class="options">

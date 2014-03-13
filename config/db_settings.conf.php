@@ -3,9 +3,9 @@ $db_settings['type'] =                     'postgresql';
 
 $db_settings['host'] =                     'localhost';
 $db_settings['port'] =                     5432;
-$db_settings['database'] =                 'geocre';
-$db_settings['user'] =                     'geocre';
-$db_settings['password'] =                 'foobar123';
+$db_settings['database'] =                 'YOUR_DATABASE';
+$db_settings['user'] =                     'YOUR_DATABASE_USER';
+$db_settings['password'] =                 'YOUR_PASSWORD';
 
 $db_settings['superuser'] =                '';
 $db_settings['superuser_password'] =       '';

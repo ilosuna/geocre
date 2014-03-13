@@ -4,7 +4,7 @@
 </div>
 <div class="col-sm-6">
 <?php if(isset($help)): ?>
-<a class="btn btn-default btn-top-right" href="index.php?r=help.<?php echo $help; ?>" data-toggle="modal" data-target="#modal_help" data-input="content"><span class="glyphicon glyphicon-question-sign"></span> <?php echo $lang['help']; ?></a>
+<a class="btn btn-default btn-top-right" href="index.php?r=help.<?php echo $help; ?>" data-toggle="modal" data-target="#modal_help"><span class="glyphicon glyphicon-question-sign"></span> <?php echo $lang['help']; ?></a>
 <?php endif; ?>
 </div>
 </div>

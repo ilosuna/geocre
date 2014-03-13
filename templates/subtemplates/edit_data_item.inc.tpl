@@ -88,7 +88,7 @@
 <?php endif; ?>-->
 
 <!--<div class="table-responsive">-->
-<table class="table">
+<table class="table table-striped">
 <tr class="success">
 <td colspan="2"><button class="btn btn-success btn-lg pull-right" type="submit"><span class="glyphicon glyphicon-save"></span> <?php echo $lang['save_submit']; ?></button></td>
 </tr>

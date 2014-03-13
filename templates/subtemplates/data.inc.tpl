@@ -64,16 +64,19 @@
 
 <div id="items" class="mytab-pane<?php if($data_type==0): ?> mytab-pane-active<?php endif; ?>">
 <?php if(isset($data_items)): ?>
-<div class="table-responsive">
+<div class="table-data">
 <table class="table table-striped table-hover">
 <thead>
 <tr>
+
+<th class="options-l">&nbsp;</th>
+
 <?php if($parent_title): ?>
 <th class="parent"><a href="<?php echo BASE_URL; ?>?r=data&amp;data_id=<?php echo $table_id; ?>&amp;order=fk<?php if($order=='fk'&&!$asc): ?>&amp;asc=1<?php endif; ?>&amp;ipp=<?php echo $ipp; ?><?php if($data_type==1): ?>#items<?php endif; ?>" title="<?php echo str_replace('[column]', $lang['parent_id_column_label'], $lang['order_by']); ?>"><?php echo $lang['parent_id_column_label']; ?><?php if($order=='fk'&&!$asc): ?> <span class="glyphicon glyphicon-chevron-up"></span><?php elseif($order=='fk'&&$asc): ?> <span class="glyphicon glyphicon-chevron-down"></span><?php endif; ?></a></th>
 <?php endif; ?>
 <?php if(isset($columns)): ?>
 <?php foreach($columns as $column): ?>
-<th><a href="<?php echo BASE_URL; ?>?r=data&amp;data_id=<?php echo $table_id; ?>&amp;order=<?php echo $column['name']; ?><?php if($order==$column['name']&&!$asc): ?>&amp;asc=1<?php endif; ?>&amp;ipp=<?php echo $ipp; ?><?php if($data_type==1): ?>#items<?php endif; ?>" title="<?php echo str_replace('[column]', $column['label'], $lang['order_by']); ?>"><?php echo truncate($column['label'], 15, true); ?> <?php if($order==$column['name']&&!$asc): ?> <span class="glyphicon glyphicon-chevron-up"></span><?php elseif($order==$column['name']&&$asc): ?> <span class="glyphicon glyphicon-chevron-down"></span><?php endif; ?></a></th>
+<th><a href="<?php echo BASE_URL; ?>?r=data&amp;data_id=<?php echo $table_id; ?>&amp;order=<?php echo $column['name']; ?><?php if($order==$column['name']&&!$asc): ?>&amp;asc=1<?php endif; ?>&amp;ipp=<?php echo $ipp; ?><?php if($data_type==1): ?>#items<?php endif; ?>" title="<?php echo str_replace('[column]', $column['label'], $lang['order_by']); ?>"><?php echo truncate($column['label'], 20, true); ?> <?php if($order==$column['name']&&!$asc): ?> <span class="glyphicon glyphicon-chevron-up"></span><?php elseif($order==$column['name']&&$asc): ?> <span class="glyphicon glyphicon-chevron-down"></span><?php endif; ?></a></th>
 <?php endforeach; ?>
 <?php else: ?>
 <!--<th>ID</th>-->
@@ -86,13 +89,21 @@
 <th><a href="<?php echo BASE_URL; ?>?r=data&amp;data_id=<?php echo $table_id; ?>&amp;order=geom<?php if($order=='geom'&&!$asc): ?>&amp;asc=1<?php endif; ?>&amp;ipp=<?php echo $ipp; ?><?php if($data_type==1): ?>#items<?php endif; ?>" title="<?php echo str_replace('[column]', $lang['geometry_column_label'], $lang['order_by']); ?>"><?php echo $lang['geometry_column_label']; ?> <?php if($order=='geom'&&!$asc): ?> <span class="glyphicon glyphicon-chevron-up"></span><?php elseif($order=='geom'&&$asc): ?> <span class="glyphicon glyphicon-chevron-down"></span><?php endif; ?></a></th>
 <?php endif; ?>
 
-<th class="options">&nbsp;</th>
+
 </tr>
 </thead>
   
 <tbody>
-<?php $i=1; foreach($data_items as $data_item): $linked=false; ?>
+<?php $i=1; foreach($data_items as $data_item): ?>
 <tr id="row-<?php echo $data_item['id']; ?>"<?php if($data_type==1 && empty($data_item['wkt'])): ?> class="no-geometry"<?php endif; ?>>
+
+<td class="options-l"><a class="btn btn-success btn-xs" href="<?php echo BASE_URL; ?>?r=data_item&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['show_data_item_details']; ?>"><span class="glyphicon glyphicon-eye-open"></span></a><?php if($permission['write']): ?>&nbsp; <!--
+--><a class="btn btn-primary btn-xs" href="?r=edit_data_item.edit&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['edit']; ?>"><span class="glyphicon glyphicon-pencil"></a>&nbsp; <!--
+--><a class="btn btn-danger btn-xs delete-confirm" href="?r=data.delete&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['delete']; ?>" data-delete-confirm="<?php echo rawurlencode($lang['delete_data_item_message']); ?>"><span class="glyphicon glyphicon-remove"></a><?php endif; ?></td>
+
+
+
+
 <?php if($parent_table): ?><td class="parent"><a class="btn btn-warning btn-xs btn-fw-xs" href="<?php echo BASE_URL; ?>?r=data_item&amp;data_id=<?php echo $parent_table; ?>&amp;id=<?php echo $data_item['fk']; ?>"><?php echo $data_item['fk']; ?></a></td><?php endif; ?>
 <?php if(isset($columns)): ?>
 <?php foreach($columns as $column): ?>
@@ -100,17 +111,9 @@
 <?php if($column['type']==6): ?>
 <?php if($data_item[$column['name']]): ?><span class="glyphicon glyphicon-ok text-success" title="<?php echo $lang['yes']; ?>"></span><?php endif; ?>
 <?php elseif(isset($column['choice_labels']) && isset($column['choice_labels'][$data_item[$column['name']]]) && !empty($column['choice_labels'][$data_item[$column['name']]])): ?>
-<?php if(!$linked): $linked=true; ?>
-<a href="<?php echo BASE_URL; ?>?r=data_item&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $data_item['id']; ?>"><?php echo $column['choice_labels'][$data_item[$column['name']]]; ?></a>
-<?php else: ?>
 <?php echo $column['choice_labels'][$data_item[$column['name']]]; ?>
-<?php endif; ?>
-<?php else: ?>
-<?php if(!$linked): $linked=true; ?>
-<a href="<?php echo BASE_URL; ?>?r=data_item&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $data_item['id']; ?>"><?php echo truncate($data_item[$column['name']], 20, $column['type']==1 ? true : false); ?></a>
 <?php else: ?>
 <?php echo truncate($data_item[$column['name']], 20, $column['type']==1 ? true : false); ?>
-<?php endif; ?>
 <?php endif; ?>
 </td>
 <?php endforeach; ?>
@@ -125,16 +128,13 @@
 <td><?php if(!empty($data_item['has_geometry'])): ?><span class="glyphicon glyphicon-ok text-success" title="<?php echo $lang['yes']; ?>"></span><?php endif; ?></td>
 <?php endif; ?>
 
-<td class="options"><a class="btn btn-primary btn-xs" href="<?php echo BASE_URL; ?>?r=data_item&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['show_data_item_details']; ?>"><span class="glyphicon glyphicon-search"></span></a><?php if($permission['write']): ?>&nbsp; <!--
---><a class="btn btn-primary btn-xs" href="?r=edit_data_item.edit&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['edit']; ?>"><span class="glyphicon glyphicon-pencil"></a>&nbsp; <!--
---><a class="btn btn-danger btn-xs delete-confirm" href="?r=data.delete&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['delete']; ?>" data-delete-confirm="<?php echo rawurlencode($lang['delete_data_item_message']); ?>"><span class="glyphicon glyphicon-remove"></a><?php endif; ?></td>
 </tr>
 <?php ++$i; endforeach; ?>
 </tbody>
 </table>
 </div>
 
-<?php if($pagination): ?>
+
 <div class="row">
 <div class="col-md-6">
 <?php echo $lang['displayed_records_label']; ?> / 
@@ -150,6 +150,7 @@
 </form>
 </div>
 <div class="col-md-6">
+<?php if($pagination): ?>
 <ul class="pagination pull-right nomargin">
 <?php if($pagination['previous']): ?><li><a href="<?php echo BASE_URL; ?>?r=data&amp;data_id=<?php echo $table_id; ?>&amp;p=<?php echo $pagination['previous']; ?>&amp;order=<?php echo $order; ?>&amp;asc=<?php echo $asc; ?>&amp;ipp=<?php echo $ipp; ?><?php if($data_type==1): ?>#items<?php endif; ?>" title="<?php echo $lang['previous_page_title']; ?>"><span class="glyphicon glyphicon-chevron-left"></span></a></li><?php endif; ?>
 <?php foreach($pagination['items'] as $item): ?>
@@ -157,17 +158,17 @@
 <?php endforeach; ?>
 <?php if($pagination['next']): ?><li><a href="<?php echo BASE_URL; ?>?r=data&amp;data_id=<?php echo $table_id; ?>&amp;p=<?php echo $pagination['next']; ?>&amp;order=<?php echo $order; ?>&amp;asc=<?php echo $asc; ?>&amp;ipp=<?php echo $ipp; ?><?php if($data_type==1): ?>#items<?php endif; ?>" title="<?php echo $lang['next_page_title']; ?>"><span class="glyphicon glyphicon-chevron-right"></span></a></li><?php endif; ?>  
 </ul>
-</div>
-</div>
-
-<?php else: ?>
-<?php echo $lang['total_records_label']; ?>
 <?php endif; ?>
+</div>
+</div>
+
+
+
 
 
 
 <?php else: ?>
-<p><em><?php echo $lang['db_table_empty']; ?></em></p>
+<div class="alert alert-warning"><?php echo $lang['db_table_empty']; ?></div>
 <?php endif; ?>
 </div>
 
@@ -287,7 +288,8 @@ else document.getElementById("layerinactivenotice").style.display = "block";';
 <?php $js[] = 'extentLayer = new OpenLayers.Layer.Vector("Extent");
 var extent = new OpenLayers.Format.WKT({"internalProjection":projDisplay,"externalProjection":projData}).read("'.$spatial_info['extent'].'");
 extentLayer.addFeatures([extent]);
-map.zoomToExtent(extentLayer.getDataExtent());'; ?>
+map.zoomToExtent(extentLayer.getDataExtent());
+if(map.zoom > 17) map.zoomTo(17);'; ?>
 <?php else: ?>
 <?php $js[] = 'map.setCenter(new OpenLayers.LonLat('.$settings['default_longitude'].','.$settings['default_latitude'].').transform(projData, projDisplay), '.$settings['default_zoomlevel'].');'; ?>
 <?php endif; ?>

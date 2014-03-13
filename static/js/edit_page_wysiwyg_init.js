@@ -1,7 +1,8 @@
 tinymce.init({
-    selector: "textarea.wysiwyg",
-    menubar:false,
-    statusbar: false,
+   selector: "textarea.wysiwyg",
+   menubar:false,
+   statusbar: false,
+   entity_encoding : "raw",
    plugins: [
         "advlist autolink lists link image anchor code"
     ],

@@ -1,15 +1,16 @@
 <?php
 
-define('JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js');
-define('JQUERY_UI', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js');
-define('JQUERY_UI_CSS', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css');
+define('JQUERY', '//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js');
+define('JQUERY_UI', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js');
+define('JQUERY_UI_CSS', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.min.css');
 define('JQUERY_UI_HANDLER', STATIC_URL.'js/jquery_ui_handler.js');
 
-define('BOOTSTRAP', '//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js');
-define('BOOTSTRAP_CSS', '//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css');
+define('BOOTSTRAP', '//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js');
+define('BOOTSTRAP_CSS', '//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css');
 
 define('OPENLAYERS', '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.12/OpenLayers.js');
-define('OPENLAYERS_CSS', STATIC_URL.'css/openlayers.css');
+#define('OPENLAYERS_CSS', STATIC_URL.'css/openlayers.css');
+define('OPENLAYERS_CSS', '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.12/theme/default/style.css');
 define('OPENLAYERS_DATA', STATIC_URL.'js/ol_data.js');
 define('OPENLAYERS_DATA_ITEM', STATIC_URL.'js/ol_data_item.js');
 define('OPENLAYERS_DATA_ITEM_ATTACHED', STATIC_URL.'js/ol_data_item_attached.js');

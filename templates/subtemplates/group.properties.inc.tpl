@@ -135,6 +135,7 @@
 </div>
 
 </li>
+<?php /*
 <li><label for="type_6" class="mainlabel"><input id="type_6" type="radio" name="type" value="<?php echo Permission::PHOTOS; ?>"> <span><?php echo $lang['group_permission_type'][Permission::PHOTOS]; ?></span></label>
 <div class="permission_details alert alert-info">
 <span class="description"><?php echo $lang['group_permission_description'][Permission::PHOTOS]; ?></span><br />
@@ -147,7 +148,7 @@
 
 </div>
 </li>
-
+*/ ?>
 </ul>
 </div>
 </form>

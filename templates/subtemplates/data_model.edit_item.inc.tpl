@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
 <li><a href="<?php echo BASE_URL; ?>?r=dashboard#data" title="<?php echo $lang['dashboard_title']; ?>"><?php echo $lang['dashboard_link']; ?></a></li>
-<li><a href="<?php echo BASE_URL; ?>?r=data_model.edit_model&id=<?php echo $data_id; ?>#structure"><?php echo $lang['edit_data_model_title']; ?></a></li>
+<li><a href="<?php echo BASE_URL; ?>?r=data_model.edit_model&amp;id=<?php echo $data_id; ?>#structure"><?php echo $lang['edit_data_model_title']; ?></a></li>
 <li class="active">
 <?php if(isset($model_item['id'])): ?>
 <?php echo $lang['data_model_edit_item_title']; ?>
@@ -50,45 +50,54 @@
 <span class="description"><?php echo $lang['db_tabel_item_label_description']; ?></span></td>
 <td class="value"><input id="label" class="form-control" type="text" name="label" value="<?php if(isset($model_item['label'])): ?><?php echo $model_item['label']; ?><?php endif; ?>" size="50" /></td>
 </tr>
+
+
 <tr>
 <td class="key"><label for="description"><?php echo $lang['db_tabel_item_description_label']; ?></label><br />
 <span class="description"><?php echo $lang['db_tabel_item_description_description']; ?></span></td>
 <td class="value"><input id="description" class="form-control" type="text" name="description" value="<?php if(isset($model_item['description'])): ?><?php echo $model_item['description']; ?><?php endif; ?>" size="50" /></td>
 </tr>
-<tr<?php if(isset($error_fields) && in_array('type', $error_fields)): ?> class="has-error danger"<?php endif; ?>>
-<td class="key"><label for="type"><?php echo $lang['db_tabel_item_type_label']; ?></label><br />
+
+<tr>
+<td class="key"><?php echo $lang['db_tabel_item_type_label']; ?><br />
 <span class="description"><?php echo $lang['db_tabel_item_type_description']; ?></span></td>
+<td class="value">
+<div class="radio">
+<label>
+<input type="radio" name="item_type" value="0"<?php if(isset($model_item['item_type']) && $model_item['item_type']==0): ?> checked<?php endif; ?><?php if(isset($model_item['id'])): ?> disabled="disabled"<?php endif; ?>>
+<?php echo $lang['db_tabel_item_type'][0]; ?>
+</label>
+</div>
+<div class="radio">
+<label>
+<input type="radio" name="item_type" value="1"<?php if(isset($model_item['item_type']) && $model_item['item_type']==1): ?> checked<?php endif; ?><?php if(isset($model_item['id'])): ?> disabled="disabled"<?php endif; ?>>
+<?php echo $lang['db_tabel_item_type'][1]; ?>
+</label>
+</div>
+</td>
+</tr>
+
+<tr<?php if(isset($error_fields) && in_array('type', $error_fields)): ?> class="has-error danger"<?php endif; ?>>
+<td class="key"><label class="control-label" for="type"><?php echo $lang['db_tabel_data_type_label']; ?></label><br />
+<span class="description"><?php echo $lang['db_tabel_data_type_description']; ?></span></td>
 <td class="value">
 <select id="type" class="form-control form-control-default form-control-inline" name="column_type" size="1"<?php if(isset($model_item['id'])): ?> disabled="disabled"<?php endif; ?>>
 <?php foreach($column_types as $key => $value): ?>
 <option value="<?php echo $key; ?>"<?php if(isset($model_item['column_type']) && $key==$model_item['column_type']): ?> selected="selected"<?php endif; ?>><?php echo $value['label']; ?></option>
 <?php endforeach; ?>
 </select>
-<input id="column_length" class="form-control form-control-small form-control-inline" type="text" name="column_length" value="<?php if(!empty($model_item['column_length'])): ?><?php echo $model_item['column_length']; ?><?php endif; ?>" size="7" class="input-default-size"<?php if(isset($model_item['id'])): ?> disabled="disabled"<?php endif; ?>></td>
+<input id="column_length" class="form-control form-control-small form-control-inline" type="text" name="column_length" value="<?php if(!empty($model_item['column_length'])): ?><?php echo $model_item['column_length']; ?><?php endif; ?>" size="7"<?php if(isset($model_item['id'])): ?> disabled="disabled"<?php endif; ?>></td>
 </tr>
 
 <tr>
-<td class="key"><label for="section_type"><?php echo $lang['db_tabel_item_section_label']; ?></label><br />
+<td class="key"><label><?php echo $lang['db_tabel_item_section_label']; ?></label><br />
 <span class="description"><?php echo $lang['db_tabel_item_section_description']; ?></span></td>
 <td class="value">
-<div class="radio">
-<label>
-<input type="radio" name="section_type" value="0"<?php if(isset($model_item['section_type']) && $model_item['section_type']==0): ?> checked<?php endif; ?>>
-<?php echo $lang['data_model_section_type'][0]; ?>
-</label>
-</div>
-<div class="radio">
-<label>
-<input type="radio" name="section_type" value="1"<?php if(isset($model_item['section_type']) && $model_item['section_type']==1): ?> checked<?php endif; ?>>
-<?php echo $lang['data_model_section_type'][1]; ?>
-</label>
-</div>
-<div class="radio">
-<label>
-<input type="radio" name="section_type" value="2"<?php if(isset($model_item['section_type']) && $model_item['section_type']==2): ?> checked<?php endif; ?>>
-<?php echo $lang['data_model_section_type'][2]; ?>
-</label>
-</div>
+<select id="type" class="form-control form-control-default form-control-inline" name="section_type" size="1"<?php if(isset($model_item['id']) && isset($model_item['column_type']) && $model_item['column_type']>0): ?> disabled="disabled"<?php endif; ?>>
+<option value="0"<?php if(isset($model_item['section_type']) && $model_item['section_type']==0): ?> selected="selected"<?php endif; ?>><?php echo $lang['data_model_section_type'][0]; ?></option>
+<option value="1"<?php if(isset($model_item['section_type']) && $model_item['section_type']==1): ?> selected="selected"<?php endif; ?>><?php echo $lang['data_model_section_type'][1]; ?></option>
+<option value="2"<?php if(isset($model_item['section_type']) && $model_item['section_type']==2): ?> selected="selected"<?php endif; ?>><?php echo $lang['data_model_section_type'][2]; ?></option>
+</select>
 </td>
 </tr>
 
@@ -96,7 +105,7 @@
 <tr>
 <td class="key"><label for="range_from"><?php echo $lang['db_tabel_item_range_label']; ?></label><br />
 <span class="description"><?php echo $lang['db_tabel_item_range_description']; ?></span></td>
-<td class="value"><input id="range_from" class="form-control form-control-medium form-control-inline" type="text" name="range_from" value="<?php if(isset($model_item['range_from'])): ?><?php echo $model_item['range_from']; ?><?php endif; ?>" size="7" class="input-default-size" /> - <input id="range_to" class="form-control form-control-medium form-control-inline" type="text" name="range_to" value="<?php if(isset($model_item['range_to'])): ?><?php echo $model_item['range_to']; ?><?php endif; ?>" size="7" class="input-default-size" /></td>
+<td class="value"><input id="range_from" class="form-control form-control-medium form-control-inline" type="text" name="range_from" value="<?php if(isset($model_item['range_from'])): ?><?php echo $model_item['range_from']; ?><?php endif; ?>" size="7" /> - <input id="range_to" class="form-control form-control-medium form-control-inline" type="text" name="range_to" value="<?php if(isset($model_item['range_to'])): ?><?php echo $model_item['range_to']; ?><?php endif; ?>" size="7" /></td>
 </tr>
 
 <tr>
@@ -121,11 +130,15 @@
 <span class="description"><?php echo $lang['db_tabel_item_required_description']; ?></span></td>
 <td class="value"><input id="required" type="checkbox" name="required" value="1"<?php if(isset($model_item['required']) && $model_item['required']==1): ?> checked="checked"<?php endif; ?> /></td>
 </tr>
+
+<?php /*
+TODO
 <tr>
 <td class="key"><label for="overview"><?php echo $lang['db_tabel_item_overview_label']; ?></label><br />
 <span class="description"><?php echo $lang['db_tabel_item_overview_description']; ?></span></td>
 <td class="value"><input id="overview" type="checkbox" name="overview" value="1"<?php if(isset($model_item['overview']) && $model_item['overview']==1): ?> checked="checked"<?php endif; ?> /></td>
 </tr>
+*/ ?>
 
 <tr>
 <td colspan="2"><a href="#additional-options" data-toggle="collapse" data-target=".additional-options"><?php echo $lang['db_tabel_item_additional_options_link']; ?> <span class="caret"></span></a>
@@ -143,7 +156,7 @@
 <span class="description"><?php echo $lang['db_tabel_item_relation_description']; ?></span></td>
 <td class="value">
 <select id="relation" class="form-control" name="relation" size="1">
-<option value="0"></option>
+<option value="0">&nbsp;</option>
 <?php foreach($relations as $relation): ?>
 <option value="<?php echo $relation['id']; ?>"<?php if(isset($model_item['relation']) && $relation['id']==$model_item['relation']): ?> selected="selected"<?php endif; ?>><?php echo $relation['table_name']; ?>.<?php echo $relation['column_name']; ?></option>
 <?php endforeach; ?>

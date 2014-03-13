@@ -5,16 +5,13 @@ define('DEFAULT_PAGE_SUBTEMPLATE', 'default.inc.tpl');
 
 $settings['project_thumbnail_width'] = 170;
 $settings['project_thumbnail_height'] = 170;
-$settings['project_thumbnail_quality'] = 85;
+$settings['project_thumbnail_quality'] = 80;
 $settings['page_image_width'] = 380;
 $settings['page_image_height'] = 285;
 $settings['page_image_quality'] = 85;
 $settings['project_photo_width'] = 900;
 $settings['project_photo_height'] = 800;
 $settings['project_photo_quality'] = 85;
-$settings['project_thumbnail_width'] = 170;
-$settings['project_thumbnail_height'] = 170;
-$settings['project_thumbnail_quality'] = 80;
 //$settings['page_teaser_auto_truncate'] = 385;
 
 function get_uploaded_image($upload, $directory, $height, $width, $mode='inset', $quality=85)
@@ -138,16 +135,7 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
           $page['subtemplate'] = $row['subtemplate'];
           $page['menu'] = htmlspecialchars($row['menu']);
           
-          $tv_array = explode(',', $row['tv']);
-          foreach($tv_array as $tv_item)
-           {
-            if($tv_item)
-             {
-              $tv_item_parts = explode('=', $tv_item);
-              $tv[trim($tv_item_parts[0])] = isset($tv_item_parts[1]) ? trim($tv_item_parts[1]) : true;
-             }
-           }
-          if(isset($tv)) $template->assign('tv', $tv);          
+          if($tv = extract_tvs($row['tv'])) $template->assign('tv', $tv);
           
           $page['parent_identifier'] = htmlspecialchars($row['parent_identifier']);
           $page['parent_title'] = htmlspecialchars($row['parent_title']);          
@@ -292,8 +280,8 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
          $template->assign('subtemplate', 'page.edit.inc.tpl');        
          $javascripts[] = JQUERY_UI;
          $javascripts[] = JQUERY_UI_HANDLER;
-         $javascripts[] = WYSIWYG_EDITOR;
-         $javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';             
+         #$javascripts[] = WYSIWYG_EDITOR;
+         #$javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';             
         break;
     case 'edit':
         if(isset($_GET['id']) && $permission->granted(Permission::PAGE_MANAGEMENT))
@@ -343,8 +331,8 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
             $template->assign('subtemplate', 'page.edit.inc.tpl');        
             //$javascripts[] = JQUERY_UI;
             //$javascripts[] = JQUERY_UI_HANDLER;
-            $javascripts[] = WYSIWYG_EDITOR;
-            $javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';          
+            #$javascripts[] = WYSIWYG_EDITOR;
+            #$javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';          
           
             // parent pages:
             $dbr = Database::$connection->prepare("SELECT id, title FROM ".$db_settings['pages_table']." WHERE id!=:id ORDER BY sequence ASC");
@@ -993,23 +981,25 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
         if($permission->granted(Permission::PAGE_MANAGEMENT)) $status_query = '';
         elseif($permission->granted(Permission::USER)) $status_query = ' AND status > 0';
         else $status_query = ' AND status = 2';
-        $dbr = Database::$connection->prepare("SELECT id, identifier, extract(epoch FROM created) as created_timestamp, custom_date, title, content, teaser_supertitle, teaser_title, teaser_text, teaser_linktext, teaser_image, teaser_image_width, teaser_image_height FROM ".Database::$db_settings['pages_table']." WHERE index IS true".$status_query." ORDER BY sequence ASC");
+        $dbr = Database::$connection->prepare("SELECT id, identifier, extract(epoch FROM created) as created_timestamp, custom_date, title, content, teaser_supertitle, teaser_title, teaser_text, teaser_linktext, teaser_image, teaser_image_width, teaser_image_height, tv FROM ".Database::$db_settings['pages_table']." WHERE index IS true".$status_query." ORDER BY sequence ASC");
         $dbr->execute();
         $i=0;
         while($row = $dbr->fetch()) 
          {
+          if($tv = extract_tvs($row['tv'])) $projects[$i]['tv'] = $tv;
+
           $projects[$i]['id'] = intval($row['id']);
           $projects[$i]['identifier'] = htmlspecialchars($row['identifier']);
           $projects[$i]['created'] = htmlspecialchars(strftime($lang['time_format'], $row['created_timestamp']));
           
           if($row['teaser_supertitle']) $projects[$i]['teaser_supertitle'] = htmlspecialchars($row['teaser_supertitle']);
-          else $projects[$i]['teaser_supertitle'] = strftime($lang['time_format'], $row['created_timestamp']);
+          //else $projects[$i]['teaser_supertitle'] = strftime($lang['time_format'], $row['created_timestamp']);
           if($row['teaser_title']) $projects[$i]['teaser_title'] = htmlspecialchars($row['teaser_title']);
           else $projects[$i]['teaser_title'] = htmlspecialchars($row['title']);
           if($row['teaser_text']) $projects[$i]['teaser_text'] = $row['teaser_text'];
           //else $projects[$i]['teaser_text'] = truncate($row['content'], $settings['page_teaser_auto_truncate']);
           else $projects[$i]['teaser_text'] = $row['content'];
-          if($row['teaser_linktext']) $projects[$i]['teaser_linktext'] = htmlspecialchars($row['teaser_linktext']);
+          if($row['teaser_linktext']) $projects[$i]['teaser_linktext'] = $row['teaser_linktext'];
           //else $projects[$i]['teaser_linktext'] = $lang['page_default_teaser_linktext'];
           
           if($row['teaser_image'])

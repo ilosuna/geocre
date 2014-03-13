@@ -2,24 +2,16 @@
 <html lang="<?php echo $lang['language']; ?>" data-base-url="<?php echo BASE_URL; ?>" data-static-url="<?php echo STATIC_URL; ?>">
 <head>
 <meta charset="utf-8">
+<title><?php if(isset($page_title)) echo $page_title; elseif(isset($subtitle)) echo $subtitle . ' - ' . $title; else echo $title; ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="<?php echo $settings['description']; ?>">
-<link rel="shortcut icon" href="<?php echo STATIC_URL; ?>img/favicon.png" />
-
-<title><?php if(isset($page_title)) echo $page_title; elseif(isset($subtitle)) echo $subtitle . ' - ' . $title; else echo $title; ?></title>
-
 <link href="<?php echo BOOTSTRAP_CSS; ?>" rel="stylesheet">
 <?php /*<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css" media="all" />*/ ?>
 <link rel="stylesheet" type="text/css" href="<?php echo STATIC_URL; ?>css/style.css" media="all" />
 <?php if(isset($stylesheets)): foreach($stylesheets as $stylesheet): ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $stylesheet; ?>" media="all" />
 <?php endforeach; endif; ?>
-<?php /*
-<!--[if lt IE 9]>
-<script src="../../assets/js/html5shiv.js"></script>
-<script src="../../assets/js/respond.min.js"></script>
-<![endif]-->
-*/ ?>
+<link rel="shortcut icon" href="<?php echo STATIC_URL; ?>img/favicon.png" />
 </head>
 
 <body>
@@ -36,17 +28,31 @@
 <a class="navbar-brand" href="<?php echo BASE_URL; ?>"><?php echo $title; ?></a>
 </div>
 <div class="navbar-collapse collapse">
-<ul class="nav navbar-nav">
-<?php if($logged_in): ?>
-<li<?php if(isset($active) && $active=='dashboard'): ?> class="active"<?php endif; ?>><a href="<?php echo BASE_URL; ?>?r=dashboard" title="<?php echo $lang['dashboard_title']; ?>"><span class="glyphicon glyphicon-list-alt"></span> <?php echo $lang['dashboard_link']; ?></a></li>
-<?php endif; ?>
+
+
 <?php if(isset($menu)): ?>
+<ul class="nav navbar-nav">
+
+<li class="dropdown">
+<?php if($logged_in): ?>
+<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-file"></span> <?php echo $lang['pages_label']; ?> <b class="caret"></b></a>
+<ul class="dropdown-menu">
+<?php endif; ?>
 <?php foreach($menu as $menu_item): ?>
 <li<?php if(isset($current_page)&&$current_page==$menu_item['page']): ?> class="active"<?php endif; ?>><a href="<?php echo BASE_URL.$menu_item['page']; ?>"><?php echo $menu_item['label']; ?></a></li>
 <?php endforeach; ?>
+<?php if($logged_in): ?>
+</ul>
 <?php endif; ?>
 </ul>
+<?php endif; ?>
+
+
+
 <?php if($logged_in): ?>
+<ul class="nav navbar-nav">
+<li<?php if(isset($active) && $active=='dashboard'): ?> class="active"<?php endif; ?>><a href="<?php echo BASE_URL; ?>?r=dashboard" title="<?php echo $lang['dashboard_title']; ?>"><span class="glyphicon glyphicon-list-alt"></span> <?php echo $lang['dashboard_link']; ?></a></li>
+</ul>
 <ul class="nav navbar-nav navbar-right">
 <?php if($permission['admin']||$permission['users_groups']||$permission['page_management']): ?>
 <li class="dropdown<?php if(isset($active) && $active=='admin'): ?> active"<?php endif; ?>">
@@ -76,6 +82,7 @@
 </ul>
 <?php else: ?>  
 <ul class="nav navbar-nav navbar-right">
+
 <li<?php if(isset($active) && $active=='login'): ?> class="active"<?php endif; ?>><a href="<?php echo BASE_URL; ?>?r=login"><span class="glyphicon glyphicon-user"></span> <?php echo $lang['login_link']; ?></a></li>
 </ul>
 <?php endif; ?>
@@ -109,7 +116,12 @@
 </div><?php /* container */ ?>
 
 <?php if(isset($help)): ?>
-<div class="modal fade" id="modal_help" tabindex="-1"></div>
+<div class="modal fade" id="modal_help" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+</div>
+</div>
+</div>
 <?php endif; ?>
 
 <?php if(isset($javascripts)): foreach($javascripts as $javascript): ?>

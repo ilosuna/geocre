@@ -9,12 +9,12 @@
 <?php $i=1; foreach($projects as $project): ?>
 
 <div class="col-md-4 teaser">
-<p class="supertitle"><?php echo $project['teaser_supertitle']; ?></p>
-<h2><a href="<?php echo BASE_URL . $project['identifier']; ?>"><?php echo $project['teaser_title']; ?></a></h2>
+<?php if(isset($project['teaser_supertitle'])): ?><p class="supertitle"><?php echo $project['teaser_supertitle']; ?></p><?php endif; ?>
+<h2><a href="<?php if(isset($project['tv']['teaser_link'])): ?><?php echo $project['tv']['teaser_link']; ?><?php else: ?><?php echo BASE_URL . $project['identifier']; ?><?php endif; ?>"><?php echo $project['teaser_title']; ?></a></h2>
 <div class="media">
-<?php if(isset($project['teaser_image'])): ?><a class="thumbnail pull-left" href="<?php echo BASE_URL . $project['identifier']; ?>"><img class="media-object" src="<?php echo PAGE_TEASER_IMAGES_URL.$project['teaser_image']['file']; ?>" width="<?php echo $project['teaser_image']['width']; ?>" height="<?php echo $project['teaser_image']['height']; ?>" alt="<?php echo $project['teaser_title']; ?>" /></a><?php endif; ?>
+<?php if(isset($project['teaser_image'])): ?><a class="thumbnail pull-left" href="<?php if(isset($project['tv']['teaser_link'])): ?><?php echo $project['tv']['teaser_link']; ?><?php else: ?><?php echo BASE_URL . $project['identifier']; ?><?php endif; ?>"><img class="media-object" src="<?php echo PAGE_TEASER_IMAGES_URL.$project['teaser_image']['file']; ?>" width="<?php echo $project['teaser_image']['width']; ?>" height="<?php echo $project['teaser_image']['height']; ?>" alt="<?php echo $project['teaser_title']; ?>" /></a><?php endif; ?>
 <p><?php echo $project['teaser_text']; ?></p>
-<?php if(isset($project['teaser_linktext'])): ?><p><a href="<?php echo BASE_URL . $project['identifier']; ?>"><?php echo $project['teaser_linktext']; ?></a></p><?php endif; ?>
+<?php if(isset($project['teaser_linktext'])): ?><p><a href="<?php if(isset($project['tv']['teaser_link'])): ?><?php echo $project['tv']['teaser_link']; ?><?php else: ?><?php echo BASE_URL . $project['identifier']; ?><?php endif; ?>"><?php echo $project['teaser_linktext']; ?></a></p><?php endif; ?>
 </div>
 </div>
 
