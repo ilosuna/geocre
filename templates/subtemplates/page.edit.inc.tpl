@@ -160,7 +160,7 @@ if(isset($page['id'])): ?>
 <strong><?php echo $lang['page_teaser_image_label']; ?></strong><br />
 <img class="thumbnail" src="<?php echo PAGE_TEASER_IMAGES_URL.$page['teaser_image']; ?>" alt="Teaser" class="teaser_image_edit"/>
 <div class="checkbox">
-<input id="delete_teaser_image" class="form-control" type="checkbox" name="delete_teaser_image" value="1" /> <label for="delete_teaser_image"><?php echo $lang['page_delete_teaser_image']; ?></label>
+<input id="delete_teaser_image" type="checkbox" name="delete_teaser_image" value="1" /> <label for="delete_teaser_image"><?php echo $lang['page_delete_teaser_image']; ?></label>
 </div>
 </div>
 <?php endif; ?>

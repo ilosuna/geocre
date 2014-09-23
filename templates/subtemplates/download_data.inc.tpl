@@ -11,8 +11,9 @@
 <?php endif; ?>
 
 <form action="index.php" method="post"><div>
-<input type="hidden" name="r" value="download_data.download" />
-<input type="hidden" name="id" value="<?php echo $data['id']; ?>" />
+<input type="hidden" name="r" value="download_data.download">
+<input type="hidden" name="id" value="<?php echo $data['id']; ?>">
+<input id="downloadtoken" type="hidden" name="downloadtoken">
 
 <fieldset>
 <legend><?php echo $lang['download_data_options_label']; ?></legend>
@@ -49,16 +50,38 @@
   </label>
 </div>
 <?php endif; ?>
+</fieldset>
+
 <?php if($data['parent_table']): ?>
+<fieldset>
+<legend><?php echo $lang['download_data_join_parent_data_label']; ?></legend>
 <div class="checkbox">
   <label>
     <input type="checkbox" name="join" id="join">
-    <?php echo $lang['download_data_join']; ?>
+    <?php echo $data['parent_title']; ?>
   </label>
 </div>
+</fieldset>
 <?php endif; ?>
 
+<?php if(isset($data['child'])): ?>
+
+<fieldset>
+<legend><?php echo $lang['download_data_merge_child_data_label']; ?></legend>
+<?php foreach($data['child'] as $child): ?>
+<div class="checkbox">
+  <label>
+    <input type="checkbox" name="childdata[]" value="<?php echo $child['id']; ?>">
+    <?php echo $child['title']; ?>
+  </label>
+</div>
+<?php endforeach; ?>
+
 </fieldset>
+
+<?php endif; ?>
+
+
 
 <fieldset>
 <legend><?php echo $lang['download_data_format_label']; ?></legend>
@@ -104,7 +127,7 @@
 </fieldset>
 
 <div class="top-space">
-<button class="btn btn-primary btn-lg" type="submit"><span class="glyphicon glyphicon-cloud-download"></span> <?php echo $lang['download_data_submit']; ?></button>
+<button class="btn btn-primary btn-lg" type="submit" data-downloading="<?php echo rawurlencode($lang['processing_message']); ?>"><span class="glyphicon glyphicon-cloud-download"></span> <?php echo $lang['download_data_submit']; ?></button>
 </div>
 
 

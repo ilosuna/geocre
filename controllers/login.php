@@ -20,7 +20,7 @@ switch($action)
    $pw = isset($_POST['pw']) ? trim($_POST['pw']) : '';
    if($email && $pw)
     {
-     $dbr = Database::$connection->prepare("SELECT id, name, pw, type, language, time_zone, settings FROM ".Database::$db_settings['userdata_table']." WHERE LOWER(email)=LOWER(:email) LIMIT 1");
+     $dbr = Database::$connection->prepare("SELECT id, name, pw, language, time_zone, settings FROM ".Database::$db_settings['userdata_table']." WHERE LOWER(email)=LOWER(:email) LIMIT 1");
      $dbr->bindParam(':email', $email);
      $dbr->execute();
      $row = $dbr->fetch();
@@ -32,13 +32,13 @@ switch($action)
          $dbr->bindValue(':id', $row['id']);
          $dbr->execute();
          $_SESSION[$settings['session_prefix'].'auth']['id'] = $row['id'];
-         $_SESSION[$settings['session_prefix'].'auth']['type'] = $row['type'];
+         #$_SESSION[$settings['session_prefix'].'auth']['type'] = $row['type'];
          #$_SESSION[$settings['session_prefix'].'auth']['email'] = htmlspecialchars($row['email']);
          $_SESSION[$settings['session_prefix'].'auth']['name'] = htmlspecialchars($row['name']);
          if($row['language']) $_SESSION[$settings['session_prefix'].'language'] = $row['language'];
          if($row['time_zone']) $_SESSION[$settings['session_prefix'].'time_zone'] = $row['time_zone'];
          if($row['settings']) $_SESSION[$settings['session_prefix'].'usersettings'] = unserialize($row['settings']);
-         log_status(NULL, 1);
+         log_activity(1);
          header('Location: '.BASE_URL.'?r=dashboard');
          exit;
         }
@@ -74,8 +74,10 @@ switch($action)
   case 'logout':
    if(isset($_SESSION[$settings['session_prefix'].'auth']))
     {
-     log_status(NULL, 2);
+     log_activity(2);
      unset($_SESSION[$settings['session_prefix'].'auth']);
+     unset($_SESSION[$settings['session_prefix'].'language']);
+     unset($_SESSION[$settings['session_prefix'].'time_zone']);
      unset($_SESSION[$settings['session_prefix'].'usersettings']);
      header('Location: '.BASE_URL);
      exit;

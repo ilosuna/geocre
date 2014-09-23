@@ -1,11 +1,8 @@
 <?php
 if(!defined('IN_INDEX')) exit;
 
-$settings['status_items_per_page'] = 20;
-
 if($permission->granted(Permission::USER))
  {
-
   switch($action)
    {
     case 'default':
@@ -86,15 +83,19 @@ if($permission->granted(Permission::USER))
          }
         catch(Exception $exception)
          {
+          $records_count = 0;
           $data[$i]['available'] = false;
          }
         $data[$i]['id'] = $row['id'];
         $data[$i]['title'] = htmlspecialchars($row['title']);
         $data[$i]['type'] = intval($row['type']);
+        #if(isset($records_count)) $data[$i]['records'] = $records_count;
+        #else $data[$i]['records'] = 0;
         $data[$i]['records'] = $records_count;
         $data[$i]['status'] = intval($row['status']);
         $data[$i]['parent_table'] = intval($row['parent_table']);
         $data[$i]['project'] = htmlspecialchars($row['project']);
+        if($row['project']) $template->assign('projects', true);
         if($row['readonly']==0 && ($permission->granted(Permission::DATA_MANAGEMENT)||$permission->granted(Permission::DATA_ACCESS, $row['id'], Permission::WRITE))) $data[$i]['edit'] = true;
         else $data[$i]['edit'] = false;
         if($permission->granted(Permission::DATA_MANAGEMENT)||$permission->granted(Permission::DATA_ACCESS, $row['id'], Permission::MANAGE)) $data[$i]['manage'] = true;
@@ -103,123 +104,16 @@ if($permission->granted(Permission::USER))
        }
       if(isset($data)) $template->assign('data', $data);
      }
-    
-    // profile:
-    /*
-    $dbr = Database::$connection->prepare("SELECT id, name, real_name, email, language, time_zone FROM ".Database::$db_settings['userdata_table']." WHERE id=:id LIMIT 1");
-    $dbr->bindValue(':id', $_SESSION[$settings['session_prefix'].'auth']['id']);
-    $dbr->execute();
-    $row = $dbr->fetch();
-    if(isset($row['id']))
-     {
-      $profile['id'] = $row['id'];
-      $profile['name'] = htmlspecialchars($row['name']);
-      $profile['real_name'] = htmlspecialchars($row['real_name']);
-      $profile['email'] = htmlspecialchars($row['email']);
-      $profile['language'] = htmlspecialchars(get_language_name($row['language']));
-      if($row['time_zone']) $profile['time_zone'] = htmlspecialchars($row['time_zone']);
-      else $profile['time_zone'] = $settings['time_zone'];
-      $template->assign('profile', $profile);
-     }       
-    
-    // groups:
-    $dbr = Database::$connection->prepare("SELECT groups.name AS group_name
-                                           FROM ".Database::$db_settings['group_memberships_table']." AS memberships
-                                           LEFT JOIN ".Database::$db_settings['group_table']." AS \"groups\" ON memberships.\"group\"=\"groups\".id
-                                           WHERE memberships.user=:user
-                                           ORDER BY groups.sequence ASC");
-    $dbr->bindParam(':user', $profile['id'], PDO::PARAM_INT);
-    $dbr->execute();
-    while($row = $dbr->fetch())
-     {
-      $groups[] = $row['group_name'];
-     }
-    if(isset($groups)) $template->assign('groups', $groups);
-    */
-     
-    // activity:  
-    $total_count_result = Database::$connection->query("SELECT COUNT(*) FROM ".Database::$db_settings['status_table']);
-    list($total_items) = $total_count_result->fetch();
-    $total_pages = ceil($total_items / $settings['status_items_per_page']);
-    // get current page:
-    $p = isset($_GET['p']) ? intval($_GET['p']) : 1;
-    if($p<1) $p=1;
-    if($total_pages>0 && $p>$total_pages) $p = $total_pages;
-    $offset = ($p-1) * $settings['status_items_per_page'];  
-    $dbr = Database::$connection->prepare("SELECT a.id,
-                                              a.user,
-                                              a.action,
-                                              a.table,
-                                              a.item,
-                                              a.message,
-                                              extract(epoch FROM a.time) as timestamp,
-                                              b.name AS username,
-                                              c.title AS table_title
-                                       FROM ".Database::$db_settings['status_table']." AS a
-                                       LEFT JOIN ".Database::$db_settings['userdata_table']." AS b ON a.user=b.id
-                                       LEFT JOIN ".Database::$db_settings['data_models_table']." AS c ON a.table=c.id
-                                       ORDER BY a.id DESC
-                                       LIMIT ".$settings['status_items_per_page']."
+   } // switch
 
-                                       OFFSET ".$offset);
-    $dbr->execute();
-    $i=0;
-    foreach($dbr as $row)
-     {
-      $status[$i]['id'] = $row['id'];
-      $status[$i]['username'] = htmlspecialchars($row['username']);
-      $status[$i]['action'] = $row['action'];
-      $status[$i]['table'] = $row['table'];
-      $status[$i]['table_title'] = htmlspecialchars($row['table_title']);
-      $status[$i]['item'] = $row['item'];
-      $status[$i]['message'] = make_link(htmlspecialchars($row['message']));
-      $status[$i]['time'] = htmlspecialchars(strftime($lang['time_format'], $row['timestamp']));
-      $status[$i]['minutes_ago'] = ceil((time()-intval($row['timestamp']))/60);
-      $hours = floor($status[$i]['minutes_ago']/60);
-      $minutes_remainder = intval($status[$i]['minutes_ago'])-intval($hours*60);
-      if($minutes_remainder<10) $minutes_remainder = '0'.$minutes_remainder;;
-      $status[$i]['hours_ago'] = $hours.':'.$minutes_remainder;
-      ++$i;
-     }
-
-    if(isset($status)) $template->assign('status', $status);
-    $template->assign('pagination', pagination($total_pages, $p));          
-     
-    if(isset($_GET['success'])) $template->assign('success', htmlspecialchars($_GET['success']));
-    elseif(isset($_GET['failure'])) $template->assign('failure', htmlspecialchars($_GET['failure']));
-
-    $template->assign('active', 'dashboard'); 
-     
-    break;
-    
-
-  
-   case 'status':
-  
-    if(isset($_POST['status_message']))
-     {
-      log_status($_POST['status_message']);
-      header('Location: '.BASE_URL.'?r=dashboard#activity');
-      exit;
-     }
-    if(isset($_REQUEST['delete_status_item']) && $permission->granted(Permission::ADMIN))
-     {
-      // delete item:
-      $dbr = Database::$connection->prepare("DELETE FROM ".Database::$db_settings['status_table']." WHERE id=:id");
-      $dbr->bindValue(':id', $_REQUEST['delete_status_item'], PDO::PARAM_INT);
-      $dbr->execute();
-      header('Location: '.BASE_URL.'?r=dashboard#activity');
-      exit;
-     }
-    break;    
-  
-  
- } // switch
-
-  $javascripts[] = JQUERY_UI;
-  $javascripts[] = JQUERY_UI_HANDLER;
-
+  if($permission->granted(Permission::DATA_MANAGEMENT))
+   {
+    $javascripts[] = JQUERY_UI;
+    $javascripts[] = JQUERY_UI_HANDLER;
+   }
+   
   $lang['dashboard_headline'] = str_replace('[user]', htmlspecialchars($_SESSION[$settings['session_prefix'].'auth']['name']), $lang['dashboard_headline']);
+  $template->assign('active', 'dashboard');
   $template->assign('help', 'dashboard');
   $template->assign('subtitle', $lang['dashboard_subtitle']);
   $template->assign('subtemplate', 'dashboard.inc.tpl');

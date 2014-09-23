@@ -8,12 +8,12 @@ class Database
   public function __construct()
    {
     self::$_instance = $this;
-    require('./config/db_settings.conf.php');
+    require(BASE_PATH.'config/db_settings.conf.php');
     self::$db_settings = $db_settings;
     
     switch(self::$db_settings['type'])
      {
-     case 'postgresql':
+      case 'postgresql':
        self::$connection = new PDO('pgsql:host='.self::$db_settings['host'].';port='.self::$db_settings['port'].';dbname='.self::$db_settings['database'].';user='.self::$db_settings['user'].';password='.self::$db_settings['password']);
        self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
        self::$connection->query("SET timezone='UTC'");

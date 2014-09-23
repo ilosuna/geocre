@@ -24,6 +24,34 @@ function getElementsByClassName(class_name)
   return ret_obj;
 }
 
+function saveInputValue(id, field)
+ {
+  if($('#'+field).val() && $('#'+field).is(':checkbox'))
+   {
+    if($('#'+field).is(':checked')) value = $('#'+field).val();
+    else value = '';
+   }
+  else if($('#'+field).val() && $('#'+field).not(':checkbox')) value = $('#'+field).val();
+  else if($('[name="data[_'+field+'_]"]').val()) value = $('[name="data[_'+field+'_]"]').val();
+  else if($('input[name="data['+field+']"]:checked').val()) value = $('input[name="data['+field+']"]:checked').val();
+  else value = '';
+  if(value && $('#'+field+'-remember-handle').hasClass('btn-default'))
+   {
+    $('#'+field+'-remember-handle').removeClass('btn-default').addClass('btn-warning');
+    data = {key:id, value:value};
+   }
+  else
+   {
+    $('#'+field+'-remember-handle').removeClass('btn-warning').addClass('btn-default');
+    data = {key:id, value:''};
+   } 
+  $.ajax({
+  type: "POST",
+  url: "index.php",
+  data: { r:"arp.set_user_setting", input_value:data }
+  });  
+ }
+
 
 function selectRow(id)
  {
@@ -92,7 +120,7 @@ function toggleZoomWheel(edit)
     $.ajax({
     type: "POST",
     url: "index.php",
-    data: { r:"arp.set_user_setting", map_edit_zoomwheel: zoomwheel }
+    data: { r:"arp.set_user_setting", map_edit_zoomwheel:zoomwheel }
     });
    }
   else
@@ -100,7 +128,7 @@ function toggleZoomWheel(edit)
     $.ajax({
     type: "POST",
     url: "index.php",
-    data: { r:"arp.set_user_setting", map_zoomwheel: zoomwheel }
+    data: { r:"arp.set_user_setting", map_zoomwheel:zoomwheel }
     });   
    } 
  
@@ -142,7 +170,7 @@ function saveMapHeight(value)
  {
   $.ajax({
   type: "POST",
-  url: "index.php?r=arp&set_user_setting=1",
+  url: "index.php",
   data: { r:"arp.set_user_setting", map_height:value }
   });  
  }
@@ -154,9 +182,9 @@ function resetMap()
   $('#mapcontainer').removeClass("fullscreen");
   $('body').removeClass("fullscreen");
   $('#mapsizetools').attr("class", "buttongroup");
+  $('#disablemap').show();
   if(typeof initialMapHeight==='undefined') $('#mapcontainer').css({'height':'550px'});
   else $('#mapcontainer').css({'height': initialMapHeight + 'px'});
-  //$("#mapcontainer").insertBefore('#resizemap');
   $("#mapcontainer").prependTo("#mapwrapper");
   map.updateSize();
   if(typeof nav!=='undefined') nav.disableZoomWheel();
@@ -190,17 +218,51 @@ function featureInfo(areaRaw, perimeterRaw, lengthRaw, latitudeRaw, longitudeRaw
   return featureInfo;
  }
 
+function finishDownload() {
+ window.clearInterval(fileDownloadCheckTimer);
+ $.removeCookie('downloadtoken');
+ $("[data-downloading]").html(btnInitialValue);
+ $("[data-downloading]").removeClass("btn-processing");
+ $("[data-downloading]").removeAttr("disabled");
+}
+
  
 $(function() {
+
+$('body').on('hidden.bs.modal', '.modal', function () {
+  $(this).removeData('bs.modal');
+});
 
 $('[data-check]').click(function(){
 $('#'+$(this).data('check')).attr("checked","checked");
 });
 
 $("[data-processing]").click(function(){
-$($(this)).attr("disabled","disabled");
+$($(this)).attr("disabled", "disabled");
 $($(this)).html(decodeURIComponent($(this).data("processing")));
 $($(this)).addClass("btn-processing");
+});
+
+$("[data-downloading]").click(function(){
+$($(this)).attr("disabled", "disabled");
+btnInitialValue = $($(this)).html();
+
+$($(this)).html(decodeURIComponent($(this).data("downloading")));
+$($(this)).addClass("btn-processing");
+
+    var token = new Date().getTime();
+    $('#downloadtoken').val(token);
+    
+    fileDownloadCheckTimer = window.setInterval(function () {
+      var cookieValue = $.cookie('downloadtoken');
+      if (cookieValue == token)
+       finishDownload();
+    }, 1000);
+
+});
+
+$('[data-disable-on-submit]').submit(function(){
+  $(this).find(':submit').attr('disabled', 'disabled');
 });
 
 $("form[data-validate]").submit(function( event ) {
@@ -210,8 +272,8 @@ var messages = $('[data-message]').map(function() { return $(this).data('message
   for(var i = 0; i < requiredFields.length; i++)
    {
     var passed = false;
-    $('form[data-validate] [name="'+requiredFields[i]+'"]').each(function( index ) {
-    if ($(this).is(':radio'))
+    $("form[data-validate] [name='"+requiredFields[i]+"']").each(function( index ) {
+    if($(this).is(':radio'))
      {
       if($(this).is(':checked') && $(this).val()!='') passed = true;
      }
@@ -223,15 +285,18 @@ var messages = $('[data-message]').map(function() { return $(this).data('message
     if(!passed)
      {
       error_message += decodeURIComponent(messages[i])+"\n";
-      $('[data-required='+requiredFields[i]+']').addClass('has-error danger');
+      if(requiredFields[i]=='data[_latitude]'||requiredFields[i]=='data[_longitude]') $('.latlong').addClass('has-error danger');
+      else $("[data-required='"+requiredFields[i]+"']").addClass('has-error danger');
      }
     else
      {
-      $('[data-required='+requiredFields[i]+']').removeClass('has-error danger');
+      if(requiredFields[i]=='data[_latitude]'||requiredFields[i]=='data[_longitude]') $('.latlong').removeClass('has-error danger');
+      else $("[data-required='"+requiredFields[i]+"']").removeClass('has-error danger');
      }
    }
   if(error_message)
    {
+    $('[data-disable-on-submit]').find(':submit').removeAttr('disabled');
     alert(error_message);
     return false;
    }
@@ -251,8 +316,10 @@ $("a[data-delete-confirm]").click(function(e) { e.preventDefault();
                                             if(confirmed) window.location.href = $(this).attr("href") + '&confirmed=true';
                                             $(this).parents("tr").removeClass('danger'); });
 
-//$('#message, #success, #failure').append('<a class="close_button" href="#" alt="[x]">[x]</a>');
-//$("#message .close_button, #success .close_button, #failure .close_button").click(function(e) { e.preventDefault(); $(this).parent().hide(); });
+$("a[data-confirm]").click(function(e) { e.preventDefault();
+                                            message = $(this).data('confirm') ? decodeURIComponent($(this).data('confirm')) : 'Proceed?';
+                                            var confirmed = confirm(decodeURIComponent(message));
+                                            if(confirmed) window.location.href = $(this).attr("href") + '&confirmed=true'; });
 
 $("#fullscreenmap").click(function(e) { 
                                         initialMapHeight = $('#mapcontainer').height();
@@ -263,8 +330,8 @@ $("#fullscreenmap").click(function(e) {
                                         $('body').addClass("fullscreen");
                                         $('#mapcontainer').css({'height': $(document).height() + 'px'});
                                         map.updateSize();
-                                        //if(typeof nav!=='undefined') nav.enableZoomWheel();
                                         $('#mapsizetools').attr("class", "buttongroup-inactive");
+                                        $('#disablemap').hide();
                                         $('<a id="resetmap" href="#" title="close fullscreen mode">x</a>').appendTo('#mapcontainer');
                                         $("#resetmap").click(function(e) { e.preventDefault(); resetMap() });
                                         $(document).keyup(function(e) { if(e.keyCode == 27) { resetMap(); }});

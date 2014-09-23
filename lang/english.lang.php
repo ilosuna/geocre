@@ -7,9 +7,12 @@ $lang['dir'] =                       'ltr';
 $lang['time_format'] =               '%Y-%m-%d, %H:%M';
 $lang['date_format'] =               '%Y-%m-%d';
 $lang['time_format_full'] =          '%A, %B %d, %Y, %H:%M';
-#$lang['date_format'] =               '%d.%m.%Y';
 $lang['rss_time_format'] =           'a, %d %b %Y %H:%M:%S +0000';
-
+$lang['just_now'] =                   'just now';
+$lang['minutes_ago'] =                '[minutes] minutes ago';
+$lang['hours_ago'] =                  '[hours] hours ago';
+$lang['days_ago'] =                   '[days] days ago';
+$lang['more_than_a_year_ago'] =       'more than a year ago';
 $lang['dec_point'] =                 '.';
 $lang['thousands_sep'] =             ',';
 
@@ -31,6 +34,7 @@ $lang['back_link'] =                 'Back';
 $lang['form_uncomplete'] =           'Please fill out all fields.';
 $lang['sort'] =                      'Sort by this column';
 $lang['options_label'] =             'Options';
+$lang['pages_label'] =               'Pages';
 
 $lang['serach_default_value'] =      'Search...';
 $lang['last_edited'] =               'Least edited';
@@ -55,6 +59,7 @@ $lang['processing_message'] =        'Processing...';
 
 $lang['required_label'] =            'required';
 $lang['required_field_message'] =    'Field required: <strong>[field]</strong>';
+$lang['unique_field_message'] =      'Field <strong>[field]</strong> requires unique values - entered value already exists';
 $lang['field_length_exceeded_message'] = 'Input for <strong>[field]</strong> too long ([max_characters] characters possible, [inserted_characters] inserted)';
 $lang['invalid_input_format'] =      'Invalid input format in <strong>[field]</strong>';
 $lang['input_number_too_low'] =      'Input for <strong>[field]</strong> too low (minimum [minimum])';
@@ -62,8 +67,9 @@ $lang['input_number_too_high'] =     'Input for <strong>[field]</strong> too hig
 $lang['input_length_too_low'] =      'Input length for <strong>[field]</strong> too low (minimum [minimum] characters)';
 $lang['input_length_too_high'] =     'Input length for <strong>[field]</strong> too high (maximum [maximum] characters)';
 $lang['invalid_choice'] =            'Invalid choice in <strong>[field]</strong>';
+$lang['confirm_form_reload'] =       'The form will be reloadad - already entered data will not be saved!';
 
-$lang['toggle_map_label'] =          'show / hide map';
+#$lang['toggle_map_label'] =          'show / hide map';
 $lang['point_tool_label'] =          'draw point';
 $lang['line_tool_label'] =           'draw line';
 $lang['polygon_tool_label'] =        'draw polygon';
@@ -75,6 +81,10 @@ $lang['enlarge_map_label'] =         'enlarge map';
 $lang['reduce_map_label'] =          'reduce map';
 $lang['layer_inactive_message'] =    'change zoom level for details';
 $lang['layer_overview_label'] =      'Layer overview';
+$lang['disable_map'] =               'Disable map';
+$lang['enable_map'] =                'Enable map';
+$lang['map_disabled'] =              'Map disabled';
+$lang['map_disabled_edit_info'] =    'To edit this kind of data the map needs to be enabled.';
 
 $lang['setposition_prompt_label'] =  'Latitude / "Longitude" in decimal degrees (e.g. 47.9935, 7.8451):';
 $lang['setposition_format_error'] =  'Invalid latitude/longitude!';
@@ -135,7 +145,6 @@ $lang['exception_message'] =         'An error occurred while processing your re
 // menu
 $lang['home_link'] =                 'Home';
 $lang['home_title'] =                'Home';
-$lang['pages_label'] =               'Pages';
 $lang['user_account_link'] =         'User account';
 $lang['admin_title'] =               'Administration';
 $lang['admin_link'] =                'Admin';
@@ -149,61 +158,91 @@ $lang['register_menu_title'] =       'Create a user account';
 #$lang['usermenu'] =                 'User menu';
 
 // search
-$lang['search_button'] =             'Buscar';
+$lang['search_button'] =             'Search';
 $lang['search_reset_button'] =       'Reset';
 $lang['details_title'] =             'View details of [title]';
 $lang['search_label'] =              'Search:';
 $lang['search_default_value'] =      'search...';
 
-// status:
-$lang['status_subtitle'] =           'Home';
-$lang['status_message_label'] =      'What are you doing right now?';
-$lang['status_submit'] =             'OK';
-$lang['status_logged_in'] =          '<strong>[user]</strong> logged in';
-$lang['status_logged_out'] =         '<strong>[user]</strong> logged out';
-$lang['status_added'] =              '<strong>[user]</strong> added an item to <a href="[base_url]?r=data_item&amp;data_id=[table]&amp;id=[item]">[table_title]</a>';
-$lang['status_edited'] =             '<strong>[user]</strong> edited <a href="[base_url]?r=data_item&amp;data_id=[table]&amp;id=[item]">[table_title]</a>';
-$lang['status_deleted'] =             '<strong>[user]</strong> deleted an item from [table_title]';
+// log:
+$lang['log_link'] =                  'Log';
+$lang['log_title'] =                 'Log';
+$lang['log_details_title'] =         'Log details';
+$lang['log_user_column_label'] =     'User';
+$lang['log_action_column_label'] =   'Action';
+$lang['log_data_column_label'] =     'Data';
+$lang['log_item_column_label'] =     'Item';
+$lang['log_time_column_label'] =     'Time';
+$lang['log_previous_column_label'] = 'Previous';
+$lang['log_current_column_label'] =  'Current';
+$lang['log_details_link'] =          'Details';
+$lang['log_activity'][ACTIVITY_LOG_IN] =                    '<span class="text-muted"><span class="glyphicon glyphicon-log-in"></span> log in</span>';
+$lang['log_activity'][ACTIVITY_LOG_OUT] =                   '<span class="text-muted"><span class="glyphicon glyphicon-log-out"></span> log out</span>';
+$lang['log_activity'][ACTIVITY_ADD_ITEM] =                  '<span class="text-success"><span class="glyphicon glyphicon-plus-sign"></span> add record</span>';
+$lang['log_activity'][ACTIVITY_EDIT_ITEM] =                 '<span class="text-info"><span class="glyphicon glyphicon-pencil"></span> edit record</span>';
+$lang['log_activity'][ACTIVITY_DELETE_ITEM] =               '<span class="text-danger"><span class="glyphicon glyphicon-remove"></span> delete record</span>';
+$lang['log_activity'][ACTIVITY_ADD_DATA_MODEL] =            '<span class="text-warning"><span class="glyphicon glyphicon-plus-sign"></span> create data model</span>';
+$lang['log_activity'][ACTIVITY_EDIT_DATA_MODEL] =           '<span class="text-warning"><span class="glyphicon glyphicon-pencil"></span> edit data model</span>';
+$lang['log_activity'][ACTIVITY_EDIT_DATA_MODEL_STRUCTURE] = '<span class="text-warning"><span class="glyphicon glyphicon-pencil"></span> edit data model structure</span>';
+$lang['log_activity'][ACTIVITY_DELETE_DATA_MODEL] =         '<span class="text-warning"><span class="glyphicon glyphicon-remove"></span> delete data model</span>';
+$lang['log_activity'][ACTIVITY_ADD_DATA_IMAGE] =             '<span class="text-success"><span class="glyphicon glyphicon-picture"></span> add data image</span>';
+$lang['log_activity'][ACTIVITY_EDIT_DATA_IMAGE] =            '<span class="text-info"><span class="glyphicon glyphicon-picture"></span> edit data image</span>';
+$lang['log_activity'][ACTIVITY_DELETE_DATA_IMAGE] =          '<span class="text-danger"><span class="glyphicon glyphicon-picture"></span> delete data image</span>';
+$lang['log_activity'][ACTIVITY_ADD_DATA_ITEM_IMAGE] =       '<span class="text-success"><span class="glyphicon glyphicon-picture"></span> add data record image</span>';
+$lang['log_activity'][ACTIVITY_EDIT_DATA_ITEM_IMAGE] =      '<span class="text-info"><span class="glyphicon glyphicon-picture"></span> edit data record image</span>';
+$lang['log_activity'][ACTIVITY_DELETE_DATA_ITEM_IMAGE] =    '<span class="text-danger"><span class="glyphicon glyphicon-picture"></span> delete data record image</span>';
 
-
-$lang['status_photo_added'] =         '<strong>[user]</strong> added <a href="[base_url]?mode=photos&id=[item]">a photo</a>';
-$lang['status_photo_edited'] =        '<strong>[user]</strong> edited <a href="[base_url]?mode=photos&id=[item]">a photo</a>';
-$lang['status_photo_deleted'] =       '<strong>[user]</strong> deleted a photo';
-
-$lang['just_now'] =                   'just now';
-$lang['minutes_ago'] =                '[minutes] minutes ago';
-$lang['hours_ago'] =                  '[hours] hours ago';
-$lang['days_ago'] =                   '[days] days ago';
-$lang['more_than_a_year_ago'] =       'more than a year ago';
-
-$lang['delete_status_item_message'] = 'Are you sure you want to delete this item?';
+// log:
+$lang['error_log_link'] =                  'Error log';
+$lang['error_log_title'] =                 'Error log';
+$lang['error_log_time_column_label'] =     'Time';
+$lang['error_log_message_column_label'] =  'Message';
+$lang['error_log_server_column_label'] =   '$_SERVER';
+$lang['error_log_request_column_label'] =  '$_REQUEST';
+$lang['error_log_session_column_label'] =  '$_SESSION';
+$lang['error_log_disabled_message'] =      'Error log disabled.';
+$lang['error_log_empty_message'] =         'Error log empty.';
+$lang['error_log_clear_label'] =           'Clear error log';
+$lang['error_log_clear_message'] =         'Clear error log?';
 
 // data model
+$lang['data_model_options_link'] =     'Data model options';
 $lang['add_data_model_link'] =         'Create data model';
 $lang['add_data_model_title'] =        'Create data model';
-$lang['edit_data_model_title'] =       'Edit data model';
-$lang['edit_data_model_full_title'] =  'Edit data model "[name]"';
+$lang['edit_data_model_title'] =       'Edit data model properties';
+$lang['edit_data_model_full_title'] =  'Edit data model properties of "[name]"';
 $lang['delete_data_model_title'] =     'Delete data model';
-$lang['edit_data_model_link'] =        'Edit data model';
+$lang['edit_data_model_properties_link'] = 'Edit data model properties';
+$lang['data_model_properties_link'] =  'Data model properties';
+$lang['data_model_structure_link'] =   'Data structure';
 $lang['delete_data_model_link'] =      'Delete data model';
-$lang['delete_table_label'] =          'Delete database table <strong>[table]</strong> containing <strong>[records]</strong> records';
+$lang['delete_data_model_rel_data_title'] = 'Related data';
+$lang['delete_data_model_rel_data_desc'] =  'There is data related to this data model:';
+$lang['delete_data_model_relation_item'] =  'Item:';
+$lang['delete_data_model_related_model'] =  'Related data model:';
+$lang['delete_data_model_related_item'] =   'Related item:';
+$lang['delete_keep_table_label'] =          'Keep the database table <strong>[table]</strong>';
+$lang['delete_table_info'] =          'The corresponding database table <strong>[table]</strong> contains <strong>[records]</strong> records.';
+$lang['delete_table_images_info'] =   'There are <strong>[number] images</strong> connected to this data model.';
 $lang['data_model_deleted'] =          'Data model deleted!';
+$lang['copy_data_model_title'] =       'Copy data model';
+$lang['copy_data_model_description'] = 'Please enter the details of the new data model.';
+$lang['copy_data_model_link'] =        'Copy data model';
+$lang['copy_data_model_submit'] =      'Copy data model';
+$lang['copy_data_model_table_postfix'] = '_copy';
+$lang['copy_data_model_title_postfix'] = ' (copy)';
 $lang['column_doesnt_exist'] =         'Column doesn\'t exists in the database table';
 $lang['data_model_special_options_label'] = 'Special options:';
 $lang['data_model_no_table_creation'] = 'no creation of database table (manual table creation)';
 $lang['data_model_delete_item_label'] = 'delete item';
 $lang['no_database_altering_label'] =   'no database table altering (manual table altering)';
-
-$lang['data_model_add_item_link'] = 'Add item';
-$lang['data_model_add_item_title'] = 'Add item';
-$lang['data_model_edit_item_title'] = 'Edit item';
-
+$lang['data_model_add_item_link'] = 'Add data model element';
+$lang['data_model_add_item_title'] = 'Add data model element';
+$lang['data_model_edit_item_title'] = 'Edit data model element';
 
 // db tables:
 $lang['no_db_tables_available'] =    'No database tables available.';
 $lang['db_tables_subtitle'] =        'Database tables';
-
-
 $lang['delete_db_table_message'] =   'Do you really want to delete this database table?';
 $lang['no_db_table_available'] =     'No database table available.';
 $lang['db_table_name_column_label'] = 'Table name';
@@ -216,7 +255,6 @@ $lang['db_table_name_input_label'] = 'Table name:';
 $lang['db_table_title_input_label'] = 'Title:';
 $lang['db_table_project_input_label'] = 'Project:';
 $lang['db_table_description_label'] = 'Description:';
-
 $lang['db_table_unavailable'] = 'The corresponding database table of this data model does not exist!';
 $lang['create_db_table_link'] = 'Create database table';
 $lang['db_table_type_input_label'] = 'Type:';
@@ -227,61 +265,66 @@ $lang['db_table_geometry_type_label'][0] =     'mixed';
 $lang['db_table_geometry_type_label'][1] =     'point';
 $lang['db_table_geometry_type_label'][2] =     'line';
 $lang['db_table_geometry_type_label'][3] =     'polygon';
-$lang['db_table_geometry_required_input_label'] = 'Geometry required';
+$lang['db_table_latlong_entry_label'] =        'Entry as latitude/longitude:';
+$lang['db_table_geometry_required_input_label'] = 'Geometry required:';
 $lang['db_table_basemaps_label'] = 'Basemaps:';
 $lang['db_table_basemaps_defaut_label'] = '(default)';
 $lang['db_table_basemaps_description'] = 'if none is selected the defaut basemaps are used';
 $lang['db_table_scale_range_input_label'] = 'Scale range:';
 $lang['db_table_scale_range_description'] = 'minimum/maximum scale (e.g. 50000 / 0) to display the layer from middle to highest zoom level)';
-
-$lang['db_table_simp_tol_input_label'] = 'Geometry simplification tolerance';
+$lang['db_table_simp_tol_input_label'] = 'Geometry simplification tolerance:';
 $lang['db_table_simp_tol_description'] = 'Fixed simplification tolerance (e.g. 0.1)';
-$lang['db_table_simp_tol_sf_input_label'] = 'Geometry simplification tolerance/extent factor';
+$lang['db_table_simp_tol_sf_input_label'] = 'Geometry simplification tolerance/extent factor:';
 $lang['db_table_simp_tol_sf_description'] = 'Variable simplification tolerance dependent on map extent (tolerance / bounding box diagonal degrees, e.g. 0.001)';
-
 $lang['db_table_overview_input_label'] = 'Layer overview:';
 $lang['db_table_layer_overview_label'][0] = 'none';
 $lang['db_table_layer_overview_label'][1] = 'point clustering';
 $lang['db_table_layer_overview_label'][2] = 'convex hull';
 $lang['db_table_overview_description'] = 'Simplified overview layer in lower zoom levels';
+$lang['db_table_boundary_layer_input_label'] = 'Boundary layer:';
 $lang['db_table_auxiliary_layer_input_label'] = 'Auxiliary layer:';
-
 $lang['db_table_parent_input_label'] = 'Parent table:';
 $lang['db_table_status_input_label'] = 'Status:';
 $lang['db_table_status_label'][0] = 'draft';
 $lang['db_table_status_label'][1] = 'private';
 $lang['db_table_status_label'][2] = 'public';
 $lang['db_table_status_readonly'] = 'read-only';
-
-$lang['edit_db_table_error_no_name'] = 'Please enter a table name';
+$lang['db_table_images_input_label'] = 'Images:';
+$lang['db_table_images_data_label'] = 'data';
+$lang['db_table_images_item_label'] = 'items';
+$lang['edit_db_table_error_no_name'] = 'No table name specified';
 $lang['edit_db_table_error_name'] = 'Invalid table name';
 $lang['edit_db_table_error_name_chars'] = 'The table name contains invalid characters';
 $lang['edit_db_table_error_table_exists'] = 'The table name already exists';
-$lang['edit_db_table_error_no_title'] = 'Please enter a title';
+$lang['edit_db_table_error_no_title'] = 'No title specified';
+$lang['edit_db_table_error_title_exists'] = 'The title already exists';
+$lang['edit_db_table_error_latlong_entry'] = 'Only point geometries can be entered as latitude/longitude';
 $lang['delete_db_table_title'] = 'Delete table';
 $lang['delete_db_table_message'] = 'Are you sure you want to delete the table <strong>[item]</strong>? All Data will be lost!';
 $lang['db_table_properties_title'] = 'Database table properties';
 $lang['delete_db_table_title'] = 'Delete database table';
 $lang['db_table_status_active'] = 'active';
 $lang['db_table_sql_subtitle'] = 'SQL schema';
-#$lang['edit_db_table_items'] = 'Items';
-$lang['data_properties_title'] = 'Properties';
-$lang['data_structure_title'] = 'Structure';
 $lang['data_properties_general_label'] = 'General';
 $lang['data_properties_spatial_label'] = 'Spatial data properties';
 $lang['data_properties_metadata_label'] = 'Metadata';
 $lang['db_table_items_name_column_label'] = 'Name';
 $lang['db_table_items_type_column_label'] = 'Type';
 $lang['db_table_items_length_column_label'] = 'Length';
+$lang['db_tabel_item_unique_label'] = 'unique';
 $lang['db_table_items_required_column_label'] = 'Required';
+$lang['db_table_items_unique_column_label'] = 'Unique';
 $lang['db_table_items_overview_column_label'] = 'Overview';
 $lang['db_table_items_label_column_label'] = 'Label';
+$lang['db_table_items_choices_column_label'] = 'Choices';
+$lang['db_table_items_definition_column_label'] = 'Definition';
+$lang['db_table_items_comments_column_label'] = 'Comments';
 $lang['no_db_table_items_available'] = 'No data model items available.';
 $lang['db_tabel_item_name_label'] = 'Identifier:';
-$lang['db_tabel_item_name_description'] = 'must begin with a lowercase letter and consist of lowercase letters, numbers and underscores';
-$lang['db_tabel_item_label_description'] = 'item label';
+$lang['db_tabel_item_name_description'] = 'Must begin with a lowercase letter and consist of lowercase letters, numbers and underscores';
+$lang['db_tabel_item_label_description'] = 'The label is used e.g. for column headings in data tables';
 $lang['db_tabel_item_description_label'] = 'Description:';
-$lang['db_tabel_item_description_description'] = 'item description';
+$lang['db_tabel_item_description_description'] = 'A detailed explanation in addition to the label for filling in the item, e.g. the question for the questionaire';
 $lang['db_tabel_item_type_label'] = 'Item type:';
 $lang['db_tabel_item_type_description'] = 'Type of item';
 $lang['db_tabel_item_type'][0] = 'data';
@@ -296,10 +339,16 @@ $lang['input_type_radio_label'] = 'radio buttons';
 $lang['input_type_select_label'] = 'select field';
 $lang['db_tabel_item_range_label'] = 'Range:';
 $lang['db_tabel_item_range_description'] = 'range of numbers or string lengths';
+$lang['db_tabel_item_definition_label'] = 'Definition:';
+$lang['db_tabel_item_definition_description'] = 'Item definition';
+$lang['db_tabel_item_comments_label'] = 'Comments:';
+$lang['db_tabel_item_comments_description'] = 'Item comments';
+$lang['db_tabel_item_column_default_value_label'] = 'Default value:';
+$lang['db_tabel_item_column_default_value_description'] = 'Database table column default value';
 $lang['db_tabel_item_regex_label'] = 'Regular expression:';
 $lang['db_tabel_item_regex_description'] = 'e.g "/^[a-z0-9]+$/" for strings contining only lowercase letters and numbers';
 $lang['db_tabel_item_choices_label'] = 'Choices:';
-$lang['db_tabel_item_choices_description'] = 'predefined selectable values, one value per line, optional labels in corresponding line; asterisk (*) in value as wildcard';
+$lang['db_tabel_item_choices_description'] = 'Predefined selectable values, one value per line, optional labels in corresponding line; asterisk (*) in value as wildcard';
 $lang['db_tabel_item_choice_values_label'] = 'Values:';
 $lang['db_tabel_item_choice_labels_label'] = 'Labels:';
 $lang['db_tabel_item_relation_label'] = 'Relation:';
@@ -307,32 +356,30 @@ $lang['db_tabel_item_relation_description'] = 'Relation to item of other data mo
 $lang['db_tabel_item_relation_column_label'] = 'Relation column:';
 $lang['db_tabel_item_relation_column_description'] = 'check if this item can be used as relation column';
 $lang['db_tabel_item_required_label'] = 'Required:';
-$lang['db_tabel_item_required_description'] = 'check if	field cannot be empty';
+$lang['db_tabel_item_required_description'] = 'Check if	field cannot be empty';
 $lang['db_tabel_item_overview_label'] = 'Display in overview:';
-$lang['db_tabel_item_overview_description'] = 'check if item should be displayed in data overviews';
-$lang['db_tabel_item_section_label'] = 'Section type:';
-$lang['db_tabel_item_section_description'] = 'section type (if no data type is specified)';
-$lang['data_model_section_type'][0] = '';
-$lang['data_model_section_type'][1] = 'main section';
-$lang['data_model_section_type'][2] = 'subsection';
+$lang['db_tabel_item_overview_description'] = 'Check if item should be displayed in data overviews';
+$lang['db_tabel_item_priority_label'] = 'Priority:';
+$lang['db_tabel_item_priority_description'] = 'Element priority or hierarchy';
+$lang['data_model_item_priority'][0] = 'default';
+$lang['data_model_item_priority'][1] = 'low';
+$lang['data_model_item_priority'][2] = 'high';
 $lang['db_tabel_item_additional_options_link'] = 'Additional options';
-
-
 $lang['delete_db_table_item_title'] = 'Delete database item';
-$lang['delete_db_table_item_message'] = 'Do you really want to delete this item? The corresponding database table column and containing data will be deleted as well!';
+$lang['delete_db_table_item_message'] = 'CAUTION! Delete data model element/column?';
 $lang['delete_db_table_item_message_explicit'] = 'Do you really want to delete <strong>[item]</strong>?';
-
 $lang['show_data_item_details'] = 'Show details';
-$lang['data_item_details_title'] = 'Item details';
-
+$lang['data_item_details_title'] = 'Record details';
 $lang['create_db_table_subtitle'] = 'Create database table';
 $lang['create_db_table_message'] = 'Are you sure you want to create the database table <strong>[table]</strong>?';
-
 $lang['error_no_column_type'] = 'No column type specified';
+$lang['error_column_type_invalid'] = 'Invalid column type';
+$lang['error_relation_type_invalid'] = 'The column type must be integer to create a relation';
+$lang['error_required_column_empty_values'] = 'Column cannot be required as it already contains empty values';
+$lang['error_required_existing_records'] = 'The new column cannot be required as there are already records in the table (set default value or create non required column, fill in values and change to required afterwards)';
 $lang['error_column_name_already_exists'] = 'Identifier already exists';
 $lang['error_column_name_invalid'] = 'Identifier invalid';
 $lang['error_relation_invalid'] = 'Invalid relation';
-
 $lang['data_model_saved'] = 'Data model saved';
 
 // dashboard
@@ -342,44 +389,46 @@ $lang['dashboard_subtitle'] = 'Dashboard';
 $lang['dashboard_headline'] = 'Welcome, [user]!';
 $lang['displayed_data_stocks_label'] = '[displayed] of [total] data stocks';
 $lang['display_all_data_stocks_label'] = 'show all';
-
 $lang['data_label'] = 'Data';
 $lang['photos_label'] = 'Photos';
 $lang['admin_label'] = 'Administration';
 $lang['profile_label'] = 'Profile';
 $lang['activity_label'] = 'Activity';
-$lang['no_data_message'] = 'No data available.';
+$lang['no_data_message'] = 'No data available';
 
 // data
 $lang['data_map_title'] = 'Map';
-$lang['data_items_title'] = 'Items';
-$lang['data_metadata_title'] = 'Metadata';
-
+$lang['data_items_title'] = 'Records';
+$lang['data_images'] = 'Images ([number])';
+$lang['data_properties_title'] = 'Properties';
+$lang['data_structure_title'] = 'Structure';
+$lang['status_label'] = 'Status:';
+$lang['type_label'] = 'Type:';
 $lang['description_label'] = 'Description:';
-$lang['no_metadata'] = 'No metadata available.';
-
+$lang['no_metadata'] = 'No metadata available';
 $lang['maximum_records_per_page_label'] =    'max. per page:';
 $lang['order_by'] =                'order by [column]';
-
 $lang['data_column_label'] = 'Data';
 $lang['project_column_label'] = 'Project';
 $lang['data_type_column_label'] = 'Type';
 $lang['number_of_records_column_label'] = 'Records';
 $lang['editable_column_label'] = 'Editable';
 $lang['options_column_label'] = 'Options';
-
 $lang['data_title'] = 'Manage data';
 $lang['data_link'] = 'Data';
 $lang['data_subtitle'] = 'Data';
-
+$lang['remember_input_value'] = 'Remember value';
+$lang['data_definition_title'] = 'Show data definition';
 $lang['delete_data_item_message'] = 'Delete this item?';
 $lang['db_table_empty'] = 'No data available.';
-$lang['add_item_link'] = 'Add item';
-$lang['edit_item_link'] = 'Edit item';
-$lang['delete_item_link'] = 'Delete item';
-$lang['add_attached_item_link'] = 'Add item ([table])';
+$lang['filter_label'] = 'Filter…';
+$lang['filter_title'] = 'Filter';
+$lang['filter_remove_title'] = 'Reset filter';
+$lang['add_item_link'] = 'Add record';
+$lang['edit_item_link'] = 'Edit record';
+$lang['delete_item_link'] = 'Delete record';
+$lang['add_attached_item_link'] = 'Add record ([table])';
 $lang['data_table_doesnt_exist'] = 'Data table doesn\'t exist.';
-
 $lang['coordinates_column_label'] = 'Coordinates';
 $lang['centroid_label'] = 'centroid'; 
 $lang['area_column_label'] =  'Area';
@@ -387,23 +436,19 @@ $lang['perimeter_column_label'] =  'Perimeter';
 $lang['length_column_label'] = 'Length';
 $lang['latitude_column_label'] = 'Latitude';
 $lang['longitude_column_label'] = 'Longitude';
-
 $lang['number_of_records_label'] = 'Records:';
 $lang['number_of_spatial_records_label'] = 'Records with geometry:';
 $lang['nr_of_displayed_items_label'] = 'Displayed items:';
 $lang['total_area_label'] = 'Total area:';
 $lang['displayed_area_label'] = 'Displayed area:';
-
 $lang['displayed_records_label'] = '[displayed] of [total] records';
 $lang['total_records_label'] =     '[total] records';
-
 
 // data relations:
 $lang['data_relations_link'] = 'Data relations';
 $lang['data_relations_title'] = 'Data relations';
 $lang['data_relations_model_1_label'] = 'Data model 1';
 $lang['data_relations_model_2_label'] = 'Data model 2';
-
 
 // pages:
 $lang['page_details_link'] = 'More…';
@@ -415,7 +460,6 @@ $lang['page_delete_link'] = 'Delete page';
 $lang['related_pages_label'] = 'Related';
 $lang['project_data_label'] = 'Project data';
 $lang['page_admin_label'] = 'Administration';
-
 $lang['page_content_tab_label'] =          'Content';
 $lang['page_sidebar_tab_label'] =          'Sidebar';
 $lang['page_teaser_tab_label'] =           'Teaser';
@@ -434,13 +478,11 @@ $lang['menu_description'] =                'only if the page should be displayed
 $lang['tv_description'] =                  'several variables separated by comma';
 $lang['page_title_label'] =                'Title:';
 $lang['page_title_as_headline_label'] =    'as headline';
-
 $lang['page_sidebar_title_label'] = 'Sidebar title:';
 $lang['page_sidebar_text_label'] = 'Sidebar text:';
 $lang['page_sidebar_link_label'] = 'Sidebar link:';
 $lang['page_sidebar_linktext_label'] = 'Sidebar linktext:';
 $lang['page_info_title_label'] = 'Page info title:';
-
 $lang['page_location_label'] =             'Location:';
 $lang['page_custom_date_label'] =          'Date:';
 $lang['page_contact_name_label'] =         'Contact:';
@@ -461,7 +503,6 @@ $lang['page_image_caption_label'] =        'Project image caption:';
 $lang['page_content_label'] =              'Content:';
 $lang['no_pages_available'] =              'No pages available.';
 $lang['delete_project_message'] =          'Do you really want to delete this project?';
-
 $lang['page_teaser_supertitle_label'] =    'Supertitle:';
 $lang['page_teaser_title_label'] =         'Title:';
 $lang['page_teaser_text_label'] =          'Text:';
@@ -470,9 +511,7 @@ $lang['page_teaser_image_label'] =         'Teaser image:';
 $lang['page_delete_teaser_image'] =        'delete teaser image';
 $lang['page_add_teaser_image_label'] =     'Add teaser image:';
 $lang['page_replace_teaser_image_label'] = 'Replace teaser image:';
-
 $lang['page_default_teaser_linktext'] = 'Read more…';
-
 $lang['error_no_title'] =                  'Please enter a title';
 $lang['error_no_identifier'] =             'Please enter an identifier';
 $lang['error_page_identifier_invalid'] =   'The page identifier contains invalid characters';
@@ -490,51 +529,74 @@ $lang['page_photo_author_label'] =         'Author:';
 $lang['page_photo_author_declaration'] =   'Photo: [author]';
 $lang['delete_project_photo_message'] =    'Delete photo?';
 
+// gallery:
+$lang['gallery_image_author_declaration'] =   'Image author: [author]';
+
+
 // data item:
 $lang['no_geometry_message'] = 'No geometry';
-$lang['item_details_title'] = 'Item';
+$lang['item_details_title'] = 'Record';
 $lang['item_attached_data'] = 'Attached data';
 $lang['item_related_data'] = 'Related data';
+$lang['item_images'] = 'Images ([number])';
 $lang['item_details_label'] = 'Item details';
 $lang['item_metadata_label'] = 'Metadata';
 
 $lang['data_item_doesnt_exist'] = 'Item doesn\'t exist.';
-$lang['add_data_item_subtitle'] = 'Add item';
-$lang['attached_data_item_subtitle'] = 'Attached item ([table])';
-$lang['edit_data_item_subtitle'] = 'Edit item';
-$lang['add_attached_data_item_subtitle'] = 'Add attached item ([table])';
-$lang['edit_attached_data_item_subtitle'] = 'Edit attached item ([table])';
-$lang['error_geometry_required'] = 'Please enter a geometry';
+$lang['add_data_item_subtitle'] = 'Add record';
+$lang['attached_data_item_subtitle'] = 'Attached record ([table])';
+$lang['edit_data_item_subtitle'] = 'Edit record';
+$lang['add_attached_data_item_subtitle'] = 'Add attached record ([table])';
+$lang['edit_attached_data_item_subtitle'] = 'Edit attached record ([table])';
+$lang['error_invalid_form'] = 'Invalid submission! This might be caused by a repeated transmission of the same record. Please check if the record has already been saved.';
 $lang['error_invalid_geometry'] = 'Invalid geometry entered';
 $lang['error_invalid_geometry_reason'] = 'Invalid geometry entered ([reason])';
-$lang['error_empty_geometry'] = 'No geometry entered';
-
+$lang['error_invalid_latlong'] = 'Latitude/longitude invalid';
+$lang['error_no_geometry'] = 'No geometry entered';
+$lang['error_no_latitude'] = 'No latitude entered';
+$lang['error_no_longitude'] = 'No longitude entered';
+$lang['error_geometry_exceeds_boundary'] = 'Geometry exceeds boundary';
 $lang['add_relation_link'] = 'Add relation ([table])';
-
-$lang['item_added_message'] = 'Item added';
-$lang['add_another_item_link'] = 'Add another item';
+$lang['item_added_message'] = 'Record added';
+$lang['add_another_item_link'] = 'Add another record';
 $lang['child_data_without_fk'] = 'Child data items cannot be added directly - they must be attached to their parent items.';
+$lang['remembered_values_warning'] = 'Caution! There are previously remembered values set. Please check if they apply to this data record!';
+$lang['location_latlong_label'] = 'Location';
+$lang['location_latlong_description'] = 'Coordinates in decimal degrees';
+$lang['location_latitude_label'] = 'Latitude:';
+$lang['location_longitude_label'] = 'Longitude:';
 
 // attached data
 $lang['no_attached_items_available'] = 'No attached items available.';
 $lang['nr_of_attached_items_label'] =       'Number of attached items:';
 $lang['total_area_attached_items_label'] =   'Total area:';
 
+// data images:
+$lang['add_data_image_title'] = 'Add image';
+$lang['edit_data_image_title'] = 'Edit image';
+$lang['no_data_images_available'] = 'No images available.';
+$lang['add_data_image_link'] = 'Add image';
+$lang['add_data_image_submit'] = 'Upload image';
+$lang['data_image_label'] = 'Image:';
+$lang['delete_data_image_message'] = 'Delete image?';
+$lang['error_no_image_selected'] = 'No image selected.';
+$lang['error_image_upload'] = 'Upload error (file might be too large).';
+$lang['error_image_no_title'] = 'No title specified.';
+$lang['error_image_invalid_file_type'] = 'Invalid file type (must be a JPG, PNG or GIF image).';
+$lang['download_image_link'] = 'download';
+
 // relations:
 $lang['add_relation_subtitle'] = 'Add relation';
 $lang['no_relational_items_available'] = 'No relational items available (table empty or all items already related).';
 $lang['no_relational_data_available'] = 'No relational data available';
 $lang['add_relation_description'] = 'Select the related item(s):';
-
 $lang['relation_table_1_doesnt_exist'] = 'The first part relation table doesn\'t exist';
 $lang['relation_item_1_doesnt_exist'] = 'The first part relation item doesn\'t exist';
 $lang['relation_table_2_doesnt_exist'] = 'The second part relation table doesn\'t exist';
 $lang['relation_item_2_doesnt_exist'] = 'The second part relation table doesn\'t exist';
-
 $lang['add_relation_submit'] = 'OK - Add relation';
 $lang['error_no_item_selection_made'] = 'No item selection made.';
 $lang['error_invalid_relation'] = 'Invalid relation.';
-
 $lang['no_related_items_available'] = 'No related items available.';
 $lang['nr_of_related_items_label'] =       'Number of related items:';
 $lang['total_area_related_items_label'] =   'Total area:';
@@ -545,16 +607,17 @@ $lang['delete_relation_message'] = 'Are you sure you want to delete the relation
 $lang['download_data_link'] = 'Download data';
 $lang['download_data_subtitle'] = 'Download data';
 $lang['download_data_headline'] = 'Download data: [data]';
-//$lang['download_data_link'] = 'Download data';
 $lang['download_data_submit'] = 'Download data';
 $lang['download_data_table_label'] = 'Database table:';
 $lang['download_data_options_label'] = 'Options';
 $lang['download_data_column_header_labels'] = 'use column header labels';
 $lang['download_data_metadata'] = 'include metadata (time of data creation/last edit)';
+$lang['download_data_join_parent_data_label'] = 'Parent data join';
 $lang['download_data_join'] = 'join parent data ([data])';
 $lang['download_data_spatial_metadata'] = 'include spatial metadata (latitude, longitude, area, perimeter, length)';
 $lang['download_data_wkt'] = 'include geometry as <abbr title="Well-known text">WKT</abbr>';
 $lang['download_data_labels'] = 'replace values by labels';
+$lang['download_data_merge_child_data_label'] = 'Merge child data';
 $lang['download_data_format_label'] = 'Format';
 $lang['download_data_format_xlsx'] = 'Excel (XSLX)';
 $lang['download_data_format_xls'] = 'Excel (XLS)';
@@ -563,6 +626,7 @@ $lang['download_data_format_csv'] = '<abbr title="Comma-separated values">CSV</a
 $lang['download_data_format_shp'] = 'Shapefile';
 $lang['download_data_format_kml'] = '<abbr title="Keyhole Markup Language">KML</abbr>';
 $lang['download_data_error_not_spatial'] = 'No spatial table';
+$lang['download_data_error_child_merge_format'] = 'Child data cannot be merged in Shapefile or KML format';
 
 // download sheet:
 $lang['download_sheet_link'] = 'Download sheet';
@@ -575,13 +639,17 @@ $lang['download_sheet_format_docx'] = 'Word (DOCX)';
 $lang['download_sheet_format_txt'] = 'Text';
 
 // feedback
-$lang['feedback_link'] = 'Feedback';
-$lang['feedback_title'] = 'Send feedback message to the administrator';
-$lang['feedback_subtitle'] = 'Feedback';
+$lang['feedback_link'] =                   'Feedback';
+$lang['feedback_subtitle'] =               'Feedback';
+$lang['feedback_title'] =                  'Send feedback message to the administrator';
+$lang['feedback_description'] =            'Please feel free to contact the administrators if you have questions or encounter any issues. Any feedback is appreciated!';
 $lang['feedback_message_label'] =          'Message:';
-$lang['feedback_submit_button'] =          'OK - Submit';
+$lang['feedback_submit_button'] =          'OK - Send message';
+$lang['feedback_submit_button_processing'] = 'Sending message...';
 $lang['feedback_subject'] =                'geoCRE Feedback';
+$lang['feedback_subject_help'] =           'geoCRE Help / Support Request';
 $lang['feedback_no_message'] =             'No message entered.';
+$lang['feedback_mail_body'] =              "Sender: [sender] <[email]>\nURL: [url]\n\n[message]";
 $lang['feedback_error_message_too_long'] = 'The message is too long';
 $lang['feedback_message_sent'] =           'Thank you, your message has been sent successfully!';
 
@@ -640,7 +708,6 @@ $lang['registered'] =                'User account successfully registered';
 $lang['groups_link'] =                'User groups';
 $lang['admin_projects_link'] =        'Projects';
 
-
 // reset password:
 $lang['reset_pw_link'] =              'Forgot your password?';
 $lang['reset_pw_subtitle'] =          'Reset password';
@@ -674,6 +741,7 @@ $lang['delete_user_title'] =          'Delete user';
 $lang['delete_user_message'] =        'Do you really want to delete this user?';
 $lang['edit_user_title'] =            'Edit user';
 $lang['admin_add_user_link'] =        'Add user';
+$lang['unknown_user'] =               'unknown';
 
 // images:
 $lang['edit_images'] = 'Bilder bearbeiten';
@@ -818,7 +886,7 @@ $lang['error_email_already_exists'] = 'There\'s already a user with this e-mail 
 $lang['error_language_not_available'] = 'Language not available';
 $lang['error_time_zone_not_available'] = 'Time zone not available';
 $lang['pw_saved'] =                   'The passwort has been changed';
-$lang['user_email_label'] =           'E-Mail:';
+$lang['user_email_label'] =           'E-mail:';
 $lang['user_language_label'] =        'Language:';
 $lang['user_default_language_label'] = 'Default ([language])';
 $lang['user_time_zone_label'] =       'Time zone:';
@@ -842,7 +910,7 @@ $lang['user_details_subtitle'] =      'User details';
 $lang['user_notify_label'] =          'notify user';
 $lang['error_user_notification'] =    'User notification needs to be enabled if password is autogenerated';
 $lang['add_user_notification_mail_subject'] = "User registration";
-$lang['add_user_notification_mail_text'] = "Hello [user_name],\nhere is your access data for [website_title]:\n\nAddress: [website_address]\nLogin e-mail: [email]\nPassword: [password]";
+$lang['add_user_notification_mail_text'] = "Hello [user_name],\This is your access data for [website_title]:\n\nAddress: [website_address]\nLogin e-mail: [email]\nPassword: [password]";
 $lang['update_profile_submit'] =      'OK - Update profile';
 $lang['profile_saved'] =              'Profile saved';
 $lang['userdata_saved'] =             'User data saved';

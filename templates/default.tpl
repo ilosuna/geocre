@@ -17,7 +17,7 @@
 <body>
 <div id="wrapper">
 
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div class="navbar navbar-inverse  navbar-static-top">
 <div class="container">
 <div class="navbar-header">
 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -47,17 +47,21 @@
 </ul>
 <?php endif; ?>
 
-
-
 <?php if($logged_in): ?>
 <ul class="nav navbar-nav">
 <li<?php if(isset($active) && $active=='dashboard'): ?> class="active"<?php endif; ?>><a href="<?php echo BASE_URL; ?>?r=dashboard" title="<?php echo $lang['dashboard_title']; ?>"><span class="glyphicon glyphicon-list-alt"></span> <?php echo $lang['dashboard_link']; ?></a></li>
 </ul>
 <ul class="nav navbar-nav navbar-right">
+
 <?php if($permission['admin']||$permission['users_groups']||$permission['page_management']): ?>
 <li class="dropdown<?php if(isset($active) && $active=='admin'): ?> active"<?php endif; ?>">
 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span> <?php echo $lang['admin_label']; ?> <b class="caret"></b></a>
 <ul class="dropdown-menu">
+
+<?php if($permission['admin']): ?>
+<li><a href="<?php echo BASE_URL; ?>?r=log"><span class="glyphicon glyphicon-book"></span> <?php echo $lang['log_link']; ?></a></li>
+<?php endif; ?>
+
 <?php if($permission['users_groups']): ?>
 <li><a href="<?php echo BASE_URL; ?>?r=users" class="users"><span class="glyphicon glyphicon-user"></span> <?php echo $lang['users_and_groups_link']; ?></a></li>
 <?php endif; ?>
@@ -69,13 +73,13 @@
 <?php if(isset($backup_enabled)): ?>
 <li><a href="<?php echo BASE_URL; ?>?r=backup"><span class="glyphicon glyphicon-save"></span> <?php echo $lang['backup_link']; ?></a></li>
 <?php endif; ?>
-<?php /*
-<li><a href="<?php echo BASE_URL; ?>?r=backup" class="backup"><span class="glyphicon glyphicon-save"></span> <?php echo $lang['backup_link']; ?></a></li>
-*/ ?>
 <li><a href="<?php echo BASE_URL; ?>?r=settings" class="settings"><span class="glyphicon glyphicon-wrench"></span> <?php echo $lang['settings_link']; ?></a></li>
 <?php endif; ?>
 </ul>
 </li>
+<?php endif; ?>
+<?php if($settings['feedback']): ?>
+<li<?php if(isset($active) && $active=='feedback'): ?> class="active"<?php endif; ?>><a href="<?php echo BASE_URL; ?>?r=feedback"><span class="glyphicon glyphicon-envelope"></span> <?php echo $lang['feedback_link']; ?></a></li>
 <?php endif; ?>
 <li<?php if(isset($active) && $active=='profile'): ?> class="active"<?php endif; ?>><a href="<?php echo BASE_URL; ?>?r=profile"><span class="glyphicon glyphicon-user"></span> <?php echo $user_name; ?></a></li>
 <li><a href="<?php echo BASE_URL; ?>?r=logout"><span class="glyphicon glyphicon-off"></span> <?php echo $lang['logout_link']; ?></a></li>
@@ -91,6 +95,7 @@
 </div>
 
 <div class="container">
+
 <?php if(isset($subtemplate)): ?>
 <?php include(BASE_PATH.'templates/subtemplates/'.$subtemplate); ?>
 <?php elseif(isset($content)): ?>

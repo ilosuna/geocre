@@ -1,24 +1,41 @@
 <?php
 if(!defined('IN_INDEX')) exit;
- 
+
 if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEMENT) || $permission->granted(Permission::DATA_ACCESS, intval($_REQUEST['data_id']), Permission::READ)))
  {
-  if($table_info = get_table_info($_REQUEST['data_id'], true)) // 'true' fetches only overview columns
-   {
+  include(BASE_PATH.'config/column_types.conf.php');
+  $template->assign('column_types', $column_types);       
   
+  if($table_info = get_table_info($_REQUEST['data_id'])) // 'true' fetches only overview columns
+   { 
   switch($action)
    {
     case 'default':
+     if(isset($_REQUEST['disable_map']))
+      {
+       $_REQUEST['disable_map'] = $_REQUEST['disable_map'] ? 1 : 0;
+       set_user_setting();
+      }
+    
      if(isset($table_info['columns']))
       {
-       $template->assign('columns', $table_info['columns']);  
+       $template->assign('columns', $table_info['columns']);
        $i=0;
        foreach($table_info['columns'] as $column)
         {
-         $column_names[] = $column['name'];
-         if($column['type']>0) $select_query_parts[] = 'table'.$table_info['table']['id'].'.'.$column['name'];
-         
-         if($column['relation'])
+         if($column['type']>0)
+          { 
+           $column_names[] = $column['name'];
+           $select_query_parts[] = 'table'.$table_info['table']['id'].'.'.$column['name'];
+           #if($column['type']==1 || $column['type']==2 || $column['type']==3 || $column['type']==4 || $column['type']==5) 
+           # {
+             $filter_columns[$column['id']]['id'] = $column['id'];
+             $filter_columns[$column['id']]['name'] = $column['name'];
+             $filter_columns[$column['id']]['type'] = $column['type'];
+             $filter_columns[$column['id']]['label'] = htmlspecialchars($column['label']);
+           # }
+          }
+         if($column['relation'] && $column['relation_table_name'])
           {
            $joined_tables[] = $table_info['table']['id'];
            $joins[$i]['table'] = $table_info['table']['id'];
@@ -32,12 +49,15 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
           }       
          ++$i;
         }
-       $select_query = ', ' . implode(', ', $select_query_parts);
+       if(isset($select_query_parts)) $select_query = ', ' . implode(', ', $select_query_parts);
+       else $select_query = '';
       } 
      else
       {
        $select_query = '';
       }
+     
+     if(isset($filter_columns)) $template->assign('filter_columns', $filter_columns);
      
      // check if table exists:
      $check_result = Database::$connection->query(LIST_TABLES_QUERY);
@@ -50,13 +70,24 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
       {
        $template->assign('table_exists', true);
        
-       // count items:
-       #if($table_info['table']['type']==0) // common data table
-       # {
-         $total_count_result = Database::$connection->query('SELECT COUNT(*) FROM "'.$table_info['table']['table_name'].'"');
-         list($total_items) = $total_count_result->fetch();
-       # }
-       #else // spatial data table
+       $filter = isset($_GET['filter']) ? trim($_GET['filter']) : false;
+       $filter_id = isset($_GET['filter_id']) ? intval($_GET['filter_id']) : 0;
+       if($filter && $filter_id && isset($filter_columns[$filter_id]))
+        {
+         $template->assign('filter', htmlspecialchars($filter));
+         $template->assign('filter_id', $filter_id);
+        }
+       else
+        { 
+         $filter = false; 
+        }
+        
+       if($filter) $count_query = 'SELECT COUNT(*) FROM "'.$table_info['table']['table_name'].'" WHERE LOWER(CAST("'.$filter_columns[$filter_id]['name'].'" AS TEXT)) LIKE LOWER(:filter)';
+       else $count_query = 'SELECT COUNT(*) FROM "'.$table_info['table']['table_name'].'"';
+       $dbr = Database::$connection->prepare($count_query);
+       if($filter) $dbr->bindValue(':filter', '%'.$filter.'%', PDO::PARAM_STR);
+       $dbr->execute();
+       list($total_items) = $dbr->fetch();
        
        if($table_info['table']['type']==1) // spatial data
         {
@@ -137,12 +168,15 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
        
        $query .= "\nLEFT JOIN ".Database::$db_settings['userdata_table']." AS userdata_table_1 ON userdata_table_1.id=table".$table_info['table']['id'].".creator";
        $query .= "\nLEFT JOIN ".Database::$db_settings['userdata_table']." AS userdata_table_2 ON userdata_table_2.id=table".$table_info['table']['id'].".last_editor";
-                                               
+       
+       if($filter) $query .= "\nWHERE LOWER(CAST(table".$table_info['table']['id'].".\"".$filter_columns[$filter_id]['name']."\" AS TEXT)) LIKE LOWER(:filter)";
+       
        $query .= "\nORDER BY table".$table_info['table']['id'].".".$order." ".$descasc." LIMIT ".$items_per_page." OFFSET ".$offset;
        
-       #showme($query);
-       
+       //showme($query);
+        
        $dbr = Database::$connection->prepare($query);
+       if($filter) $dbr->bindValue(':filter', '%'.$filter.'%', PDO::PARAM_STR);
        $dbr->execute();  
 
        $displayed_items = $dbr->rowCount();
@@ -184,9 +218,12 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
           {
            foreach($table_info['columns'] as $column)
             {
-             // first custom column as feature label: 
-             if($table_info['table']['type']==1 && empty($data_items[$i]['_featurelabel_'])) $data_items[$i]['_featurelabel_'] = htmlspecialchars($row[$column['name']]);
-             $data_items[$i][$column['name']] = htmlspecialchars($row[$column['name']]);
+             if($column['type']>0)
+              { 
+               // first custom column as feature label: 
+               if($table_info['table']['type']==1 && empty($data_items[$i]['_featurelabel_'])) $data_items[$i]['_featurelabel_'] = htmlspecialchars($row[$column['name']]);
+               $data_items[$i][$column['name']] = htmlspecialchars($row[$column['name']]);
+              }
             }
           }
           ++$i;
@@ -220,12 +257,15 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
      $template->assign('parent_table', intval($table_info['table']['parent_table']));
      $template->assign('parent_title', htmlspecialchars($table_info['table']['parent_title']));
      $template->assign('table_status', intval($table_info['table']['status']));
+     $template->assign('readonly', $table_info['table']['readonly']);
      $template->assign('data_type', intval($table_info['table']['type']));
+     $template->assign('geometry_type', intval($table_info['table']['geometry_type']));
      $template->assign('min_scale', intval($table_info['table']['min_scale']));
      $template->assign('max_scale', intval($table_info['table']['max_scale']));
      if($table_info['table']['simplification_tolerance_extent_factor']) $template->assign('redraw', true);
      $template->assign('layer_overview', intval($table_info['table']['layer_overview']));
      $template->assign('auxiliary_layer_1', intval($table_info['table']['auxiliary_layer_1']));
+     if($table_info['table']['auxiliary_layer_1_stef']) $template->assign('auxiliary_layer_1_redraw', true);
      $template->assign('auxiliary_layer_1_title', htmlspecialchars($table_info['table']['auxiliary_layer_1_title']));
      /*
      $template->assign('auxiliary_layer_2', intval($table_info['table']['auxiliary_layer_2']));
@@ -234,7 +274,7 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
      $template->assign('auxiliary_layer_3_title', htmlspecialchars($table_info['table']['auxiliary_layer_3_title']));
      */
      $template->assign('subtitle', htmlspecialchars($table_info['table']['title']));
-     $template->assign('description', $table_info['table']['description']);
+     $template->assign('description', nl2br(htmlspecialchars($table_info['table']['description'])));
      //$javascripts[] = JQUERY_UI;
      
      $granted_permissions['write'] = $table_info['table']['readonly']==0 && ($permission->granted(Permission::DATA_MANAGEMENT) || $permission->granted(Permission::DATA_ACCESS, intval($table_info['table']['id']), Permission::WRITE)) ? true : false;
@@ -243,8 +283,13 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
 
      $template->assign('permission', $granted_permissions);
      
-     
-     if($table_info['table']['type']==1)
+     if($permission->granted(Permission::DATA_MANAGEMENT) || $permission->granted(Permission::DATA_ACCESS, intval($table_info['table']['id']), Permission::MANAGE))
+      {
+       $javascripts[] = JQUERY_UI;
+       $javascripts[] = JQUERY_UI_HANDLER;
+      }
+      
+     if($table_info['table']['type']==1 && empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map']))
       {
        if($basemaps = get_basemaps($table_info['table']['basemaps']))
         {
@@ -266,6 +311,59 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
        if($table_info['table']['parent_table']) $template->assign('help', 'data_common_child');
        else $template->assign('help', 'data_common');
       }
+     
+        /* images: */
+        if($settings['data_images'] && $table_info['table']['data_images'])
+         {
+          // get images:
+          $dbr = Database::$connection->prepare("SELECT id, filename, thumbnail_width, thumbnail_height, title, description, author FROM ".Database::$db_settings['data_images_table']." WHERE data=:data AND item=:item ORDER by sequence ASC");
+          $dbr->bindParam(':data', $table_info['table']['id'], PDO::PARAM_INT);
+          $dbr->bindValue(':item', 0, PDO::PARAM_INT);
+          $dbr->execute();
+          $i=0;
+          while($row = $dbr->fetch())
+           {
+            $images[$i]['id'] = $row['id'];
+            $images[$i]['filename'] = $row['filename'];
+            if($settings['data_images_permission_check'])
+             {
+              $images[$i]['thumbnail_url'] = BASE_URL.'?r=data_image.thumbnail&file='.$row['filename'];
+              $images[$i]['image_url'] = BASE_URL.'?r=data_image.image&file='.$row['filename'];
+             }
+            else
+             {
+              $images[$i]['thumbnail_url'] = DATA_THUMBNAILS_URL.$row['filename'];
+              $images[$i]['image_url'] = DATA_IMAGES_URL.$row['filename'];
+             }
+            $images[$i]['thumbnail_width'] = intval($row['thumbnail_width']);
+            $images[$i]['thumbnail_height'] = intval($row['thumbnail_height']);
+            $images[$i]['title'] = htmlspecialchars($row['title']);
+            $images[$i]['description'] = htmlspecialchars($row['description']);
+            if($row['author']) $images[$i]['author'] = str_replace('[author]', htmlspecialchars($row['author']), $lang['gallery_image_author_declaration']);
+            else $images[$i]['author'] = '';
+            ++$i;
+           }
+          // enable images if there are images or if user is allowed to add images:
+          if($i || $granted_permissions['write'])
+           {
+            $lang['data_images'] = str_replace('[number]', $i, $lang['data_images']);
+            $template->assign('number_of_images', $i); 
+            $template->assign('data_images', true);
+           }
+          // assign images and requirements:
+          if(isset($images))
+           {
+            $template->assign('images', $images);    
+            $javascripts[] = LIGHTBOX;
+            if($granted_permissions['write'])
+             {
+              if(empty($javascripts) || (isset($javascripts) && !in_array(JQUERY_UI, $javascripts))) $javascripts[] = JQUERY_UI;
+              if(empty($javascripts) || (isset($javascripts) && !in_array(JQUERY_UI_HANDLER, $javascripts))) $javascripts[] = JQUERY_UI_HANDLER;
+             }
+           }
+         }     
+     
+     
      $template->assign('subtemplate', 'data.inc.tpl');
      break;
    
@@ -294,30 +392,19 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
          }
         else
          {
+          // get current data for the activity log:
+          $dbr = Database::$connection->prepare('SELECT * FROM "'.$table_info['table']['table_name'].'" WHERE id=:id LIMIT 1');
+          $dbr->bindParam(':id', $row['id'], PDO::PARAM_INT);
+          $dbr->execute();
+          $previous_data = serialize($dbr->fetch(PDO::FETCH_ASSOC));          
+          
           // delete item:
           $dbr = Database::$connection->prepare("DELETE FROM \"".$table_info['table']['table_name']."\" WHERE id = :id");
           $dbr->bindValue(':id', $row['id']);
           $dbr->execute();
-          // delete attached items:
-          $dbr = Database::$connection->prepare("SELECT table_name
-                                                 FROM ".$db_settings['data_models_table']."
-                                                 WHERE parent_table = :table_id");
-          $dbr->bindParam(':table_id', $table_info['table']['id'], PDO::PARAM_INT);
-          $dbr->execute();
-          foreach($dbr as $row)
-           {
-            $dar = Database::$connection->prepare("DELETE FROM \"".$row['table_name']."\" WHERE fk = :id");
-            $dar->bindParam(':id', $row['id'], PDO::PARAM_INT);
-            $dar->execute();
-           }
-          // delete related items:
-          $drr = Database::$connection->prepare("DELETE FROM \"".$db_settings['relations_table']."\"
-                                               WHERE t1=:table AND i1=:item OR t2=:table AND i2=:item");
-          $drr->bindParam(':table', $table_info['table']['id'], PDO::PARAM_INT);
-          $drr->bindParam(':item', $row['id'], PDO::PARAM_INT);
-          $drr->execute();
-        
-          if(!$row['fk']) log_status(NULL, 5, $table_info['table']['id']);
+          
+          delete_linked_data($table_info['table']['id'], $row['id']);
+          log_activity(ACTIVITY_DELETE_ITEM, $table_info['table']['id'], $row['id'], $previous_data);
           
           if($table_info['table']['parent_table'] && $row['fk']) header('Location: '.BASE_URL.'?r=data_item&data_id='.$table_info['table']['parent_table'].'&id='.$row['fk'].'#attached-data');
           else header('Location: '.BASE_URL.'?r=data&data_id='.$table_info['table']['id']);
@@ -330,6 +417,29 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
         exit;
        }  
      }      
+    break;
+    
+
+    case 'definition':
+     // get model and item data:
+     $dbr = Database::$connection->prepare("SELECT items.id,
+                                                   items.table_id,
+                                                   items.name,
+                                                   items.label,
+                                                   items.description,
+                                                   items.definition
+                                            FROM ".Database::$db_settings['data_model_items_table']." AS items
+                                            WHERE items.id=:id LIMIT 1");
+     $dbr->bindParam(':id', $_REQUEST['id'], PDO::PARAM_INT);
+     $dbr->execute();
+     $row = $dbr->fetch();
+     // check permission:
+     if(isset($row['table_id']) && ($permission->granted(Permission::DATA_ACCESS, $row['table_id'], Permission::READ)))
+      {    
+       $template->assign('label', htmlspecialchars($row['label']));
+       $template->assign('definition', nl2br(htmlspecialchars($row['definition'])));
+       $page_template = 'subtemplates/data_definition.inc.tpl';  
+      }
     break;
    
    }

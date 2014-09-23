@@ -41,11 +41,6 @@ function get_settings()
 
 function get_base_url()
  {
-  global $settings;
-  if($settings['base_url']!='')
-   {
-    return $settings['base_url'];
-   }
   if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on')
    {
     $protocol = 'https://';
@@ -84,6 +79,27 @@ function ol_encode_label($string)
   $string = preg_replace("/\015\012|\015|\012/", " ", $string);
   $string = addslashes($string);
   return $string;
+ }
+
+/**
+ * recursively deletes a directory that is not empty
+ * origin: http://www.php.net/manual/en/function.rmdir.php#98622
+ */
+function rrmdir($dir)
+ {
+  if(is_dir($dir))
+   {
+    $objects = scandir($dir);
+    foreach ($objects as $object)
+     {
+      if ($object != "." && $object != "..")
+       {
+        if(filetype($dir."/".$object) == "dir") rrmdir($dir."/".$object); else unlink($dir."/".$object);
+       }
+     }
+    reset($objects);
+    rmdir($dir);
+   }
  }
 
 /**
@@ -177,6 +193,74 @@ function get_basemaps($mode=true)
   return false;
  }
 
+function set_user_setting()
+ {
+  global $settings;
+  require(BASE_PATH.'config/user_settings.conf.php');
+  foreach($user_settings as $user_setting)
+   {
+    if(isset($_REQUEST[$user_setting['name']]))
+     {
+      switch($user_setting['type'])
+       {
+        case 1: // integer
+         $usersettings[$user_setting['name']] = intval($_REQUEST[$user_setting['name']]);
+         break;
+        case 2: // input values
+         if(is_array($_REQUEST[$user_setting['name']]))
+          {
+           // get valid ids:
+           $valid_ids = array();
+           $dbr = Database::$connection->prepare("SELECT id
+                                                  FROM ".Database::$db_settings['data_model_items_table']."
+                                                  WHERE column_type > 0");
+           $dbr->execute();
+           foreach($dbr as $row) $valid_ids[] = $row['id'];
+            $request_key = intval($_REQUEST[$user_setting['name']]['key']);
+           $request_value = trim($_REQUEST[$user_setting['name']]['value']);
+           if(isset($_SESSION[$settings['session_prefix'].'usersettings'][$user_setting['name']]))
+            {
+             $value_updated = false;
+             foreach($_SESSION[$settings['session_prefix'].'usersettings'][$user_setting['name']] as $key => $value)
+              {
+               if($key==$request_key) // overwrite value
+                {
+                 if($request_value!='' && in_array($key, $valid_ids)) $usersettings[$user_setting['name']][$key] = $request_value;
+                 $value_updated = true;
+                }
+               else // keep current value
+                {
+                 if(in_array($key, $valid_ids)) $usersettings[$user_setting['name']][$key] = $value;
+                }
+              }
+             if(!$value_updated) // new value
+              {
+               if($request_value!='' && in_array($request_key, $valid_ids)) $usersettings[$user_setting['name']][$_POST['input_value']['key']] = $request_value;
+              }
+            }
+           else
+            {
+             if($request_value!='' && in_array($request_key, $valid_ids)) $usersettings[$user_setting['name']][$_POST['input_value']['key']] = $request_value;
+            }
+          }
+         break;
+        default: // string
+         $usersettings[$user_setting['name']] = trim($_REQUEST[$user_setting['name']]);
+       }
+     }
+    elseif(isset($_SESSION[$settings['session_prefix'].'usersettings'][$user_setting['name']]))
+     {
+      $usersettings[$user_setting['name']] = $_SESSION[$settings['session_prefix'].'usersettings'][$user_setting['name']];
+     }
+   }
+  $_SESSION[$settings['session_prefix'].'usersettings'] = $usersettings;
+  $usersettings_serialized = serialize($usersettings);
+  $dbr = Database::$connection->prepare("UPDATE ".Database::$db_settings['userdata_table']." SET settings=:settings WHERE id=:id");
+  $dbr->bindParam(':settings', $usersettings_serialized, PDO::PARAM_STR);
+  $dbr->bindParam(':id', $_SESSION[$settings['session_prefix'].'auth']['id'], PDO::PARAM_INT);
+  $dbr->execute();
+}
+
 function auto_html($text)
  {
   $text = trim($text);
@@ -261,6 +345,21 @@ function js_encode_mail($email, $name='')
 }
 
 /**
+ * Sets download token cookie required to provide UI feedback while processing/downloading data 
+ *
+ * @param string $token
+ */
+function set_download_token_cookie($token='downloadtoken')
+ {
+  if(isset($_POST[$token]))
+   {
+    // filter value (only numbers, 13 digits):
+    $token_value = preg_replace( '/[^0-9]/', '', substr($_POST[$token], 0, 13));
+    setcookie("downloadtoken", $token_value);
+   }
+ }
+
+/**
  * creates a written out time indication between now and given timestamp
  *
  * @param floor $time
@@ -288,10 +387,12 @@ function get_geographic_coordinates($latitude, $longitude)
   $lat_parts = explode('.', $latitude);
   $lon_parts = explode('.', $longitude);
   $lat_deg = $lat_parts[0];
+  if(isset($lat_parts[1])) $lat_dec_place = $lat_parts[1];
+  else $lat_dec_place = 0;
   if($lat_deg<0) $lat_hemisphere = 'S';
   else $lat_hemisphere = 'N';
   $lat_deg = abs($lat_deg);
-  $lat_tempma = '0.'.$lat_parts[1];
+  $lat_tempma = '0.'.$lat_dec_place;
   $lat_tempma = $lat_tempma * 3600;
   $lat_min = floor($lat_tempma / 60);
   $lat_sec = number_format($lat_tempma - ($lat_min*60), 2);
@@ -306,10 +407,12 @@ function get_geographic_coordinates($latitude, $longitude)
     $lat_min = 0;
    }
   $lon_deg = $lon_parts[0];
+  if(isset($lon_parts[1])) $lon_dec_place = $lon_parts[1];
+  else $lon_dec_place = 0;
   if($lon_deg<0) $lon_hemisphere = 'W';
   else $lon_hemisphere = 'E';
   $lon_deg = abs($lon_deg);  
-  $lon_tempma = '0.'.$lon_parts[1];
+  $lon_tempma = '0.'.$lon_dec_place;
   $lon_tempma = $lon_tempma * 3600;
   $lon_min = floor($lon_tempma / 60);
   $lon_sec = number_format($lon_tempma - ($lon_min*60), 2);
@@ -401,27 +504,33 @@ function my_exif_read_data($file)
  }
 
 
-function log_status($message, $action=0, $table=0, $item=0)
+function log_activity($action=0, $table=0, $item=0, $previous_data=NULL)
  {
   global $_SESSION, $settings;
-  if(!is_null($message)) $message = truncate(trim($message), 500);
-  if(is_null($message) || $message!='')
-   {
-    $dbr = Database::$connection->prepare("INSERT INTO ".Database::$db_settings['status_table']." (\"user\", action, \"table\", item, message) VALUES (:user, :action, :table, :item, :message)");
-    $dbr->bindValue(':user', $_SESSION[$settings['session_prefix'].'auth']['id'], PDO::PARAM_INT);
-    $dbr->bindValue(':action', $action, PDO::PARAM_INT);
-    $dbr->bindValue(':table', $table, PDO::PARAM_INT); 
-    $dbr->bindValue(':item', $item, PDO::PARAM_INT); 
-    $dbr->bindValue(':message', $message, PDO::PARAM_STR);
-    $dbr->execute();
-   }
+  #if(!is_null($message)) $message = truncate(trim($message), 500);
+  $dbr = Database::$connection->prepare("INSERT INTO ".Database::$db_settings['log_table']." (\"user\", action, \"table\", item, previous_data) VALUES (:user, :action, :table, :item, :previous_data)");
+  $dbr->bindValue(':user', $_SESSION[$settings['session_prefix'].'auth']['id'], PDO::PARAM_INT);
+  $dbr->bindValue(':action', $action, PDO::PARAM_INT);
+  $dbr->bindValue(':table', $table, PDO::PARAM_INT); 
+  $dbr->bindValue(':item', $item, PDO::PARAM_INT); 
+    
+  if(is_null($previous_data)) $dbr->bindParam(':previous_data', $previous_data, PDO::PARAM_NULL);
+  else $dbr->bindValue(':previous_data', $previous_data, PDO::PARAM_STR);
+    
+  $dbr->execute();
  }
 
-function log_error($file, $message)
+function log_error($message='')
  {
-  $time = date(DATE_RFC822);
-  $log_message = "\n\n########################################################\n\n" . $time . "\n\n" . print_r($_SERVER, true) . "\n\n" . print_r($_REQUEST, true) . "\n\n" . print_r($_SESSION, true) . "\n\n" . $message;
-  file_put_contents($file, $log_message, FILE_APPEND | LOCK_EX);
+  if(file_exists(ERROR_LOGFILE))
+   {
+    $time = gmdate("c");
+    $log_data = array($time, $message, serialize($_SERVER), serialize($_REQUEST), serialize($_SESSION));
+    $fp = fopen(ERROR_LOGFILE, 'a');
+    fputcsv($fp, $log_data);
+    fclose($fp);
+    #file_put_contents($file, $log_message, FILE_APPEND | LOCK_EX);
+   }
  }
 
 /**
@@ -772,6 +881,11 @@ function move_item($table, $id, $direction, $section='')
  }
 
 
+/**
+ * returns the data model information
+ * 
+ * @param int $table : id of database table 
+ */ 
 function get_table_info($table, $overview_only=false)
  {
     $dbr = Database::$connection->prepare("SELECT a.id,
@@ -779,6 +893,7 @@ function get_table_info($table, $overview_only=false)
                                                   a.title,
                                                   a.type,
                                                   a.geometry_type,
+                                                  a.latlong_entry,
                                                   a.geometry_required,
                                                   a.basemaps,
                                                   a.min_scale,
@@ -788,15 +903,15 @@ function get_table_info($table, $overview_only=false)
                                                   a.layer_overview,
                                                   a.status,
                                                   a.readonly,
+                                                  a.data_images,
+                                                  a.item_images,
                                                   a.parent_table,
                                                   a.description,
                                                   b.title as parent_title,
+                                                  a.boundary_layer,
                                                   a.auxiliary_layer_1,
                                                   c.title as auxiliary_layer_1_title,
-                                                  a.auxiliary_layer_2,
-                                                  d.title as auxiliary_layer_2_title,
-                                                  a.auxiliary_layer_3,
-                                                  e.title as auxiliary_layer_3_title
+                                                  c.simplification_tolerance_extent_factor as auxiliary_layer_1_stef
                                            FROM ".Database::$db_settings['data_models_table']." AS a
                                            LEFT JOIN ".Database::$db_settings['data_models_table']." AS b ON a.parent_table=b.id
                                            LEFT JOIN ".Database::$db_settings['data_models_table']." AS c ON a.auxiliary_layer_1=c.id
@@ -825,21 +940,27 @@ function get_table_info($table, $overview_only=false)
                                                     a.description,
                                                     a.column_type,
                                                     a.column_length,
+                                                    a.column_default_value,
+                                                    a.unique,
                                                     a.column_not_null,
                                                     a.input_type,
                                                     a.choices,
                                                     a.choice_labels,
                                                     a.relation,
+                                                    a.relation_column,
                                                     c.table_id as relation_table,
                                                     b.table_name as relation_table_name,
                                                     b.title as relation_table_title,
                                                     c.name AS relation_column_name,
+                                                    c.label AS relation_column_label,
                                                     a.required,
                                                     a.overview,
-                                                    a.section_type,
+                                                    a.priority,
                                                     a.range_from,
                                                     a.range_to,
-                                                    a.regex
+                                                    a.regex,
+                                                    a.definition,
+                                                    a.comments
                                              FROM ".Database::$db_settings['data_model_items_table']." AS a
                                              LEFT JOIN ".Database::$db_settings['data_model_items_table']." AS c ON a.relation=c.id
                                              LEFT JOIN ".Database::$db_settings['data_models_table']." AS b ON c.table_id=b.id
@@ -857,16 +978,19 @@ function get_table_info($table, $overview_only=false)
           {
            $columns[$i]['id'] = $row['id'];
            $columns[$i]['name'] = $row['name'];
-           if($row['label']) $columns[$i]['label'] = htmlspecialchars($row['label']);
-           else $columns[$i]['label'] = htmlspecialchars($row['name']);
-           $columns[$i]['description'] = htmlspecialchars($row['description']);
+           if($row['label']!='') $columns[$i]['label'] = $row['label'];
+           elseif($row['label']=='' && $row['column_type']>0) $columns[$i]['label'] = $row['name'];
+           else $columns[$i]['label'] = '';
+           $columns[$i]['description'] = $row['description'];
+           $columns[$i]['definition'] = $row['definition'];
+           $columns[$i]['comments'] = $row['comments'];
            $columns[$i]['type'] = $row['column_type'];
-           $columns[$i]['section_type'] = $row['section_type'];
+           $columns[$i]['priority'] = $row['priority'];
            $columns[$i]['range_from'] = $row['range_from'];
            $columns[$i]['range_to'] = $row['range_to'];
            $columns[$i]['regex'] = $row['regex'];
 
-           if($row['column_type']==0 && $row['section_type']==1)
+           if($row['column_type']==0 && $row['priority']==1)
             {
              if(empty($section_id)) $section_id = 1; 
              $sections[$row['id']]['id'] = $section_id;
@@ -875,6 +999,8 @@ function get_table_info($table, $overview_only=false)
             }
            
            $columns[$i]['column_length'] = $row['column_length'];
+           $columns[$i]['column_default_value'] = $row['column_default_value'];
+           $columns[$i]['unique'] = $row['unique'];
            $columns[$i]['column_not_null'] = $row['column_not_null'];
            $columns[$i]['required'] = $row['required'];
            #$columns[$i]['input_type'] = $row['input_type'];
@@ -886,7 +1012,9 @@ function get_table_info($table, $overview_only=false)
            $columns[$i]['relation_table_name'] = $row['relation_table_name'];
            $columns[$i]['relation_table_title'] = $row['relation_table_title'];
            $columns[$i]['relation'] = $row['relation'];
+           $columns[$i]['relation_column'] = $row['relation_column'];
            $columns[$i]['relation_column_name'] = $row['relation_column_name'];
+           $columns[$i]['relation_column_label'] = $row['relation_column_label'];
 
            if(trim($row['choice_labels'])!='') $choice_labels = explode("\n", $row['choice_labels']);
            else unset($choice_labels);
@@ -912,8 +1040,87 @@ function get_table_info($table, $overview_only=false)
    else return false;
  }
 
+/**
+ * deletes all linked/attached data if an item or data model
+ * 
+ * @param int $model : data model id
+ * @param int $item : item id
+ */ 
+function delete_linked_data($model, $item=0)
+ {
+  if($item)
+   {
+    // delete attached items:
+    $dbr = Database::$connection->prepare('SELECT table_name
+                                           FROM "'.Database::$db_settings['data_models_table'].'"
+                                           WHERE parent_table = :table_id');
+    $dbr->bindParam(':table_id', $model, PDO::PARAM_INT);
+    $dbr->execute();
+    foreach($dbr as $row)
+     {
+      $dar = Database::$connection->prepare('DELETE FROM "'.$row['table_name'].'" WHERE fk = :id');
+      $dar->bindParam(':id', $item, PDO::PARAM_INT);
+      $dar->execute();
+     }
+    
+    // delete related items:
+    $drr = Database::$connection->prepare('DELETE FROM "'.Database::$db_settings['relations_table'].'"
+                                           WHERE t1=:table AND i1=:item OR t2=:table AND i2=:item');
+    $drr->bindParam(':table', $model, PDO::PARAM_INT);
+    $drr->bindParam(':item', $item, PDO::PARAM_INT);
+    $drr->execute();  
+   } // if($item)
+   
+  // delete data images:
+  if($item)
+   {
+    $dbr = Database::$connection->prepare('SELECT filename FROM "'.Database::$db_settings['data_images_table'].'" WHERE data=:data AND item=:item');
+    $dbr->bindParam(':item', $item, PDO::PARAM_INT);
+   }
+  else
+   {
+    $dbr = Database::$connection->prepare('SELECT filename FROM "'.Database::$db_settings['data_images_table'].'" WHERE data=:data');
+   }
+  $dbr->bindParam(':data', $model, PDO::PARAM_INT);
+  $dbr->execute();
+  while($row = $dbr->fetch())
+   {
+    @unlink(DATA_IMAGES_PATH.$row['filename']);
+    @unlink(DATA_THUMBNAILS_PATH.$row['filename']);
+    @unlink(DATA_ORIGINAL_IMAGES_PATH.$row['filename']);
+   }
+  $dbr = Database::$connection->prepare('DELETE FROM "'.Database::$db_settings['data_images_table'].'" WHERE data=:data AND item=:item');
+  $dbr->bindParam(':data', $model, PDO::PARAM_INT);
+  $dbr->bindParam(':item', $item, PDO::PARAM_INT);
+  $dbr->execute(); 
+ }
 
 
+/**
+ * escapes the string for the SQL DEFAULT ... statement
+ * 
+ * @param string $string : string to escape
+ * @param int $type : data type
+ */ 
+function escape_column_default_value($string, $type=false)
+ {
+  switch($type)
+   {
+    case 2:
+    case 3:
+     $escaped_string = intval($string);
+     break;
+    case 4:
+     $escaped_string = floatval($string);
+     break;                     
+    case 6:
+     $escaped_string = $string ? true : false;
+    default:
+     $escaped_string = Database::$connection->quote($string);
+    break;
+   }
+  return $escaped_string; 
+ }
 
 /**
  * returns the custom (user defined) columns of a database table

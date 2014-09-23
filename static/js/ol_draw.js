@@ -2,9 +2,9 @@ var projData = new OpenLayers.Projection("EPSG:4326");
 var projDisplay = new OpenLayers.Projection("EPSG:900913");
 var vectorLayerStyle = new OpenLayers.StyleMap({
                 "default": new OpenLayers.Style({
-                    externalGraphic: staticURL+"img/marker_large.png",
-                    graphicWidth: 31,
-                    graphicHeight: 99,
+                    externalGraphic: staticURL+"img/marker_edit_large.png",
+                    graphicWidth: 41,
+                    graphicHeight: 136,
                     graphicOpacity: 1,                    
                     fillColor: "yellow",
                     fillOpacity: 0.5,
@@ -74,7 +74,7 @@ labelOutlineColor: "#fff",
 labelOutlineWidth: 4
 })});
 
-var wkt = document.getElementById("wkt").value;
+var wkt = document.getElementById("_wkt").value;
 
 var map = new OpenLayers.Map("mapcontainer", { projection: projDisplay, controls:[new OpenLayers.Control.Zoom(), new OpenLayers.Control.ScaleLine()]});
 
@@ -181,7 +181,7 @@ function updateForm(feature)
   var xfeature = vectorLayer.features[0];
   var geometry = xfeature.geometry.clone();
   geometry.transform(projDisplay, projData);
-  document.getElementById("wkt").value = geometry;
+  document.getElementById("_wkt").value = geometry;
  }
 
 $("a[data-set-position]").click(function(e)

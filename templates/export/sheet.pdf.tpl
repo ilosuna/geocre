@@ -37,7 +37,7 @@ br           { page-break-inside:avoid; }
 <?php if($item['column_type']==0): ?>
 <?php if(empty($item['label'])): ?>
 <hr />
-<?php elseif($item['section_type']==1): ?>
+<?php elseif($item['priority']==2): ?>
 <h2><?php echo $item['label']; ?>
 <?php if($item['description']): ?><br /><span><?php echo $item['description']; ?></span><?php endif; ?></h2>
 <?php else: ?>

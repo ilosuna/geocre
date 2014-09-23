@@ -9,6 +9,7 @@
 <form action="index.php" method="post"><div>
 <input type="hidden" name="r" value="download_sheet.download" />
 <input type="hidden" name="id" value="<?php echo $data['id']; ?>" />
+<input id="downloadtoken" type="hidden" name="downloadtoken">
 
 <fieldset>
 <legend><?php echo $lang['download_sheet_format_label']; ?></legend>
@@ -37,7 +38,7 @@
 </fieldset>
 
 <div class="top-space">
-<button class="btn btn-primary btn-lg" type="submit"><span class="glyphicon glyphicon-cloud-download"></span> <?php echo $lang['download_sheet_submit']; ?></button>
+<button class="btn btn-primary btn-lg" type="submit" data-downloading="<?php echo rawurlencode($lang['processing_message']); ?>"><span class="glyphicon glyphicon-cloud-download"></span> <?php echo $lang['download_sheet_submit']; ?></button>
 </div>
 
 </div></form>

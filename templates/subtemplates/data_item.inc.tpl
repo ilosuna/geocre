@@ -22,18 +22,17 @@
 <div class="alert alert-success">
 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 <p><span class="glyphicon glyphicon-ok"></span> <?php echo $lang['item_added_message']; ?></p>
-<p><a class="btn btn-success" href="<?php echo BASE_URL; ?>?r=edit_data_item.add&amp;data_id=<?php echo $table_id; ?>"<?php if($data_type==1): ?> onclick="this.href+='&current_position='+map<?php echo $table_id; ?>.center.lon+','+map<?php echo $table_id; ?>.center.lat+','+map<?php echo $table_id; ?>.zoom"<?php endif; ?>><span class="glyphicon glyphicon-plus"></span> <?php echo $lang['add_another_item_link']; ?></a></p>
+<p><a class="btn btn-success" href="<?php echo BASE_URL; ?>?r=edit_data_item.add&amp;data_id=<?php echo $table_id; ?>"<?php if($data_type==1): ?> onclick="this.href+='&current_position='+map.center.lon+','+map.center.lat+','+map.zoom"<?php endif; ?>><span class="glyphicon glyphicon-plus"></span> <?php echo $lang['add_another_item_link']; ?></a></p>
 </div>
 <?php endif; ?>
 
 <div class="row">
-<div class="col-sm-6"><h1><?php echo $lang['data_item_details_title']; ?></h1></div>
+<div class="col-sm-6"><h1><?php if(isset($item_title)): ?><?php echo $item_title; ?><?php else: ?><?php echo $lang['data_item_details_title']; ?><?php endif; ?></h1></div>
 <div class="col-sm-6">
 <?php if(!$readonly && $permission['write']): ?>
 <div class="btn-top-right">
 <a class="btn btn-primary" href="<?php echo BASE_URL; ?>?r=edit_data_item.edit&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $item_data['id']; ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo $lang['edit_item_link']; ?></a>
 <a class="btn btn-danger" href="<?php echo BASE_URL; ?>?r=data.delete&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $item_data['id']; ?>" data-delete-confirm="<?php echo rawurlencode($lang['delete_data_item_message']); ?>"><span class="glyphicon glyphicon-remove"></span> <?php echo $lang['delete_item_link']; ?></a>
-
 <?php if(isset($help)): ?>
 <a class="btn btn-default" href="index.php?r=help.<?php echo $help; ?>" data-toggle="modal" data-target="#modal_help" data-input="content"><span class="glyphicon glyphicon-question-sign"></span> <?php echo $lang['help']; ?></a>
 <?php endif; ?>
@@ -46,7 +45,7 @@
 
 <?php if(isset($item_data)): ?>
 
-<?php if(isset($attached_data) || isset($related_data)): ?>
+<?php if(isset($attached_data) || isset($related_data) || isset($item_images)): ?>
 <ul id="mytab" class="nav nav-tabs">
 <li class="active"><a href="#item" data-toggle="mytab"><?php echo $lang['item_details_title']; ?></a></li>
 <?php if(isset($attached_data)): ?>
@@ -55,10 +54,13 @@
 <?php if(isset($related_data)): ?>
 <li><a href="#related-data" data-toggle="mytab"><?php echo $lang['item_related_data']; ?></a></li>
 <?php endif; ?>
+<?php if(isset($item_images)): ?>
+<li><a href="#images" data-toggle="mytab"><?php echo $lang['item_images']; ?></a></li>
+<?php endif; ?>
 </ul>
 <?php endif; ?>
 
-<?php if(isset($attached_data) || isset($related_data)): ?>
+<?php if(isset($attached_data) || isset($related_data) || isset($item_images)): ?>
 
 <div id="myTabContent" class="tab-content">
 
@@ -66,14 +68,24 @@
 <?php endif; ?>
 
 <!--<div class="table-responsive">-->
-<table class="table table-striped">
+<table class="table">
 
 <?php if($data_type==1): $displayed_maps[]=$table_id; /* spatial data - show map box:  */ ?>
 <tr>
 <td colspan="2" class="map">
 <?php if(!empty($spatial_item_data['wkt'])): ?>
+
+<?php if(isset($_SESSION[$settings['session_prefix'].'usersettings']['disable_map']) && $_SESSION[$settings['session_prefix'].'usersettings']['disable_map']): ?>
+<div class="no-map">
+<p><span class="glyphicon glyphicon-warning-sign"></span> <?php echo $lang['map_disabled']; ?></p>
+</div>
+<div class="text-center bottom-space-small">
+<a class="btn btn-primary" href="<?php echo BASE_URL; ?>?r=data_item&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $item_data['id']; ?>&amp;disable_map=0"><?php echo $lang['enable_map']; ?></a>
+</div>
+<?php else: ?>
+
 <div id="mapwrapper">
-<div id="mapcontainer<?php echo $table_id; ?>" class="defaultmap"<?php if(isset($_SESSION[$settings['session_prefix'].'usersettings']['map_height'])): ?> style="height:<?php echo $_SESSION[$settings['session_prefix'].'usersettings']['map_height']; ?>px"<?php endif; ?>>
+<div id="mapcontainer" class="defaultmap"<?php if(isset($_SESSION[$settings['session_prefix'].'usersettings']['map_height'])): ?> style="height:<?php echo $_SESSION[$settings['session_prefix'].'usersettings']['map_height']; ?>px"<?php endif; ?>>
 <div id="maptoolbar">
 <div class="buttongroup">
 <a id="zoomwheel" href="#" onclick="toggleZoomWheel(); return false" class="<?php if(isset($_SESSION[$settings['session_prefix'].'usersettings']['map_zoomwheel'])&&$_SESSION[$settings['session_prefix'].'usersettings']['map_zoomwheel']==1): ?>active<?php else: ?>inactive<?php endif; ?>" title="<?php echo $lang['zoomwheel_label']; ?>"><?php echo $lang['zoomwheel_label']; ?></a>
@@ -84,10 +96,14 @@
 <a id="enlargemap" href="#" title="<?php echo $lang['enlarge_map_label']; ?>"><?php echo $lang['enlarge_map_label']; ?></a>
 </div>
 </div>
+<a id="disablemap" href="<?php echo BASE_URL; ?>?r=data_item&amp;data_id=<?php echo $table_id; ?>&amp;id=<?php echo $item_data['id']; ?>&amp;disable_map=1" title="<?php echo $lang['disable_map']; ?>">[x]</a>
 </div>
 </div>
+
+<?php endif; ?>
+
 <?php else: ?>
-<div class="no-geometry-details">
+<div class="no-map">
 <p><span class="glyphicon glyphicon-warning-sign"></span> <?php echo $lang['no_geometry_message']; ?></p>
 </div>
 <?php endif; ?>
@@ -97,13 +113,14 @@
 
 <?php if(isset($custom_item_data)): ?>
 
-<?php foreach($custom_item_data as $custom_item): ?>
+<?php $alter=false; foreach($custom_item_data as $custom_item): ?>
+<?php if($custom_item['type']==0||$custom_item['priority']!=1) { if($alter) $alter=false; else $alter=true; } ?>
 <?php if($custom_item['type']==0): ?>
-<tr class="<?php if($custom_item['section_type']==1): ?>section<?php else: ?>subsection<?php endif; ?>">
-<td colspan="2" class="<?php if($custom_item['section_type']==1): ?>mainsection<?php else: ?>section<?php endif; ?>"><?php if(empty($custom_item['label'])): ?>&nbsp;<?php else: ?><?php echo $custom_item['label']; ?><?php endif; ?><?php if($custom_item['description']): ?><br /><span class="description"><?php echo $custom_item['description']; ?></span><?php endif; ?></td>
+<tr class="<?php if($custom_item['priority']==2): ?>high-priority-section<?php elseif($custom_item['priority']==1): ?>low-priority-section<?php if($alter): ?> alter<?php endif; ?><?php else: ?>default-priority-section<?php endif; ?>">
+<td colspan="2" class="<?php if($custom_item['priority']==2): ?>mainsection<?php else: ?>section<?php endif; ?>"><?php if(empty($custom_item['label'])): ?>&nbsp;<?php else: ?><?php echo $custom_item['label']; ?><?php endif; ?><?php if($custom_item['description']): ?><br /><span class="description"><?php echo $custom_item['description']; ?></span><?php endif; ?></td>
 </tr>
 <?php else: ?>
-<tr>
+<tr class="<?php if($custom_item['priority']==2): ?>high-priority<?php elseif($custom_item['priority']==1): ?>low-priority<?php else: ?>default-priority<?php endif; ?><?php if($alter): ?> alter<?php endif; ?>">
 <td class="key"><strong><?php echo $custom_item['label']; ?></strong><?php if($custom_item['description']): ?><br /><span class="description"><?php echo $custom_item['description']; ?></span><?php endif; ?></td>
 <td class="value">
 <?php if($custom_item['type']==6): ?>
@@ -175,25 +192,39 @@
 </table>
 <!--</div>-->
 
-<?php if($data_type==1): /* spatial data - display map:  */ ?>
+<?php if($data_type==1 && empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map'])): /* spatial data - display map:  */ ?>
 
 <?php
-$js[] = 'var map'.$table_id.' = new OpenLayers.Map("mapcontainer'.$table_id.'", { projection:projDisplay, controls:[new OpenLayers.Control.Zoom(), new OpenLayers.Control.ScaleLine()] });';
+$js[] = 'var map = new OpenLayers.Map("mapcontainer", { projection:projDisplay, controls:[new OpenLayers.Control.Zoom(), new OpenLayers.Control.ScaleLine()] });';
 ?>
 
 <?php if(isset($basemaps[$table_id])): ?>
 <?php foreach($basemaps[$table_id] as $basemap): ?>
 <?php
 $js[] = 'var basemap_'.$table_id.'_'.$basemap['id'].' = new OpenLayers.Layer.'.$basemap['properties'].';
-map'.$table_id.'.addLayer(basemap_'.$table_id.'_'.$basemap['id'].');
+map.addLayer(basemap_'.$table_id.'_'.$basemap['id'].');
 if(typeof(basemap_'.$table_id.'_'.$basemap['id'].'.mapObject)!="undefined") basemap_'.$table_id.'_'.$basemap['id'].'.mapObject.setTilt(0);';
 ?>
 <?php endforeach; ?>
 <?php endif; ?>
 
+<?php if($auxiliary_layer_1): ?>
 <?php
+$auxiliary_layer_1_res_factor = isset($auxiliary_layer_1_redraw) ? '{resFactor:1}' : '';
+$js[] = 'auxiliary_layer_1 = new OpenLayers.Layer.Vector("'.ol_encode_label($auxiliary_layer_1_title).'", {
+projection: projData,        
+strategies: [new OpenLayers.Strategy.BBOX('.$auxiliary_layer_1_res_factor.')],
+protocol: new OpenLayers.Protocol.HTTP({ url: "'.BASE_URL.'",
+                                         params: { r:"json_data", table:"'.$auxiliary_layer_1.'" },
+                                         format: new OpenLayers.Format.GeoJSON() }),
+    styleMap:auxiliaryLayerStyle
+});
+map.addLayer(auxiliary_layer_1);';
+?>
+<?php endif; ?>
 
-if(isset($featurelabel)) $fl = ol_encode_label($featurelabel);
+<?php
+if(isset($item_title)) $fl = ol_encode_label($item_title);
 else $fl = $item_data['id'];
 
 if(isset($redraw)) $res_factor = '{resFactor:1}';
@@ -205,7 +236,7 @@ if($max_scale) $maxscale_string = 'manScale:'.$max_scale.',';
 else $maxscale_string = '';
 
 $js[] = 'featureLayer = new OpenLayers.Layer.Vector("'.$fl.'", { styleMap: featureLayerStyle });
-map'.$table_id.'.addLayer(featureLayer);
+map.addLayer(featureLayer);
 
 vectorLayer = new OpenLayers.Layer.Vector("'.ol_encode_label($table_title).'", {
     projection: projData,        
@@ -218,43 +249,36 @@ vectorLayer = new OpenLayers.Layer.Vector("'.ol_encode_label($table_title).'", {
     units: "m",
     styleMap:vectorLayerStyle
 });
-map'.$table_id.'.addLayer(vectorLayer);'; ?>
-
-<?php if($auxiliary_layer_1): ?>
-<?php
-$js[] = 'auxiliary_layer_1 = new OpenLayers.Layer.Vector("'.ol_encode_label($auxiliary_layer_1_title).'", {
-projection: projData,        
-strategies: [new OpenLayers.Strategy.BBOX()],
-protocol: new OpenLayers.Protocol.HTTP({ url: "'.BASE_URL.'",
-                                         params: { r:"json_data", table:"'.$auxiliary_layer_1.'" },
-                                         format: new OpenLayers.Format.GeoJSON() }),
-    styleMap:auxiliaryLayerStyle
-});
-map'.$table_id.'.addLayer(auxiliary_layer_1);';
-?>
-<?php endif; ?>
+map.addLayer(vectorLayer);'; ?>
 
 <?php
 $js[] = 'navigationControl = new OpenLayers.Control.Navigation({"zoomWheelEnabled":false});
-map'.$table_id.'.addControl(navigationControl);
+map.addControl(navigationControl);
 if(document.getElementById("zoomwheel") && document.getElementById("zoomwheel").className == "active") navigationControl.enableZoomWheel();
-
-map'.$table_id.'.addControl(new OpenLayers.Control.LayerSwitcher());
+map.addControl(new OpenLayers.Control.LayerSwitcher());
 var polygonFeature = new OpenLayers.Format.WKT({"internalProjection":projDisplay,"externalProjection":projData}).read("'.$spatial_item_data['wkt'].'");
 polygonFeature.attributes["id"] = '.$item_data['id'].';
 polygonFeature.attributes["featurelabel"] = "'.$fl.'";
-featureLayer.addFeatures([polygonFeature]);
+featureLayer.addFeatures([polygonFeature]);';
 
-map'.$table_id.'.zoomToExtent(featureLayer.getDataExtent());
-if(map'.$table_id.'.zoom > 17) map'.$table_id.'.zoomTo(17);';
+if($spatial_item_data['geometry_type']=='POINT'): ?>
+<?php
+$js[] = 'map.setCenter(featureLayer.getDataExtent().getCenterLonLat(),17);';
 ?>
+<?php else: ?>
+<?php
+$js[] = 'map.zoomToExtent(featureLayer.getDataExtent());
+//if(map.zoom > 17) map.zoomTo(17);';
+?>
+<?php endif; ?>
 
 <?php endif; ?>
 
-<?php if(isset($attached_data) || isset($related_data)): ?>
+<?php if(isset($attached_data) || isset($related_data) || isset($item_images)): ?>
 </div><?php /* id="item" */ ?>
 <?php endif; ?>
 
+<?php /* ############################## BEGIN ATTACHED DATA ############################## */ ?>
 <?php if(isset($attached_data)): ?>
 
 <div id="attached-data" class="mytab-pane">
@@ -275,13 +299,15 @@ if(map'.$table_id.'.zoom > 17) map'.$table_id.'.zoomTo(17);';
 <?php if($attached_data_item['items']): ?>
 
 <?php if($attached_data_item['type']==1): $displayed_maps[]=$attached_data_item['table_id']; /* spatial data - show map box  */ ?>
-<div id="mapcontainer<?php echo $attached_data_item['table_id']; ?>" class="defaultmap" style="margin-bottom:20px !important;"></div>
+<div id="mapcontainer<?php echo $attached_data_item['table_id']; ?>" class="defaultmap"></div>
 <?php endif; ?>
 
-<!--<div class="table-responsive">-->
+<div class="table-data">
 <table id="table-<?php echo $attached_data_item['table_id']; ?>" class="table table-striped table-hover">
 <thead>
 <tr>
+
+<th class="options-l">&nbsp;</th>
 
 <?php if(isset($attached_data_item['columns'])): ?>
 <?php foreach($attached_data_item['columns'] as $column): ?>
@@ -300,13 +326,20 @@ if(map'.$table_id.'.zoom > 17) map'.$table_id.'.zoomTo(17);';
 <th><?php echo $lang['geometry_column_label']; ?></th>
 <?php endif; ?>
 
-<th class="options">&nbsp;</th>
 </tr>
 </thead>
 
 <tbody>
 <?php foreach($attached_data_item['items'] as $data_item): ?>
 <tr id="row-<?php echo $attached_data_item['table_id']; ?>-<?php echo $data_item['id']; ?>">
+
+<td class="options-l">
+<a class="btn btn-success btn-xs" href="<?php echo BASE_URL; ?>?r=data_item&amp;data_id=<?php echo $attached_data_item['table_id']; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['show_data_item_details']; ?>"><span class="glyphicon glyphicon-eye-open"></span></a>
+<?php if($attached_data_item['writable']): ?> 
+<a class="btn btn-primary btn-xs" href="?r=edit_data_item.edit&amp;data_id=<?php echo $attached_data_item['table_id']; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['edit']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
+<a class="btn btn-danger btn-xs" href="?r=data.delete&amp;data_id=<?php echo $attached_data_item['table_id']; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['delete']; ?>" data-delete-confirm="<?php echo rawurlencode($lang['delete_data_item_message']); ?>"><span class="glyphicon glyphicon-remove"></span></a><?php endif; ?>
+</td>
+
 <?php if(isset($attached_data_item['columns'])): ?>
 
 <?php foreach($attached_data_item['columns'] as $column): ?>
@@ -336,16 +369,11 @@ if(map'.$table_id.'.zoom > 17) map'.$table_id.'.zoomTo(17);';
 <td><?php if(!empty($data_item['wkt'])): ?><span class="glyphicon glyphicon-ok text-success" title="<?php echo $lang['yes']; ?>"></span><?php endif; ?></td>
 <?php endif; ?>
 
-<td class="options">
-<a class="btn btn-primary btn-xs" href="<?php echo BASE_URL; ?>?r=data_item&amp;data_id=<?php echo $attached_data_item['table_id']; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['show_data_item_details']; ?>"><span class="glyphicon glyphicon-search"></span></a>
-<?php if($attached_data_item['writable']): ?> 
-<a class="btn btn-primary btn-xs" href="?r=edit_data_item.edit&amp;data_id=<?php echo $attached_data_item['table_id']; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['edit']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
-<a class="btn btn-danger btn-xs" href="?r=data.delete&amp;data_id=<?php echo $attached_data_item['table_id']; ?>&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['delete']; ?>" data-delete-confirm="<?php echo rawurlencode($lang['delete_data_item_message']); ?>"><span class="glyphicon glyphicon-remove"></span></a><?php endif; ?></td>
 </tr>
 <?php endforeach; ?>
 </tbody>
 </table>
-<!--</div>-->
+</div>
 
 <table class="data">
 <tr>
@@ -362,7 +390,7 @@ if(map'.$table_id.'.zoom > 17) map'.$table_id.'.zoomTo(17);';
 <?php endif; ?>
 </table>
 
-<?php if($attached_data_item['type']==1): ?>
+<?php if($attached_data_item['type']==1 && empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map'])): ?>
 <?php $js[] = 'var map'.$attached_data_item['table_id'].' = new OpenLayers.Map("mapcontainer'.$attached_data_item['table_id'].'", { projection:projDisplay, controls:[new OpenLayers.Control.Zoom(), new OpenLayers.Control.Navigation({"zoomWheelEnabled":false}), new OpenLayers.Control.ScaleLine()] });'; ?>
 
 <?php if(isset($basemaps[$attached_data_item['table_id']])): ?>
@@ -426,17 +454,6 @@ feature'.$attached_data_item['table_id'].'.popup = null;
 //unselectRow("row'.$attached_data_item['table_id'].'-"+feature'.$attached_data_item['table_id'].'.attributes.id);
 }});'; ?>
 
-<?php
-/*
-$js[] = '$(function() {
-$("#table-'.$attached_data_item['table_id'].' tbody tr").click(function(e) {
-   var parts = this.id.split("-");
-   selectFeature(parts[1], parts[2])
-})
-$("#table-'.$attached_data_item['table_id'].' tbody td").css("cursor", "pointer");
-});';
-*/
-?>
 <?php endif; ?>
 
 <?php else: ?>
@@ -452,8 +469,9 @@ $("#table-'.$attached_data_item['table_id'].' tbody td").css("cursor", "pointer"
 </div>
 
 <?php endif; ?>
+<?php /* ############################## END ATTACHED DATA ############################## */ ?>
 
-
+<?php /* ############################## BEGIN RELATED DATA ############################## */ ?>
 <?php if(isset($related_data)): ?>
 
 <div id="related-data"  class="mytab-pane">
@@ -535,7 +553,7 @@ $("#table-'.$attached_data_item['table_id'].' tbody td").css("cursor", "pointer"
 <?php endif; ?>
 </p>
 
-<?php if($related_data_item['type']==1): ?>
+<?php if($related_data_item['type']==1 && empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map'])): ?>
 
 <?php
 $js[] = 'var map'.$related_data_item['table_id'].' = new OpenLayers.Map("mapcontainer'.$related_data_item['table_id'].'", { projection:projDisplay, controls:[new OpenLayers.Control.Zoom(), new OpenLayers.Control.Navigation({"zoomWheelEnabled":false}), new OpenLayers.Control.ScaleLine()] });';
@@ -618,10 +636,44 @@ feature'.$related_data_item['table_id'].'.popup = null;
 <?php endforeach; ?>
 
 </div>
-</div>
-<?php endif; ?>
 
 <?php endif; ?>
+<?php /* ############################## END RELATED DATA ############################## */ ?>
+
+<?php /* ############################## BEGIN IMAGES ############################## */ ?>
+<?php if(isset($item_images)): ?>
+<div id="images" class="mytab-pane">
+
+<?php if(isset($images)): ?>
+<div class="gallery-wrapper">
+<div class="gallery"<?php if($permission['write']): ?> data-gallery-sortable="<?php echo BASE_URL; ?>?r=data_image.reorder"<?php endif; ?>>
+<?php foreach($images as $image): ?>
+<span id="item_<?php echo $image['id']; ?>" class="photooptions">
+<a class="thumbnail" href="<?php echo $image['image_url']; ?>" title="<?php echo $image['title']; ?>" data-lightbox>
+<img src="<?php echo $image['thumbnail_url']; ?>" alt="<?php echo $image['title']; ?>" title="<?php echo $image['title']; ?>" data-description="<?php echo $image['description']; ?>" data-author="<?php echo $image['author']; ?>" width="<?php echo $image['thumbnail_width']; ?>" height="<?php echo $image['thumbnail_height']; ?>">
+<span><?php echo truncate($image['title'],20,true); ?></span></a>
+<?php if($settings['data_images_download_original']): ?><a class="download_button<?php if($permission['write']): ?>_write<?php endif; ?> text-muted" href="<?php echo BASE_URL; ?>?r=data_image.download&amp;id=<?php echo $image['id']; ?>" title="<?php echo $lang['download_image_link']; ?>"><span class="glyphicon glyphicon-download"></span></a><?php endif; ?><?php if($permission['write']): ?><a class="edit_button" href="<?php echo BASE_URL; ?>?r=data_image.edit&amp;id=<?php echo $image['id']; ?>" title="<?php echo $lang['edit']; ?>"><span class="glyphicon glyphicon-pencil"></span></a><a class="delete_button text-danger" href="<?php echo BASE_URL; ?>?r=data_image.delete&amp;id=<?php echo $image['id']; ?>" title="<?php echo $lang['delete']; ?>" data-delete-confirm="<?php echo rawurlencode($lang['delete_data_image_message']); ?>"><span class="glyphicon glyphicon-remove"></span></a><span class="drag_button text-success" title="<?php echo $lang['drag_and_drop']; ?>"><span class="glyphicon glyphicon-move"></span></span><?php endif; ?>
+</span>
+<?php endforeach; ?>
+</div>
+</div>
+<?php else: ?>
+<div class="alert alert-warning"><?php echo $lang['no_data_images_available']; ?></div>
+<?php endif; ?>
+
+<?php if(!$readonly && $permission['write']): ?>
+<a class="btn btn-success" href="<?php echo BASE_URL; ?>?r=data_image.add&amp;data_id=<?php echo $table_id; ?>&amp;item_id=<?php echo $item_data['id']; ?>"><span class="glyphicon glyphicon-plus-sign"></span> <?php echo $lang['add_data_image_link']; ?></a>
+<?php endif; ?>
+
+</div>
+<?php endif; ?>
+<?php /* ############################## END IMAGES ############################## */ ?>
+
+<?php if(isset($attached_data) || isset($related_data) || isset($item_images)): ?>
+</div><?php /* id="myTabContent" */ ?>
+<?php endif; ?>
+
+<?php endif; /* if(isset($item_data)) */ ?>
 
 <?php else: ?>
 

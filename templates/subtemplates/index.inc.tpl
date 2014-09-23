@@ -29,6 +29,6 @@
 
 <?php else: ?>
 
-<p><em><?php echo $lang['no_pages_available']; ?></em></p>
+<div class="alert alert-warning"><?php echo $lang['no_pages_available']; ?></div>
 
 <?php endif; ?>

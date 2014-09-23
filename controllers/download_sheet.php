@@ -3,6 +3,8 @@ if(!defined('IN_INDEX')) exit;
 
 if(isset($_REQUEST['id']) && ($permission->granted(Permission::DATA_MANAGEMENT) || $permission->granted(Permission::DATA_ACCESS, intval($_REQUEST['id']), Permission::READ)))
  {
+  $javascripts[] = JQUERY_COOKIE;
+  
   switch($action)
    {
     case 'default':
@@ -22,6 +24,7 @@ if(isset($_REQUEST['id']) && ($permission->granted(Permission::DATA_MANAGEMENT) 
     break;    
     
     case 'download':
+     set_download_token_cookie('downloadtoken');
      $format = isset($_POST['format']) ? trim($_POST['format']) : '';
      // get table properties:
      $dbr = Database::$connection->prepare("SELECT id, table_name, title FROM ".Database::$db_settings['data_models_table']." WHERE id=:id LIMIT 1");
@@ -31,7 +34,7 @@ if(isset($_REQUEST['id']) && ($permission->granted(Permission::DATA_MANAGEMENT) 
      if($data)
       {
        // get items:
-       $dbr = Database::$connection->prepare("SELECT label, description, column_type, section_type, choices, choice_labels FROM ".Database::$db_settings['data_model_items_table']." WHERE table_id=:table_id ORDER BY sequence ASC");       
+       $dbr = Database::$connection->prepare("SELECT label, description, column_type, priority, choices, choice_labels FROM ".Database::$db_settings['data_model_items_table']." WHERE table_id=:table_id ORDER BY sequence ASC");       
        $dbr->bindParam(':table_id', $data['id'], PDO::PARAM_INT);
        $dbr->execute();
        $i=0;
@@ -40,7 +43,7 @@ if(isset($_REQUEST['id']) && ($permission->granted(Permission::DATA_MANAGEMENT) 
          $items[$i]['label'] = htmlspecialchars($row['label']);
          $items[$i]['description'] = htmlspecialchars($row['description']);
          $items[$i]['column_type'] = $row['column_type'];
-         $items[$i]['section_type'] = $row['section_type'];
+         $items[$i]['priority'] = $row['priority'];
          
          if($row['choices'])
           {

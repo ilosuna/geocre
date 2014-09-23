@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
 <li><a href="<?php echo BASE_URL; ?>?r=dashboard#data" title="<?php echo $lang['dashboard_title']; ?>"><?php echo $lang['dashboard_link']; ?></a></li>
-<li><a href="<?php echo BASE_URL; ?>?r=data_model.edit_model&amp;id=<?php echo $data_id; ?>#structure"><?php echo $lang['edit_data_model_title']; ?></a></li>
+<li><a href="<?php echo BASE_URL; ?>?r=data&amp;data_id=<?php echo $data_id; ?>#structure"><?php echo $data_model_title; ?></a></li>
 <li class="active">
 <?php if(isset($model_item['id'])): ?>
 <?php echo $lang['data_model_edit_item_title']; ?>
@@ -32,7 +32,6 @@
 <input type="hidden" name="data_id" value="<?php echo $data_id; ?>" />
 <?php endif; ?>
 
-
 <div class="table-responsive">
 <table class="table table-striped">
 
@@ -59,7 +58,7 @@
 </tr>
 
 <tr>
-<td class="key"><?php echo $lang['db_tabel_item_type_label']; ?><br />
+<td class="key"><span class="radio-label"><?php echo $lang['db_tabel_item_type_label']; ?></span><br />
 <span class="description"><?php echo $lang['db_tabel_item_type_description']; ?></span></td>
 <td class="value">
 <div class="radio">
@@ -77,30 +76,20 @@
 </td>
 </tr>
 
+<?php if(empty($model_item['id']) || isset($model_item['item_type']) && $model_item['item_type']==0): /* only for data items */ ?>
+
 <tr<?php if(isset($error_fields) && in_array('type', $error_fields)): ?> class="has-error danger"<?php endif; ?>>
 <td class="key"><label class="control-label" for="type"><?php echo $lang['db_tabel_data_type_label']; ?></label><br />
 <span class="description"><?php echo $lang['db_tabel_data_type_description']; ?></span></td>
 <td class="value">
 <select id="type" class="form-control form-control-default form-control-inline" name="column_type" size="1"<?php if(isset($model_item['id'])): ?> disabled="disabled"<?php endif; ?>>
+<option value="0"<?php if(isset($model_item['column_type']) && $model_item['column_type']==0): ?> selected="selected"<?php endif; ?>>&nbsp;</option>
 <?php foreach($column_types as $key => $value): ?>
 <option value="<?php echo $key; ?>"<?php if(isset($model_item['column_type']) && $key==$model_item['column_type']): ?> selected="selected"<?php endif; ?>><?php echo $value['label']; ?></option>
 <?php endforeach; ?>
 </select>
-<input id="column_length" class="form-control form-control-small form-control-inline" type="text" name="column_length" value="<?php if(!empty($model_item['column_length'])): ?><?php echo $model_item['column_length']; ?><?php endif; ?>" size="7"<?php if(isset($model_item['id'])): ?> disabled="disabled"<?php endif; ?>></td>
+<input id="column_length" class="form-control form-control-small form-control-inline" type="text" name="column_length" value="<?php if(!empty($model_item['column_length'])): ?><?php echo $model_item['column_length']; ?><?php endif; ?>" size="7"<?php if(isset($model_item['id'])): ?> disabled="disabled"<?php endif; ?>><?php if(isset($model_item['id']) && $model_item['unique']): ?> <span class="label label-warning"><?php echo $lang['db_tabel_item_unique_label']; ?></span><?php elseif(empty($model_item['id'])): ?> <label><input id="unique" type="checkbox" name="unique" value="1"> <?php echo $lang['db_tabel_item_unique_label']; ?></label><?php endif; ?></td>
 </tr>
-
-<tr>
-<td class="key"><label><?php echo $lang['db_tabel_item_section_label']; ?></label><br />
-<span class="description"><?php echo $lang['db_tabel_item_section_description']; ?></span></td>
-<td class="value">
-<select id="type" class="form-control form-control-default form-control-inline" name="section_type" size="1"<?php if(isset($model_item['id']) && isset($model_item['column_type']) && $model_item['column_type']>0): ?> disabled="disabled"<?php endif; ?>>
-<option value="0"<?php if(isset($model_item['section_type']) && $model_item['section_type']==0): ?> selected="selected"<?php endif; ?>><?php echo $lang['data_model_section_type'][0]; ?></option>
-<option value="1"<?php if(isset($model_item['section_type']) && $model_item['section_type']==1): ?> selected="selected"<?php endif; ?>><?php echo $lang['data_model_section_type'][1]; ?></option>
-<option value="2"<?php if(isset($model_item['section_type']) && $model_item['section_type']==2): ?> selected="selected"<?php endif; ?>><?php echo $lang['data_model_section_type'][2]; ?></option>
-</select>
-</td>
-</tr>
-
 
 <tr>
 <td class="key"><label for="range_from"><?php echo $lang['db_tabel_item_range_label']; ?></label><br />
@@ -112,46 +101,61 @@
 <td class="key"><strong><?php echo $lang['db_tabel_item_choices_label']; ?></strong><br />
 <span class="description"><?php echo $lang['db_tabel_item_choices_description']; ?></span></td>
 <td class="value">
-   <table class="choices-table">
-   <tr>
-   <th><label for="choices"><?php echo $lang['db_tabel_item_choice_values_label']; ?></label></th>
-   <th><label for="choice_labels"><?php echo $lang['db_tabel_item_choice_labels_label']; ?></label></th>
-   </tr>
-   <tr>
-   <td class="choice-value"><textarea id="choices" class="form-control" name="choices" rows="10" cols="10" wrap="off"><?php if(isset($model_item['choices'])): ?><?php echo $model_item['choices']; ?><?php endif; ?></textarea></td>
-   <td class="choice-label"><textarea id="choice_labels" class="form-control" name="choice_labels" rows="10" cols="20" wrap="off"><?php if(isset($model_item['choice_labels'])): ?><?php echo $model_item['choice_labels']; ?><?php endif; ?></textarea></td>
-   </tr> 
-   </table>
+ <table class="choices-table">
+ <tr>
+ <th><label for="choices"><?php echo $lang['db_tabel_item_choice_values_label']; ?></label></th>
+ <th><label for="choice_labels"><?php echo $lang['db_tabel_item_choice_labels_label']; ?></label></th>
+ </tr>
+ <tr>
+ <td class="choice-value"><textarea id="choices" class="form-control" name="choices" rows="10" cols="10" wrap="off"><?php if(isset($model_item['choices'])): ?><?php echo $model_item['choices']; ?><?php endif; ?></textarea></td>
+ <td class="choice-label"><textarea id="choice_labels" class="form-control" name="choice_labels" rows="10" cols="20" wrap="off"><?php if(isset($model_item['choice_labels'])): ?><?php echo $model_item['choice_labels']; ?><?php endif; ?></textarea></td>
+ </tr> 
+ </table>
 </td>
 </tr>
 
-<tr>
+<tr<?php if(isset($error_fields) && in_array('required', $error_fields)): ?> class="has-error danger"<?php endif; ?>>
 <td class="key"><label for="required"><?php echo $lang['db_tabel_item_required_label']; ?></label><br />
 <span class="description"><?php echo $lang['db_tabel_item_required_description']; ?></span></td>
 <td class="value"><input id="required" type="checkbox" name="required" value="1"<?php if(isset($model_item['required']) && $model_item['required']==1): ?> checked="checked"<?php endif; ?> /></td>
 </tr>
 
-<?php /*
-TODO
+<?php endif; /* only for data items */ ?>
+
 <tr>
-<td class="key"><label for="overview"><?php echo $lang['db_tabel_item_overview_label']; ?></label><br />
-<span class="description"><?php echo $lang['db_tabel_item_overview_description']; ?></span></td>
-<td class="value"><input id="overview" type="checkbox" name="overview" value="1"<?php if(isset($model_item['overview']) && $model_item['overview']==1): ?> checked="checked"<?php endif; ?> /></td>
+<td class="key"><label><?php echo $lang['db_tabel_item_priority_label']; ?></label><br />
+<span class="description"><?php echo $lang['db_tabel_item_priority_description']; ?></span></td>
+<td class="value">
+<div class="radio">
+<label>
+<input type="radio" name="priority" value="0"<?php if(isset($model_item['priority']) && $model_item['priority']==0): ?> checked<?php endif; ?>>
+<?php echo $lang['data_model_item_priority'][0]; ?>
+</label>
+</div>
+<div class="radio">
+<label>
+<input type="radio" name="priority" value="1"<?php if(isset($model_item['priority']) && $model_item['priority']==1): ?> checked<?php endif; ?>>
+<?php echo $lang['data_model_item_priority'][1]; ?>
+</label>
+</div>
+<div class="radio">
+<label>
+<input type="radio" name="priority" value="2"<?php if(isset($model_item['priority']) && $model_item['priority']==2): ?> checked<?php endif; ?>>
+<?php echo $lang['data_model_item_priority'][2]; ?>
+</label>
+</div>
+</td>
 </tr>
-*/ ?>
 
 <tr>
 <td colspan="2"><a href="#additional-options" data-toggle="collapse" data-target=".additional-options"><?php echo $lang['db_tabel_item_additional_options_link']; ?> <span class="caret"></span></a>
 </td>
 </tr>
 
-<tr class="additional-options collapse">
-<td class="key"><label for="regex"><?php echo $lang['db_tabel_item_regex_label']; ?></label><br />
-<span class="description"><?php echo $lang['db_tabel_item_regex_description']; ?></span></td>
-<td class="value"><input id="regex" class="form-control" type="text" name="regex" value="<?php if(isset($model_item['regex'])): ?><?php echo $model_item['regex']; ?><?php endif; ?>" size="50" /></td>
-</tr>
+<?php if(empty($model_item['id']) || isset($model_item['item_type']) && $model_item['item_type']==0): /* only for data items */ ?>
+
 <?php if(isset($relations)): ?>
-<tr class="additional-options collapse">
+<tr class="additional-options collapse<?php if(isset($error_fields) && in_array('relation', $error_fields)): ?> has-error danger<?php endif; ?>">
 <td class="key"><label for="relation"><?php echo $lang['db_tabel_item_relation_label']; ?></label><br />
 <span class="description"><?php echo $lang['db_tabel_item_relation_description']; ?></span></td>
 <td class="value">
@@ -169,6 +173,35 @@ TODO
 <td class="value"><input id="relation_column" type="checkbox" name="relation_column" value="1"<?php if(isset($model_item['relation_column']) && $model_item['relation_column']==1): ?> checked="checked"<?php endif; ?> /></td>
 </tr>
 
+<tr class="additional-options collapse">
+<td class="key"><label for="column_default_value"><?php echo $lang['db_tabel_item_column_default_value_label']; ?></label><br />
+<span class="description"><?php echo $lang['db_tabel_item_column_default_value_description']; ?></span></td>
+<td class="value"><input id="column_default_value" class="form-control" type="text" name="column_default_value" value="<?php if(isset($model_item['column_default_value'])): ?><?php echo $model_item['column_default_value']; ?><?php endif; ?>" size="50" /></td>
+</tr>
+
+<tr class="additional-options collapse">
+<td class="key"><label for="regex"><?php echo $lang['db_tabel_item_regex_label']; ?></label><br />
+<span class="description"><?php echo $lang['db_tabel_item_regex_description']; ?></span></td>
+<td class="value"><input id="regex" class="form-control" type="text" name="regex" value="<?php if(isset($model_item['regex'])): ?><?php echo $model_item['regex']; ?><?php endif; ?>" size="50" /></td>
+</tr>
+
+<?php endif; /* only for data items */ ?>
+
+<tr class="additional-options collapse">
+<td class="key"><label for="definition"><?php echo $lang['db_tabel_item_definition_label']; ?></label><br />
+<span class="description"><?php echo $lang['db_tabel_item_definition_description']; ?></span></td>
+<td class="value">
+<textarea id="definition" class="form-control" name="definition" cols="60" rows="5"><?php if(isset($model_item['definition'])): ?><?php echo $model_item['definition']; ?><?php endif; ?></textarea>
+</td>
+</tr>
+
+<tr class="additional-options collapse">
+<td class="key"><label for="comments"><?php echo $lang['db_tabel_item_comments_label']; ?></label><br />
+<span class="description"><?php echo $lang['db_tabel_item_comments_description']; ?></span></td>
+<td class="value">
+<textarea id="comments" class="form-control" name="comments" cols="60" rows="5"><?php if(isset($model_item['comments'])): ?><?php echo $model_item['comments']; ?><?php endif; ?></textarea>
+</td>
+</tr>
 
 <tr class="additional-options collapse">
 <td class="key"><strong><?php echo $lang['data_model_special_options_label']; ?></strong></td>
@@ -181,12 +214,14 @@ TODO
 </label>
 </div>
 <?php endif; ?>
+<?php if(empty($model_item['id']) || isset($model_item['item_type']) && $model_item['item_type']==0): /* only for data items */ ?>
 <div class="checkbox">
 <label for="no_database_altering">
 <input id="no_database_altering" type="checkbox" name="no_database_altering" value="1">
 <?php echo $lang['no_database_altering_label']; ?>
 </label>
 </div>
+<?php endif; /* only for data items */ ?>
 </tr>
 
 <tr class="success">
@@ -196,7 +231,5 @@ TODO
 </table>
 </div>
 
-
-<p></p>
 </div>
 </form>

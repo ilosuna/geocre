@@ -5,7 +5,7 @@
 <?php if(empty($item['label'])): ?>
 
 --------------------------------------------------------------------------------
-<?php elseif($item['section_type']==1): ?>
+<?php elseif($item['priority']==2): ?>
 
 ** <?php echo $item['label']; ?> **
 <?php else: ?>

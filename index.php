@@ -4,28 +4,30 @@
  *
  * @author Mark Hoschek <mail at mark-hoschek dot de>
  * @copyright 2014 Mark Hoschek, Department of Physical Geography, University of Freiburg, Germany
- * @version 2014-03-13-1
+ * @version 2014-09-23-1
  * @link http://geocre.net/
  */
 
 try
 {
-define('IN_INDEX', TRUE);
-define('BASE_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
+$special_pages = array();
 session_start();
 
+define('IN_INDEX', TRUE);
+define('BASE_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
+
 require(BASE_PATH.'lib/functions.php');
+
+define('BASE_URL', get_base_url());
+define('STATIC_URL', BASE_URL.'static/');
+
+require(BASE_PATH.'config/definitions.conf.php');
+
 require(BASE_PATH.'config/db_settings.conf.php');
 
 require(BASE_PATH.'lib/Database.class.php');
 $database = new Database();
 $settings = get_settings();
-
-#define('BASE_PATH', get_base_path());
-define('BASE_URL', get_base_url());
-define('STATIC_URL', BASE_URL.'static/');
-
-require(BASE_PATH.'config/definitions.conf.php');
 
 require(BASE_PATH.'lib/Permission.class.php');
 $permission = new Permission(isset($_SESSION[$settings['session_prefix'].'auth']['id']) ? $_SESSION[$settings['session_prefix'].'auth']['id'] : false);
@@ -63,7 +65,7 @@ $granted_permissions['page_management'] = $permission->granted(Permission::PAGE_
 $granted_permissions['users_groups'] = $permission->granted(Permission::USERS_GROUPS) ? true : false;
 $granted_permissions['data_management'] = $permission->granted(Permission::DATA_MANAGEMENT) ? true : false;
 $template->assign('permission', $granted_permissions);
-if($settings['backup_path'] && $db_settings['superuser'] && $db_settings['superuser_password']) $template->assign('backup_enabled', true);
+if($db_settings['backup_path'] && $db_settings['superuser'] && $db_settings['superuser_password']) $template->assign('backup_enabled', true);
 
 // evaluate the request ( example.org/?r=foo.bar )
 if(isset($_REQUEST['r'])) // default request
@@ -80,6 +82,11 @@ if(isset($_REQUEST['r'])) // default request
     $action = 'default';
    }
  }
+elseif(isset($_GET['page']) && in_array($_GET['page'], $special_pages)) // special page request (mod_rewrite)
+ {
+  $controller = $_GET['page'];
+  $action = 'default';
+ } 
 elseif(isset($_GET['page'])) // special page request (mod_rewrite)
  {
   $controller = 'page';
@@ -104,6 +111,9 @@ if(isset($controller))
     case 'page': 
        include(BASE_PATH.'controllers/page.php');
        break;
+    case 'schools':
+       include(BASE_PATH.'controllers/schools.php');
+       break;
     case 'dashboard': 
        include(BASE_PATH.'controllers/dashboard.php');
        break;
@@ -112,6 +122,9 @@ if(isset($controller))
        break;
     case 'edit_data_item': 
        include(BASE_PATH.'controllers/edit_data_item.php');
+       break;
+    case 'data_image': 
+       include(BASE_PATH.'controllers/data_image.php');
        break;
     case 'data_item': 
        include(BASE_PATH.'controllers/data_item.php');
@@ -124,10 +137,7 @@ if(isset($controller))
        break;
     case 'logout': 
        include(BASE_PATH.'controllers/login.php');
-       break;
-    #case 'photos': 
-    #   include(BASE_PATH.'controllers/photos.php');
-    #   break;     
+       break;   
     case 'users':
        include(BASE_PATH.'controllers/users.php');
        break;
@@ -170,9 +180,12 @@ if(isset($controller))
     case 'download_sheet':
        include(BASE_PATH.'controllers/download_sheet.php');
        break;     
-    case 'activity': // asynchronous request processing
-       include(BASE_PATH.'controllers/status.php');
-       break;     
+    case 'log':
+       include(BASE_PATH.'controllers/log.php');
+       break;
+    case 'error_log':
+       include(BASE_PATH.'controllers/error_log.php');
+       break;          
     case 'json_data':
        include(BASE_PATH.'controllers/json_data.php');
        break;     
@@ -243,7 +256,7 @@ else $template->display(BASE_PATH.'templates/'.$settings['default_template']);
 catch(Exception $exception)
  {
   if(isset($lang)) $template->assign('lang', $lang);
-  if(isset($settings['log_errors']) && $settings['log_errors']) log_error($settings['log_errors'], $exception);
+  log_error($exception);
   if(isset($settings['default_template']) && isset($lang))
    {
     header('HTTP/1.1 500 Internal Server Error');
@@ -259,7 +272,7 @@ catch(Exception $exception)
    {
     header('HTTP/1.1 500 Internal Server Error');
     header('Content-Type: text/html; charset=utf-8');
-    ?><!DOCTYPE html><html><head><title>Error</title></head><body><h1>Error!</h1><pre><?php echo $exception; ?></pre></body></html><?php
+    include(BASE_PATH.'static/html/error_500.html');
    }
  }
 ?>

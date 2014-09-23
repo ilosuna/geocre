@@ -10,7 +10,7 @@
 <input type="hidden" name="r" value="login" />
 <div class="form-group login-form">
 <label for="email"><?php echo $lang['login_email']; ?></label>
-<input id="email" type="text" name="email" class="form-control" value="<?php if(isset($email)): ?><?php echo $email; ?><?php endif; ?>" autofocus></p>
+<input id="email" type="text" name="email" class="form-control" value="<?php if(isset($email)): ?><?php echo $email; ?><?php endif; ?>" autofocus>
 </div>
 <div class="form-group login-form">
 <label for="pw"><?php echo $lang['login_password']; ?></label>

@@ -3,6 +3,13 @@ if(!defined('IN_INDEX')) exit;
 
 if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permission::DATA_MANAGEMENT) || $permission->granted(Permission::DATA_ACCESS, intval($_GET['data_id']), Permission::READ)))
  {
+     if(isset($_REQUEST['disable_map']))
+      {
+       $_REQUEST['disable_map'] = $_REQUEST['disable_map'] ? 1 : 0;
+       set_user_setting();
+      }
+
+
     $granted_permissions['write'] = $permission->granted(Permission::DATA_MANAGEMENT) || $permission->granted(Permission::DATA_ACCESS, intval($_GET['data_id']), Permission::WRITE) ? true : false;
     $template->assign('permission', $granted_permissions);
        
@@ -29,7 +36,6 @@ if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permis
     $readonly = $table_info['table']['readonly']==1 ? true : false; 
     $template->assign('readonly', $readonly);
 
-
     if(isset($table_info['columns']))
      {
       $template->assign('columns', $table_info['columns']);  
@@ -38,7 +44,7 @@ if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permis
        {
         if($column['type']>0) $select_query_parts[] = 'table'.$table_info['table']['id'].'.'.$column['name'];
         
-        if($column['relation'])
+        if($column['relation'] && $column['relation_table_name'])
          {
           $joined_tables[] = $table_info['table']['id'];
           $joins[$i]['table'] = $table_info['table']['id'];
@@ -124,7 +130,7 @@ if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permis
           $spatial_item_data['length']['raw'] = $row['length'];
           $spatial_item_data['length']['m'] = number_format($row['length'], 1, $lang['dec_point'], $lang['thousands_sep']);
           $spatial_item_data['length']['km'] = number_format($row['length']/1000, 1, $lang['dec_point'], $lang['thousands_sep']);
-          if($basemaps[$table_info['table']['id']] = get_basemaps($table_info['table']['basemaps']))
+          if(empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map']) && $basemaps[$table_info['table']['id']] = get_basemaps($table_info['table']['basemaps']))
            {
             foreach($basemaps[$table_info['table']['id']] as $basemap)
              {
@@ -138,13 +144,13 @@ if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permis
           foreach($table_info['columns'] as $column)
            {
             // first column as feature label TODO:
-            if($table_info['table']['type']==1 && empty($featurelabel_set) && $column['type']!=0 && $row[$column['name']])
+            if(empty($item_title_set) && $column['type']!=0 && $row[$column['name']])
              {
-              $template->assign('featurelabel', htmlspecialchars($row[$column['name']]));
-              $featurelabel_set = true;
+              $template->assign('item_title', htmlspecialchars($row[$column['name']]));
+              $item_title_set = true;
              }
             $custom_item_data[$i]['type'] = $column['type'];
-            $custom_item_data[$i]['section_type'] = $column['section_type'];
+            $custom_item_data[$i]['priority'] = $column['priority'];
             $custom_item_data[$i]['name'] = htmlspecialchars($column['name']);
             $custom_item_data[$i]['label'] = $column['label'];
             $custom_item_data[$i]['description'] = $column['description'];
@@ -212,7 +218,7 @@ if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permis
              {
               $maps[] = $attached_data_item['table_id'];
               // get basemaps of attached data:
-              if($basemaps[$attached_data_item['table_id']] = get_basemaps($attached_table_info['table']['basemaps']))
+              if(empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map']) && $basemaps[$attached_data_item['table_id']] = get_basemaps($attached_table_info['table']['basemaps']))
                {
                 foreach($basemaps[$attached_data_item['table_id']] as $basemap)
                  {
@@ -287,7 +293,7 @@ if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permis
              {
               $maps[] = $related_table;
               // get basemaps of related data:
-              if($basemaps[$related_table_info['table']['id']] = get_basemaps($related_table_info['table']['basemaps']))
+              if(empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map']) && $basemaps[$related_table_info['table']['id']] = get_basemaps($related_table_info['table']['basemaps']))
                {
                 foreach($basemaps[$related_table_info['table']['id']] as $basemap)
                  {
@@ -337,6 +343,56 @@ if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permis
           if(isset($relations)) $template->assign('relations', $relations);
          }
         
+        /* images: */
+        if($settings['data_images'] && $table_info['table']['item_images'])
+         {
+          // get images:
+          $dbr = Database::$connection->prepare("SELECT id, filename, thumbnail_width, thumbnail_height, title, description, author FROM ".Database::$db_settings['data_images_table']." WHERE data=:data AND item=:item ORDER by sequence ASC");
+          $dbr->bindParam(':data', $table_info['table']['id'], PDO::PARAM_INT);
+          $dbr->bindParam(':item', $id, PDO::PARAM_INT);
+          $dbr->execute();
+          $i=0;
+          while($row = $dbr->fetch())
+           {
+            $images[$i]['id'] = $row['id'];
+            $images[$i]['filename'] = $row['filename'];
+            if($settings['data_images_permission_check'])
+             {
+              $images[$i]['thumbnail_url'] = BASE_URL.'?r=data_image.thumbnail&file='.$row['filename'];
+              $images[$i]['image_url'] = BASE_URL.'?r=data_image.image&file='.$row['filename'];
+             }
+            else
+             {
+              $images[$i]['thumbnail_url'] = DATA_THUMBNAILS_URL.$row['filename'];
+              $images[$i]['image_url'] = DATA_IMAGES_URL.$row['filename'];
+             }
+            $images[$i]['thumbnail_width'] = intval($row['thumbnail_width']);
+            $images[$i]['thumbnail_height'] = intval($row['thumbnail_height']);
+            $images[$i]['title'] = htmlspecialchars($row['title']);
+            $images[$i]['description'] = htmlspecialchars($row['description']);
+            if($row['author']) $images[$i]['author'] = str_replace('[author]', htmlspecialchars($row['author']), $lang['gallery_image_author_declaration']);
+            else $images[$i]['author'] = '';
+            ++$i;
+           }
+          // enable images if there are images or if user is allowed to add images:
+          if($i || $granted_permissions['write'])
+           {
+            $lang['item_images'] = str_replace('[number]', $i, $lang['item_images']);
+            $template->assign('number_of_images', $i); 
+            $template->assign('item_images', true);
+           }
+          // assign images and requirements:
+          if(isset($images))
+           {
+            $template->assign('images', $images);    
+            $javascripts[] = LIGHTBOX;
+            if($granted_permissions['write'])
+             {
+              $javascripts[] = JQUERY_UI;
+              $javascripts[] = JQUERY_UI_HANDLER;
+             }
+           }
+         }
         
         $template->assign('item_exists', true);
         $template->assign('item_data', $item_data);
@@ -362,18 +418,16 @@ if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permis
     $template->assign('max_scale', intval($table_info['table']['max_scale']));
     $template->assign('auxiliary_layer_1', intval($table_info['table']['auxiliary_layer_1']));
     $template->assign('auxiliary_layer_1_title', htmlspecialchars($table_info['table']['auxiliary_layer_1_title']));
+    if($table_info['table']['auxiliary_layer_1_stef']) $template->assign('auxiliary_layer_1_redraw', true);
 
-    #$javascripts[] = JQUERY_UI;
-    if(isset($maps))
+    if(isset($maps) && empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map']))
      {
       $template->assign('maps', $maps);
       $javascripts[] = OPENLAYERS;
       $javascripts[] = OPENLAYERS_DATA_ITEM;
       if(isset($attached_data_spatial)||isset($related_data_spatial)) $javascripts[] = OPENLAYERS_DATA_ITEM_ATTACHED;
       $stylesheets[] = OPENLAYERS_CSS;
-     } 
-    
-    #$javascripts[] = MY_TABS;
+     }
     
     if(isset($basemaps)) $template->assign('basemaps', $basemaps);
     if($table_info['table']['type']==1) $template->assign('help', 'data_item_spatial');

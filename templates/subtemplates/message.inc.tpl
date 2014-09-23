@@ -9,7 +9,7 @@
 <strong><?php if(isset($lang[$failure])) echo $lang[$failure]; else echo $lang['failure_message']; ?></strong>
 </div>
 <?php elseif(isset($errors)): ?>
-<div class="alert alert-danger">
+<div class="alert alert-danger alert-error">
 <h3><span class="glyphicon glyphicon-warning-sign"></span> <?php echo $lang['error']; ?></h3>
 <ul><?php
 foreach($errors as $error): ?>

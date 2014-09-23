@@ -13,7 +13,7 @@ $('[data-sortable]').sortable({ start : function(e, ui) { ui.item.addClass("warn
                           stop : function(e, ui) { ui.item.removeClass("warning"); },
                           update : function () { var request = $(this).data('sortable');
                                                  var order = $(this).sortable('serialize');
-                                                 $.ajax({ url:request, data:order }); },
+                                                 $.ajax({ url:request, type:"POST", data:order }); },
                           containment : "parent",
                           tolerance : "pointer",
                           helper : function(e, ui) { ui.children().each(function() { $(this).width($(this).width()); }); return ui; },
@@ -21,10 +21,10 @@ $('[data-sortable]').sortable({ start : function(e, ui) { ui.item.addClass("warn
                           handle:".sortable_handle" }).disableSelection();
 
 
-$(".gallery").css("min-height", $(".gallery").height()+"px");
-$(".gallery").sortable({ update : function () { var order = $(".gallery").sortable("serialize");
-                                                 $.ajax({ url: baseURL,
-                                                          data:"r=page.reorder_photos&"+order }); },
+$("[data-gallery-sortable]").css("min-height", $("[data-gallery-sortable]").height()+"px");
+$("[data-gallery-sortable]").sortable({ update : function () { var request = $(this).data('gallery-sortable');
+                                                               var order = $(this).sortable("serialize");
+                                                               $.ajax({ url:request, type:"POST", data:order }); },
                          forceHelperSize: true,
                          forcePlaceholderSize: true,                                
                          containment : "parent",

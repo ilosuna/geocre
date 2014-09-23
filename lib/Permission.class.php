@@ -50,9 +50,13 @@ class Permission
 
   public function granted($type, $item=0, $level=0)
    {
+
     if(isset($this->permissions[self::ADMIN])) return true; // admin has always permission
     if(isset($this->permissions[$type][$item]) && $this->permissions[$type][$item]>=$level) return true;
     return false;
+   
+    
+   
    }
   
   public function get_list($type=false)

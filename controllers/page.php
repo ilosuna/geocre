@@ -398,7 +398,8 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
             if(isset($cleared_tv_array)) $tv = implode(',', $cleared_tv_array);
             else $tv = NULL;
            }
- 
+          else $tv = NULL;
+          
           // chacke data:
           if(empty($title)) $errors[] = 'error_no_title_empty';
           if(empty($identifier)) $errors[] = 'error_no_identifier';
@@ -572,7 +573,7 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
 		       }
 		      $dbr->execute(); 
 		      // delete old teaser image:
-		      if($old_teaser_image) @unlink(BASE_PATH.PROJECT_TEASER_IMAGES_DIR.$old_teaser_image);
+		      if($old_teaser_image) @unlink(PAGE_TEASER_IMAGES_PATH.$old_teaser_image);
 		     }
 		    // update project image: 
 		    if($page_image || $delete_page_image)
@@ -593,7 +594,7 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
 		       }
 		      $dbr->execute(); 
 		      // delete old teaser image:
-		      if($old_page_image) @unlink(BASE_PATH.page_imageS_DIR.$old_page_image);
+		      if($old_page_image) @unlink(PAGE_IMAGES_PATH.$old_page_image);
 		     }
 
 		  
@@ -772,10 +773,7 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
               //$photo->resize(new Imagine\Image\Box($settings['project_photo_width'], $settings['project_photo_height']))->save(BASE_PATH.PAGE_PHOTOS_DIR.$photo_info['filename'], $photo_options);
               // create thumbnail:
               $thumbnail_options = array('quality' => $settings['project_thumbnail_quality']);
-        
-              #if($upload_info[1]>$upload_info[0]) $thumbnail_size = new Imagine\Image\Box($settings['project_thumbnail_height'], $settings['project_thumbnail_width']);
               $thumbnail_size = new Imagine\Image\Box($settings['project_thumbnail_width'], $settings['project_thumbnail_height']);
-        
               $thumbnail_mode = Imagine\Image\ImageInterface::THUMBNAIL_INSET;
               $photo->thumbnail($thumbnail_size, $thumbnail_mode)->save(PAGE_THUMBNAILS_PATH.$photo_info['filename'], $thumbnail_options); 
               $saved_photo_info = getimagesize(PAGE_PHOTOS_PATH.$photo_info['filename']);

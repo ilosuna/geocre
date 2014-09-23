@@ -1,7 +1,7 @@
 <?php
 if(!defined('IN_INDEX')) exit;
 
-if($permission->granted(Permission::ADMIN) && $settings['backup_path'] && $db_settings['superuser'] && $db_settings['superuser_password'])
+if($permission->granted(Permission::ADMIN) && $db_settings['backup_path'] && $db_settings['superuser'] && $db_settings['superuser_password'])
  {
   if(isset($_GET['success'])) $template->assign('success', $_GET['success']);
   if(isset($_GET['failure'])) $template->assign('failure', $_GET['failure']);  
@@ -9,7 +9,7 @@ if($permission->granted(Permission::ADMIN) && $settings['backup_path'] && $db_se
   switch($action)
    {
     case 'default':
-     $handle=opendir($settings['backup_path']);
+     $handle=opendir($db_settings['backup_path']);
      while($file = readdir($handle))
       {
        if(preg_match('/\.backup$/i', $file) || preg_match('/\.tgz$/i', $file))
@@ -26,8 +26,8 @@ if($permission->granted(Permission::ADMIN) && $settings['backup_path'] && $db_se
         {
          $backup_files[$i]['name'] = $backup_file;
          $backup_files[$i]['type'] = preg_match('/\.db\.backup$/i', $backup_file) ? 'database' : 'files';
-         $backup_files[$i]['date'] = strftime($lang['time_format'], filemtime($settings['backup_path'].$backup_file));
-         $backup_files[$i]['size'] = number_format(filesize($settings['backup_path'].$backup_file)/pow(1024, 2),2);         
+         $backup_files[$i]['date'] = strftime($lang['time_format'], filemtime($db_settings['backup_path'].$backup_file));
+         $backup_files[$i]['size'] = number_format(filesize($db_settings['backup_path'].$backup_file)/pow(1024, 2),2);         
          $i++;
         }
        $template->assign('backup_files', $backup_files);
@@ -38,7 +38,7 @@ if($permission->granted(Permission::ADMIN) && $settings['backup_path'] && $db_se
      break;
    
     case 'create_db_backup':
-     $file = $settings['backup_path'] . 'backup.'.date('YmdHis').'.'.uniqid().'.db.backup';
+     $file = $db_settings['backup_path'] . 'backup.'.date('YmdHis').'.'.uniqid().'.db.backup';
      #echo 'pg_dump -Fc -h '.$db_settings['host'].' -p '.$db_settings['port'].' '.$db_settings['database'].' > '.$file;
      #exit;
      exec('export PGPASSWORD="'.$db_settings['superuser_password'].'" && export PGUSER="'.$db_settings['superuser'].'" && pg_dump -Fc -h '.$db_settings['host'].' -p '.$db_settings['port'].' --role '.$db_settings['user'].' '.$db_settings['database'].' > '.$file.' && unset PGPASSWORD && unset PGUSER');
@@ -47,7 +47,7 @@ if($permission->granted(Permission::ADMIN) && $settings['backup_path'] && $db_se
      break;
 
     case 'create_file_backup':
-     $file = $settings['backup_path'] . 'backup.'.date('YmdHis').'.'.uniqid().'.files.tgz';
+     $file = $db_settings['backup_path'] . 'backup.'.date('YmdHis').'.'.uniqid().'.files.tgz';
      #echo 'pg_dump -Fc -h '.$db_settings['host'].' -p '.$db_settings['port'].' '.$db_settings['database'].' > '.$file;
      #exit;
      exec('cd '.FILES_PATH.' && tar czf '.$file .' *');
@@ -57,7 +57,7 @@ if($permission->granted(Permission::ADMIN) && $settings['backup_path'] && $db_se
 
 
     case 'restore':
-     if(isset($_GET['file']) && (preg_match('/\.db\.backup$/i', $_GET['file']) || preg_match('/\.files\.tgz$/i', $_GET['file'])) && file_exists($settings['backup_path'].$_GET['file']))
+     if(isset($_GET['file']) && (preg_match('/\.db\.backup$/i', $_GET['file']) || preg_match('/\.files\.tgz$/i', $_GET['file'])) && file_exists($db_settings['backup_path'].$_GET['file']))
       {
        $backup['file'] = htmlspecialchars($_GET['file']);    
        if(preg_match('/\.db\.backup$/i', $_GET['file']))
@@ -70,8 +70,8 @@ if($permission->granted(Permission::ADMIN) && $settings['backup_path'] && $db_se
          $backup['type'] = 'files';
          $template->assign('subtitle', $lang['backup_files_restore_title']);
         }
-       $backup['date'] = strftime($lang['time_format'], filemtime($settings['backup_path'].$_GET['file']));
-       $backup['size'] = number_format(filesize($settings['backup_path'].$_GET['file'])/pow(1024, 2),2);         
+       $backup['date'] = strftime($lang['time_format'], filemtime($db_settings['backup_path'].$_GET['file']));
+       $backup['size'] = number_format(filesize($db_settings['backup_path'].$_GET['file'])/pow(1024, 2),2);         
        $template->assign('backup', $backup);
        
        $template->assign('subtemplate', 'backup.restore.inc.tpl');           
@@ -79,19 +79,19 @@ if($permission->granted(Permission::ADMIN) && $settings['backup_path'] && $db_se
      break;
 
     case 'delete':
-     if(isset($_GET['file']) && file_exists($settings['backup_path'].$_GET['file']) && isset($_GET['confirmed']))
+     if(isset($_GET['file']) && file_exists($db_settings['backup_path'].$_GET['file']) && isset($_GET['confirmed']))
       {
-       @unlink($settings['backup_path'].$_GET['file']);         
+       @unlink($db_settings['backup_path'].$_GET['file']);         
        header('Location: '.BASE_URL.'?r=backup');
        exit;
       }
      break;
 
     case 'download':
-     if(isset($_GET['file']) && file_exists($settings['backup_path'].$_GET['file']))
+     if(isset($_GET['file']) && file_exists($db_settings['backup_path'].$_GET['file']))
       {
-       $len = filesize($settings['backup_path'].$_GET['file']);
-       $fh = @fopen($settings['backup_path'].$_GET['file'], "r");
+       $len = filesize($db_settings['backup_path'].$_GET['file']);
+       $fh = @fopen($db_settings['backup_path'].$_GET['file'], "r");
        if(!$fh) return false;
        $data = fread($fh, $len);
        fclose($fh);
@@ -118,14 +118,14 @@ if($permission->granted(Permission::ADMIN) && $settings['backup_path'] && $db_se
         {
          if(preg_match('/\.db\.backup$/i', $_POST['file']))
           {
-           $file = $settings['backup_path'].escapeshellcmd($_POST['file']);
+           $file = $db_settings['backup_path'].escapeshellcmd($_POST['file']);
            exec('export PGPASSWORD="'.$db_settings['superuser_password'].'" && export PGUSER="'.$db_settings['superuser'].'" && pg_restore -c -h '.$db_settings['host'].' -p '.$db_settings['port'].' -d '.$db_settings['database'].' --role '.$db_settings['user'].' '.$file.' && unset PGPASSWORD && unset PGUSER');
            header('Location: '.BASE_URL.'?r=backup&success=backup_restored');
            exit;
           }
          elseif(preg_match('/\.files\.tgz$/i', $_POST['file']))
           {
-           $file = $settings['backup_path'].escapeshellcmd($_POST['file']);
+           $file = $db_settings['backup_path'].escapeshellcmd($_POST['file']);
            #echo 'tar -C '.FILES_PATH.' -xvf '.$file;
            #exit;
            exec('tar -C '.FILES_PATH.' -xvf '.$file);

@@ -234,6 +234,11 @@ if($permission->granted(Permission::USERS_GROUPS))
        $type = isset($_POST['type']) ? intval($_POST['type']) : 0;
        $item = isset($_POST['item']) ? intval($_POST['item']) : 0;
        $level = isset($_POST['level']) ? intval($_POST['level']) : 0;
+       if($type!=Permission::DATA_ACCESS) // only DATA_ACCESS type has items and levels
+        {
+         $item = 0; 
+         $level = 0;
+        }
        $dbr = Database::$connection->prepare("INSERT INTO ".Database::$db_settings['group_permissions_table']." (\"group\", type, item, level) VALUES (:group, :type, :item, :level)");
        $dbr->bindParam(':group', $group, PDO::PARAM_INT);
        $dbr->bindParam(':type', $type, PDO::PARAM_INT);

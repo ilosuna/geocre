@@ -139,16 +139,14 @@
 <li><label for="type_6" class="mainlabel"><input id="type_6" type="radio" name="type" value="<?php echo Permission::PHOTOS; ?>"> <span><?php echo $lang['group_permission_type'][Permission::PHOTOS]; ?></span></label>
 <div class="permission_details alert alert-info">
 <span class="description"><?php echo $lang['group_permission_description'][Permission::PHOTOS]; ?></span><br />
-
 <input id="level_50_0" type="radio" name="level" value="<?php echo Permission::READ; ?>" /> <label for="level_50_0"><?php echo $lang['group_permission_level'][Permission::PHOTOS][Permission::READ]; ?></label><br />
 <input id="level_50_1" type="radio" name="level" value="<?php echo Permission::WRITE; ?>" /> <label for="level_50_1"><?php echo $lang['group_permission_level'][Permission::PHOTOS][Permission::WRITE]; ?></label><br />
 <input id="level_50_2" type="radio" name="level" value="<?php echo Permission::MANAGE; ?>" /> <label for="level_50_2"><?php echo $lang['group_permission_level'][Permission::PHOTOS][Permission::MANAGE]; ?></label>
-
 <p><button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-plus"></span> <?php echo $lang['group_add_permission_submit']; ?></button></p>
-
 </div>
 </li>
 */ ?>
+
 </ul>
 </div>
 </form>

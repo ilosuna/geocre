@@ -114,7 +114,7 @@ switch($action)
         }
       }
      
-     // send notifications to admins  and user admins:
+     // send notifications to admins and user admins:
      if($settings['register_notification'])
       {
        // get groups of admins and user admins:
@@ -139,18 +139,18 @@ switch($action)
          if($dbr->rowCount())
           {
            require(BASE_PATH.'lib/phpmailer/class.phpmailer.php');
-           $mail = new PHPMailer();
-           $mail->CharSet = $lang['charset'];
-           $mail->IsSMTP();
-           $mail->Host       = $settings['email_smtp_host'];
-           $mail->SMTPAuth   = true;
-           $mail->Port       = $settings['email_smtp_port'];
-           $mail->Username   = $settings['email_smtp_username'];
-           $mail->Password   = $settings['email_smtp_password'];
-           $mail->SetFrom($settings['email_address'], $settings['website_title']);
            $notification_mail_text = str_replace('[email]', $email, str_replace('[user]', $name, $lang['register_user_notification_mail_text']));
            foreach($dbr as $row)
             {
+             $mail = new PHPMailer();
+             $mail->CharSet = $lang['charset'];
+             $mail->IsSMTP();
+             $mail->Host       = $settings['email_smtp_host'];
+             $mail->SMTPAuth   = true;
+             $mail->Port       = $settings['email_smtp_port'];
+             $mail->Username   = $settings['email_smtp_username'];
+             $mail->Password   = $settings['email_smtp_password'];
+             $mail->SetFrom($settings['email_address'], $settings['website_title']);
              $mail->Subject = $lang['register_user_notification_subject'];
              $mail->Body = str_replace('[name]', $row['name'], $notification_mail_text);
              $mail->AddAddress($row['email']);

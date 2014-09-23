@@ -1,8 +1,8 @@
 <div class="row">
-<div class="col-sm-6">
+<div class="col-sm-10">
 <h1><?php echo $lang['dashboard_headline']; ?></h1>
 </div>
-<div class="col-sm-6">
+<div class="col-sm-2">
 <?php if(isset($help)): ?>
 <a class="btn btn-default btn-top-right" href="index.php?r=help.<?php echo $help; ?>" data-toggle="modal" data-target="#modal_help"><span class="glyphicon glyphicon-question-sign"></span> <?php echo $lang['help']; ?></a>
 <?php endif; ?>
@@ -13,7 +13,7 @@
 <?php include(BASE_PATH.'templates/subtemplates/message.inc.tpl'); ?>
 <?php endif; ?>
 
-<ul id="myTab" class="nav nav-tabs">
+<?php /*<ul id="myTab" class="nav nav-tabs">
 <li class="active"><a href="#data" data-toggle="tab"><?php echo $lang['data_label']; ?></a></li>
 <li><a href="#activity" data-toggle="tab"><?php echo $lang['activity_label']; ?></a></li>
 </ul>
@@ -21,6 +21,7 @@
 <div id="myTabContent" class="tab-content">
 
 <div class="tab-pane fade in active" id="data">
+*/ ?>
 
 <?php if(isset($data)): ?>
 <div class="table-responsive">
@@ -28,22 +29,34 @@
 <thead>
 <tr>
 <th><?php echo $lang['data_column_label']; ?></th>
-<th><?php echo $lang['project_column_label']; ?></th>
+<?php if(isset($projects)): ?><th><?php echo $lang['project_column_label']; ?></th><?php endif; ?>
 <th><?php echo $lang['data_type_column_label']; ?></th>
 <th><?php echo $lang['number_of_records_column_label']; ?></th>
 <th><?php echo $lang['editable_column_label']; ?></th>
-<th><!--<?php echo $lang['options_column_label']; ?>--></th>
+<th>&nbsp;</th>
 </tr>
 </thead>
 <tbody<?php if($permission['data_management']): ?> data-sortable="<?php echo BASE_URL; ?>?r=data_model.reorder_models"<?php endif; ?>>
 <?php foreach($data as $data_item): ?>
 <tr id="item_<?php echo $data_item['id']; ?>">
 <td><a class="<?php if($data_item['parent_table']): ?>data-child<?php else: ?>data-primary<?php endif; ?><?php if(!$data_item['available']): ?> data-unavailable<?php elseif($data_item['status']==0): ?> data-draft<?php endif; ?>" href="<?php echo BASE_URL; ?>?r=data&amp;data_id=<?php echo $data_item['id']; ?>"><?php echo $data_item['title']; ?></a></td>
-<td><?php echo $data_item['project']; ?></td>
+<?php if(isset($projects)): ?><td><?php echo $data_item['project']; ?></td><?php endif; ?>
 <td><span class="glyphicon <?php if($data_item['type']==1): ?>glyphicon-globe<?php else: ?>glyphicon-list<?php endif; ?>"></span> <?php echo $lang['db_table_type_label'][$data_item['type']]; ?></td>
 <td><?php echo $data_item['records']; ?></td>
 <td><?php if($data_item['edit']): ?><span class="glyphicon glyphicon-ok text-success" title="<?php echo $lang['yes']; ?>"></span><?php endif; ?></td>
-<td class="options"><a class="btn btn-primary btn-xs" href="<?php echo BASE_URL; ?>?r=download_data&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['download_data_link']; ?>"><span class="glyphicon glyphicon-cloud-download"></span></a>&nbsp; <a class="btn btn-primary btn-xs" href="<?php echo BASE_URL; ?>?r=download_sheet&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['download_sheet_link']; ?>"><span class="glyphicon glyphicon-list-alt"></span></a><?php if($data_item['manage']): ?>&nbsp; <a class="btn btn-primary btn-xs" href="<?php echo BASE_URL; ?>?r=data_model.edit_model&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['edit_data_model_link']; ?>"><span class="glyphicon glyphicon-wrench"></span></a><?php endif; ?><?php if($permission['data_management']): ?>&nbsp; <a class="btn btn-danger btn-xs" href="<?php echo BASE_URL; ?>?r=data_model.delete_model&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['delete_data_model_link']; ?>"><span class="glyphicon glyphicon-remove"></span></a>&nbsp; <span class="btn btn-success btn-xs sortable_handle" title="<?php echo $lang['drag_and_drop']; ?>"><span class="glyphicon glyphicon-sort"></span><?php endif; ?></td>
+<td class="options"><a class="btn btn-primary btn-xs" href="<?php echo BASE_URL; ?>?r=download_data&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['download_data_link']; ?>"><span class="glyphicon glyphicon-cloud-download"></span></a>&nbsp; <!--
+--><a class="btn btn-primary btn-xs" href="<?php echo BASE_URL; ?>?r=download_sheet&amp;id=<?php echo $data_item['id']; ?>" title="<?php echo $lang['download_sheet_link']; ?>"><span class="glyphicon glyphicon-file"></span></a><?php if($data_item['manage']): ?>&nbsp; <!--
+--><span class="dropdown"><a class="btn btn-danger btn-xs" title="<?php echo $lang['data_model_options_link']; ?>" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-cog"></span></a>
+<ul class="dropdown-menu pull-right" role="menu">
+<li><a href="<?php echo BASE_URL; ?>?r=data_model.edit_model&amp;id=<?php echo $data_item['id']; ?>"><span class="glyphicon glyphicon-wrench"></span> <?php echo $lang['data_model_properties_link']; ?></a></li>
+<li><a href="<?php echo BASE_URL; ?>?r=data&amp;data_id=<?php echo $data_item['id']; ?>#structure"><span class="glyphicon glyphicon-list"></span> <?php echo $lang['data_model_structure_link']; ?></a></li>  
+<?php if($permission['data_management']): ?>
+<li><a href="<?php echo BASE_URL; ?>?r=data_model.copy_model&amp;id=<?php echo $data_item['id']; ?>"><span class="glyphicon glyphicon-share-alt"></span> <?php echo $lang['copy_data_model_link']; ?></a></li>
+<li><a href="<?php echo BASE_URL; ?>?r=data_model.delete_model&amp;id=<?php echo $data_item['id']; ?>"><span class="glyphicon glyphicon-remove text-danger"></span> <?php echo $lang['delete_data_model_link']; ?></a></li>
+<?php endif; ?></ul>
+</span>
+<?php endif; ?>
+<?php if($permission['data_management']): ?>&nbsp;<span class="btn btn-success btn-xs sortable_handle" title="<?php echo $lang['drag_and_drop']; ?>"><span class="glyphicon glyphicon-sort"></span><?php endif; ?></td>
 </tr>
 <?php endforeach; ?>
 </tbody>
@@ -81,6 +94,8 @@
 <p><a class="btn btn-success" href="<?php echo BASE_URL; ?>?r=data_model.add_model"><span class="glyphicon glyphicon-plus"></span> <?php echo $lang['add_data_model_link']; ?></a>
 <?php if($settings['many_to_many_relationships']): ?> <a class="btn btn-default" href="<?php echo BASE_URL; ?>?r=data_relations" class="table_relations"><span class="glyphicon glyphicon-random"></span> <?php echo $lang['data_relations_link']; ?></a><?php endif; ?></p>
 <?php endif; ?>
+
+<?php /*
 
 </div>
 
@@ -152,4 +167,4 @@
 </div>
 </div>
 
-</div>
+</div>*/ ?>

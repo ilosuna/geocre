@@ -1,29 +1,34 @@
 <?php
-$column_types[0]['type'] = '';
-$column_types[0]['label'] = '';
+$column_types[CHARACTER_VARYING]['id'] = CHARACTER_VARYING;
+$column_types[CHARACTER_VARYING]['type'] = 'character varying';
+$column_types[CHARACTER_VARYING]['label'] = 'Short text (character varying)';
+$column_types[CHARACTER_VARYING]['length'] = true;
 
-$column_types[1]['type'] = 'character varying';
-$column_types[1]['label'] = 'Short text (character varying)';
-$column_types[1]['length'] = true;
+$column_types[INTEGER]['id'] = INTEGER;
+$column_types[INTEGER]['type'] = 'integer';
+$column_types[INTEGER]['label'] = 'Integer (integer)';
 
-$column_types[2]['type'] = 'integer';
-$column_types[2]['label'] = 'Integer (integer)';
+$column_types[SMALLINT]['id'] = SMALLINT;
+$column_types[SMALLINT]['type'] = 'smallint';
+$column_types[SMALLINT]['label'] = 'Small integer (smallint)';
 
-$column_types[3]['type'] = 'smallint';
-$column_types[3]['label'] = 'Small integer (smallint)';
+$column_types[NUMERIC]['type'] = NUMERIC;
+$column_types[NUMERIC]['type'] = 'numeric';
+$column_types[NUMERIC]['label'] = 'Floating point number (numeric)';
 
-$column_types[4]['type'] = 'double precision';
-$column_types[4]['label'] = 'Floating point number (double precision)';
+$column_types[TEXT]['id'] = TEXT;
+$column_types[TEXT]['type'] = 'text';
+$column_types[TEXT]['label'] = 'Text (text)';
 
-$column_types[5]['type'] = 'text';
-$column_types[5]['label'] = 'Text (text)';
+$column_types[BOOLEAN]['id'] = BOOLEAN;
+$column_types[BOOLEAN]['type'] = 'boolean';
+$column_types[BOOLEAN]['label'] = 'True/false (boolean)';
 
-$column_types[6]['type'] = 'boolean';
-$column_types[6]['label'] = 'True/false (boolean)';
+$column_types[DATE]['id'] = DATE;
+$column_types[DATE]['type'] = 'date';
+$column_types[DATE]['label'] = 'Date (date)';
 
-$column_types[7]['type'] = 'date';
-$column_types[7]['label'] = 'Date (date)';
-
-$column_types[8]['type'] = 'time';
-$column_types[8]['label'] = 'Time (time)';
+$column_types[TIME]['id'] = TIME;
+$column_types[TIME]['type'] = 'time';
+$column_types[TIME]['label'] = 'Time (time)';
 ?>
