@@ -18,7 +18,7 @@ define('OPENLAYERS_DRAW', STATIC_URL.'js/ol_draw.js');
 
 define('LIGHTBOX', STATIC_URL.'js/mylightbox.js');
 
-define('WYSIWYG_EDITOR', '//tinymce.cachefly.net/4.0/tinymce.min.js');
+define('WYSIWYG_EDITOR', '//tinymce.cachefly.net/4.1/tinymce.min.js');
 
 define('IMAGES_DIR', 'images/');
 define('VALID_URL_CHARACTERS', '/^[a-z0-9._\-\/]+$/');

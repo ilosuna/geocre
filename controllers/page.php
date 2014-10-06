@@ -280,8 +280,18 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
          $template->assign('subtemplate', 'page.edit.inc.tpl');        
          $javascripts[] = JQUERY_UI;
          $javascripts[] = JQUERY_UI_HANDLER;
-         #$javascripts[] = WYSIWYG_EDITOR;
-         #$javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';             
+
+         if(empty($_REQUEST['disable_wysiwyg']))
+          {
+           $template->assign('wysiwyg', true);
+           $javascripts[] = WYSIWYG_EDITOR;
+           $javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';          
+          }
+         else
+          {
+           $template->assign('wysiwyg', false);
+          }
+           
         break;
     case 'edit':
         if(isset($_GET['id']) && $permission->granted(Permission::PAGE_MANAGEMENT))
@@ -331,9 +341,18 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
             $template->assign('subtemplate', 'page.edit.inc.tpl');        
             //$javascripts[] = JQUERY_UI;
             //$javascripts[] = JQUERY_UI_HANDLER;
-            #$javascripts[] = WYSIWYG_EDITOR;
-            #$javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';          
-          
+            
+            if(empty($_REQUEST['disable_wysiwyg']))
+             {
+              $template->assign('wysiwyg', true);
+              $javascripts[] = WYSIWYG_EDITOR;
+              $javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';          
+             }
+            else
+             {
+              $template->assign('wysiwyg', false);
+             }
+             
             // parent pages:
             $dbr = Database::$connection->prepare("SELECT id, title FROM ".$db_settings['pages_table']." WHERE id!=:id ORDER BY sequence ASC");
             $dbr->bindParam(':id', $row['id'], PDO::PARAM_INT);
@@ -401,7 +420,7 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
           else $tv = NULL;
           
           // chacke data:
-          if(empty($title)) $errors[] = 'error_no_title_empty';
+          if(empty($title)) $errors[] = 'error_no_title';
           if(empty($identifier)) $errors[] = 'error_no_identifier';
           elseif(!preg_match(VALID_URL_CHARACTERS, $identifier)) $errors[] = 'error_page_identifier_invalid';
           else
@@ -605,16 +624,28 @@ if($action == 'add' || $action == 'edit' || $action == 'edit_submit')
            {
             foreach($_POST as $key=>$val)
              {
-              $project[$key] = htmlspecialchars($val);
+              $page[$key] = htmlspecialchars($val);
              }
+            $template->assign('page', $page);
+
             $template->assign('project', $project);
             $template->assign('errors', $errors);
             $template->assign('subtitle', $lang['page_edit_subtitle']);
             $template->assign('subtemplate', 'page.edit.inc.tpl');        
             $javascripts[] = JQUERY_UI;
             $javascripts[] = JQUERY_UI_HANDLER;
-            $javascripts[] = WYSIWYG_EDITOR;
-            $javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';    
+
+            if(empty($_REQUEST['disable_wysiwyg']))
+             {
+              $template->assign('wysiwyg', true);
+              $javascripts[] = WYSIWYG_EDITOR;
+              $javascripts[] = STATIC_URL.'js/edit_page_wysiwyg_init.js';          
+             }
+            else
+             {
+              $template->assign('wysiwyg', false);
+             }
+   
            } 
          }
         break;  

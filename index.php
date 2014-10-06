@@ -4,7 +4,7 @@
  *
  * @author Mark Hoschek <mail at mark-hoschek dot de>
  * @copyright 2014 Mark Hoschek, Department of Physical Geography, University of Freiburg, Germany
- * @version 2014-09-23-1
+ * @version 2014-10-06-1
  * @link http://geocre.net/
  */
 
@@ -238,11 +238,11 @@ $dbr->execute();
 $i=0;
 while($row = $dbr->fetch()) 
  {
-  $menu[$i]['page'] = $row['identifier'];
-  $menu[$i]['label'] = $row['menu'];
+  $page_menu[$i]['page'] = $row['identifier'];
+  $page_menu[$i]['label'] = $row['menu'];
   ++$i;
  }
-if(isset($menu)) $template->assign('menu', $menu);
+if(isset($page_menu)) $template->assign('menu', $page_menu);
 
 
 // display template:

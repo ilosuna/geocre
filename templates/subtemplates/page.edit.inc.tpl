@@ -22,8 +22,7 @@
 <form action="index.php" method="post" enctype="multipart/form-data">
 <div>
 <input type="hidden" name="r" value="page.edit_submit" />
-<?php
-if(isset($page['id'])): ?>
+<?php if(isset($page['id'])): ?>
 <input type="hidden" name="id" value="<?php echo $page['id']; ?>" />
 <?php endif; ?>
 
@@ -53,6 +52,13 @@ if(isset($page['id'])): ?>
 
 <div class="form-group">
 <label for="content"><strong><?php echo $lang['page_content_label']; ?></strong></label>
+
+<?php if($wysiwyg): ?>
+<a class="btn btn-default btn-xs active pull-right" href="<?php echo BASE_URL; ?><?php if(isset($page['id'])): ?>?r=page.edit&id=<?php echo $page['id']; ?><?php else: ?>?r=page.add<?php endif; ?>&disable_wysiwyg=true" title="<?php echo $lang['wysiwyg_disable_title']; ?>" data-confirm="<?php echo rawurlencode($lang['wysiwyg_toogle_message']); ?>"><?php echo $lang['wysiwyg_label']; ?></a>
+<?php else: ?>
+<a class="btn btn-default btn-xs pull-right" href="<?php echo BASE_URL; ?><?php if(isset($page['id'])): ?>?r=page.edit&id=<?php echo $page['id']; ?><?php else: ?>?r=page.add<?php endif; ?>" title="<?php echo $lang['wysiwyg_enable_title']; ?>" data-confirm="<?php echo rawurlencode($lang['wysiwyg_toogle_message']); ?>"><?php echo $lang['wysiwyg_label']; ?></a>
+<?php endif; ?>
+
 <textarea id="content" class="form-control wysiwyg" name="content" rows="20"><?php if(isset($page['content'])) echo $page['content']; ?></textarea>
 </div>
 
