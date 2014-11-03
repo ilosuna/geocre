@@ -13,11 +13,10 @@
 <?php endif; ?>
 
 <?php if(isset($page['page_image'])): ?>
-<div class="media">
-<img class="media-object thumbnail pull-left" src="<?php echo PAGE_IMAGES_URL.$page['page_image']['file']; ?>" width="<?php echo $page['page_image']['width']; ?>" height="<?php echo $page['page_image']['height']; ?>" alt="<?php if($page['page_image']['caption']): ?><?php echo $page['page_image']['caption']; ?><?php endif; ?>" />
+<img class="page-image thumbnail pull-left" src="<?php echo PAGE_IMAGES_URL.$page['page_image']['file']; ?>" width="<?php echo $page['page_image']['width']; ?>" height="<?php echo $page['page_image']['height']; ?>" alt="<?php if($page['page_image']['caption']): ?><?php echo $page['page_image']['caption']; ?><?php endif; ?>" />
 <?php if($page['page_image']['caption']): ?><p class="caption"><?php echo $page['page_image']['caption']; ?></p><?php endif; ?>
 <?php echo $page['content']; ?>
-</div>
+
 <?php else: ?>
 <?php echo $page['content']; ?>
 <?php endif; ?>

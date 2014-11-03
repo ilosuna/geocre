@@ -15,6 +15,8 @@ footer li { padding:0 !important; }
 footer li:after { content:"\00a0\00a0|\00a0\00a0"; color:#ccc; }
 footer li:last-child:after { content:none; }
 
+.page-image { margin:0 15px 10px 0; }
+
 .table .key { width:25%; }
 .table .description { font-size:13px; color:#808080; }
 .table thead tr { white-space:nowrap; }
@@ -40,11 +42,6 @@ tr.alter { background:#f9f9f9; }
 table pre {  }
 
 .navbar-brand { font-weight:bold; background:url(../img/geocre_logo_small.png) no-repeat 15px center; padding-left:47px; height:inherit; }
-
-/* BS 3.2.0 fix: */
-.navbar-inverse a { color:#999 !important; }
-.navbar-inverse a:hover { color:#fff !important; }
-.navbar-inverse .dropdown-menu a { color:#333 !important; }
 
 .carousel { border-radius:10px; box-shadow:3px 3px 10px #ddd; }
 .carousel-about { background:url(../img/carousel_about_bg.jpg) no-repeat top center; background-size: 100% auto; }
@@ -73,9 +70,10 @@ table pre {  }
  }
 
 
+.teaser { margin-bottom:25px;  }
 .teaser p { margin:0; padding:0; }
 .teaser .supertitle { font-size:13px; color:#808080; margin:0; padding:0; }
-.teaser h2 { font-size:26px; margin:0; padding:0; }
+.teaser h2 { font-size:26px; margin:0 0 15px 0; padding:0; }
 .teaser h2 a { color:#333; }
 .teaser .thumbnail { margin:0 10px 7px 0px; }
 
@@ -84,7 +82,6 @@ table pre {  }
 .thumbnail       { margin-bottom:2px !important; } 
 .thumbnail-noborder { border:none !important; } 
 .thumbnail img   { max-width:100%; }
-
 
 .news             { margin:15px 0 20px 0; }
 .news .supertitle { font-size:13px; color:#777; margin:0; }

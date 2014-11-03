@@ -501,12 +501,10 @@ $lang['page_add_image_label'] =            'Add project image:';
 $lang['page_replace_image_label'] =        'Replace project image:';
 $lang['page_image_caption_label'] =        'Project image caption:';
 $lang['page_content_label'] =              'Content:';
-
 $lang['wysiwyg_label'] =                   'WYSIWYG';
 $lang['wysiwyg_enable_title'] =            'Enable WYSIWYG editor';
 $lang['wysiwyg_disable_title'] =           'Disable WYSIWYG editor';
 $lang['wysiwyg_toogle_message'] =          'Caution, modified content will be lost when toggling WYSIWYG mode!';
-
 $lang['no_pages_available'] =              'No pages available.';
 $lang['delete_project_message'] =          'Do you really want to delete this project?';
 $lang['page_teaser_supertitle_label'] =    'Supertitle:';

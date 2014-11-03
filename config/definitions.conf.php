@@ -6,8 +6,8 @@ define('JQUERY_UI_CSS', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/
 define('JQUERY_UI_HANDLER', STATIC_URL.'js/jquery_ui_handler.js');
 define('JQUERY_COOKIE', STATIC_URL.'js/jquery.cookie.min.js');
 
-define('BOOTSTRAP', '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js');
-define('BOOTSTRAP_CSS', '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css');
+define('BOOTSTRAP', '//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js');
+define('BOOTSTRAP_CSS', '//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css');
 
 define('OPENLAYERS', '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js');
 define('OPENLAYERS_CSS', '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/theme/default/style.css');
