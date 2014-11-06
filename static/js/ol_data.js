@@ -1,5 +1,5 @@
 var projData = new OpenLayers.Projection("EPSG:4326");
-var projDisplay = new OpenLayers.Projection("EPSG:900913");
+var projDisplay = new OpenLayers.Projection("EPSG:3857");
 var featuresStyle = new OpenLayers.StyleMap({
 "default": new OpenLayers.Style({
 pointRadius: 5,

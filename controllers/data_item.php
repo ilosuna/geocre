@@ -416,6 +416,7 @@ if(isset($_GET['data_id']) && isset($_GET['id']) && ($permission->granted(Permis
     $template->assign('subtitle', $lang['data_item_details_title']);
     $template->assign('min_scale', intval($table_info['table']['min_scale']));
     $template->assign('max_scale', intval($table_info['table']['max_scale']));
+    $template->assign('max_resolution', floatval($table_info['table']['max_resolution']));
     $template->assign('auxiliary_layer_1', intval($table_info['table']['auxiliary_layer_1']));
     $template->assign('auxiliary_layer_1_title', htmlspecialchars($table_info['table']['auxiliary_layer_1_title']));
     if($table_info['table']['auxiliary_layer_1_stef']) $template->assign('auxiliary_layer_1_redraw', true);

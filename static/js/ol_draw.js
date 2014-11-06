@@ -1,5 +1,5 @@
 var projData = new OpenLayers.Projection("EPSG:4326");
-var projDisplay = new OpenLayers.Projection("EPSG:900913");
+var projDisplay = new OpenLayers.Projection("EPSG:3857");
 var vectorLayerStyle = new OpenLayers.StyleMap({
                 "default": new OpenLayers.Style({
                     externalGraphic: staticURL+"img/marker_edit_large.png",
@@ -76,8 +76,7 @@ labelOutlineWidth: 4
 
 var wkt = document.getElementById("_wkt").value;
 
-var map = new OpenLayers.Map("mapcontainer", { projection: projDisplay, controls:[new OpenLayers.Control.Zoom(), new OpenLayers.Control.ScaleLine()]});
-
+var map = new OpenLayers.Map("mapcontainer", { projection: projDisplay, controls:[new OpenLayers.Control.Zoom(), new OpenLayers.Control.ScaleLine()] });
 
 vectorLayer = new OpenLayers.Layer.Vector("Feature Layer", { styleMap: vectorLayerStyle });
 map.addLayer(vectorLayer);
@@ -109,17 +108,6 @@ map.addControl(new OpenLayers.Control.MousePosition({ displayProjection:projData
                                                     }));
 
 vectorLayer.events.on({"featuremodified":updateForm, "featureadded":addReady});
-
-
-
-
-
-
-
-
-
-
-
 
 OpenLayers.Event.observe(document, "keydown", function(evt) {
     var handled = false;

@@ -33,6 +33,12 @@ if(isset($_SESSION[$settings['session_prefix'].'auth']) && $settings['feedback']
       $row = $dbr->fetch();
       if(isset($row['id']))
        {
+        // set default language if user uses a different one:
+        if(isset($_SESSION[$settings['session_prefix'].'language']) && $_SESSION[$settings['session_prefix'].'language']!=$settings['language'])
+         {
+          require(BASE_PATH.'lang/'.$settings['language'].'.lang.php');
+         } 
+        
         if(isset($_POST['help'])) $subject = $lang['feedback_subject_help'];
         else $subject = $lang['feedback_subject'];
       
@@ -75,6 +81,12 @@ if(isset($_SESSION[$settings['session_prefix'].'auth']) && $settings['feedback']
        
         if(isset($mail_error)) $errors[] = 'mail_error';
         else $template->assign('feedback_sent', true);
+       
+        // reset language:
+        if(isset($_SESSION[$settings['session_prefix'].'language']) && $_SESSION[$settings['session_prefix'].'language']!=$settings['language'] && file_exists(BASE_PATH.'lang/'.$_SESSION[$settings['session_prefix'].'language'].'.lang.php'))
+         {
+          require(BASE_PATH.'lang/'.$_SESSION[$settings['session_prefix'].'language'].'.lang.php');
+         } 
        
        }
       else

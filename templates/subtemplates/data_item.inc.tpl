@@ -198,6 +198,12 @@
 $js[] = 'var map = new OpenLayers.Map("mapcontainer", { projection:projDisplay, controls:[new OpenLayers.Control.Zoom(), new OpenLayers.Control.ScaleLine()] });';
 ?>
 
+<?php if($max_resolution): ?>
+<?php
+$js[] = 'map.setOptions({maxResolution:'.$max_resolution.'});';
+?>
+<?php endif; ?>
+
 <?php if(isset($basemaps[$table_id])): ?>
 <?php foreach($basemaps[$table_id] as $basemap): ?>
 <?php
@@ -260,18 +266,19 @@ var polygonFeature = new OpenLayers.Format.WKT({"internalProjection":projDisplay
 polygonFeature.attributes["id"] = '.$item_data['id'].';
 polygonFeature.attributes["featurelabel"] = "'.$fl.'";
 featureLayer.addFeatures([polygonFeature]);';
-
-if($spatial_item_data['geometry_type']=='POINT'): ?>
+?>
+<?php /*if($spatial_item_data['geometry_type']=='POINT'): ?>
 <?php
 $js[] = 'map.setCenter(featureLayer.getDataExtent().getCenterLonLat(),17);';
 ?>
 <?php else: ?>
 <?php
-$js[] = 'map.zoomToExtent(featureLayer.getDataExtent());
-//if(map.zoom > 17) map.zoomTo(17);';
+$js[] = 'map.zoomToExtent(featureLayer.getDataExtent());';
 ?>
-<?php endif; ?>
-
+<?php endif; */ ?>
+<?php
+$js[] = 'map.zoomToExtent(featureLayer.getDataExtent());';
+?>
 <?php endif; ?>
 
 <?php if(isset($attached_data) || isset($related_data) || isset($item_images)): ?>

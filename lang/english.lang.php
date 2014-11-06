@@ -270,8 +270,16 @@ $lang['db_table_geometry_required_input_label'] = 'Geometry required:';
 $lang['db_table_basemaps_label'] = 'Basemaps:';
 $lang['db_table_basemaps_defaut_label'] = '(default)';
 $lang['db_table_basemaps_description'] = 'if none is selected the defaut basemaps are used';
+
+$lang['db_table_default_latlon_input_label'] = 'Default latitude/longitude:';
+$lang['db_table_default_latlon_description'] = 'Default latitude/longitude (e.g. 47.99349 / 7.84507)';
+$lang['db_table_def_zoom_input_label'] = 'Default zoom level:';
+$lang['db_table_def_zoom_description'] = 'Default zoom level (e.g. 10)';
+
 $lang['db_table_scale_range_input_label'] = 'Scale range:';
 $lang['db_table_scale_range_description'] = 'minimum/maximum scale (e.g. 50000 / 0) to display the layer from middle to highest zoom level)';
+$lang['db_table_max_res_input_label'] = 'Maximum resolution:';
+$lang['db_table_max_res_description'] = 'The maximum resolution that can be zoomed to (e.g. 1000)';
 $lang['db_table_simp_tol_input_label'] = 'Geometry simplification tolerance:';
 $lang['db_table_simp_tol_description'] = 'Fixed simplification tolerance (e.g. 0.1)';
 $lang['db_table_simp_tol_sf_input_label'] = 'Geometry simplification tolerance/extent factor:';

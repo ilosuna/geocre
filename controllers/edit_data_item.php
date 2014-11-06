@@ -58,9 +58,9 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
      $template->assign('geometry_type', intval($table_info['table']['geometry_type']));
      $template->assign('latlong_entry', intval($table_info['table']['latlong_entry']));
      $template->assign('geometry_required', intval($table_info['table']['geometry_required']));
-     
-     $template->assign('min_scale', intval($table_info['table']['min_scale']));
-     $template->assign('max_scale', intval($table_info['table']['max_scale']));
+     $template->assign('min_scale', floatval($table_info['table']['min_scale']));
+     $template->assign('max_scale', floatval($table_info['table']['max_scale']));
+     $template->assign('max_resolution', floatval($table_info['table']['max_resolution']));
      $template->assign('auxiliary_layer_1', intval($table_info['table']['auxiliary_layer_1']));
      $template->assign('auxiliary_layer_1_title', htmlspecialchars($table_info['table']['auxiliary_layer_1_title']));
      if($table_info['table']['auxiliary_layer_1_stef']) $template->assign('auxiliary_layer_1_redraw', true);
@@ -201,8 +201,9 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
      $template->assign('geometry_type', intval($table_info['table']['geometry_type']));
      $template->assign('latlong_entry', intval($table_info['table']['latlong_entry']));
      $template->assign('geometry_required', intval($table_info['table']['geometry_required']));
-     $template->assign('min_scale', intval($table_info['table']['min_scale']));
-     $template->assign('max_scale', intval($table_info['table']['max_scale']));
+     $template->assign('min_scale', floatval($table_info['table']['min_scale']));
+     $template->assign('max_scale', floatval($table_info['table']['max_scale']));
+     $template->assign('max_resolution', floatval($table_info['table']['max_resolution']));
      $template->assign('auxiliary_layer_1', intval($table_info['table']['auxiliary_layer_1']));
      $template->assign('auxiliary_layer_1_title', htmlspecialchars($table_info['table']['auxiliary_layer_1_title']));
      if($table_info['table']['auxiliary_layer_1_stef']) $template->assign('auxiliary_layer_1_redraw', true);     
@@ -741,15 +742,15 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
          }
         
         $template->assign('data_item', $data_item);
-
         $template->assign('fk', $fk);
         $template->assign('table_data', $table_info['table']);
         $template->assign('data_type', $table_info['table']['type']);
         $template->assign('geometry_type', intval($table_info['table']['geometry_type']));
         $template->assign('latlong_entry', intval($table_info['table']['latlong_entry']));
         $template->assign('geometry_required', intval($table_info['table']['geometry_required']));
-        $template->assign('min_scale', intval($table_info['table']['min_scale']));
-        $template->assign('max_scale', intval($table_info['table']['max_scale']));
+        $template->assign('min_scale', floatval($table_info['table']['min_scale']));
+        $template->assign('max_scale', floatval($table_info['table']['max_scale']));
+        $template->assign('max_resolution', floatval($table_info['table']['max_resolution']));
         $template->assign('auxiliary_layer_1', intval($table_info['table']['auxiliary_layer_1']));
         $template->assign('auxiliary_layer_1_title', htmlspecialchars($table_info['table']['auxiliary_layer_1_title']));
         if($table_info['table']['auxiliary_layer_1_stef']) $template->assign('auxiliary_layer_1_redraw', true);

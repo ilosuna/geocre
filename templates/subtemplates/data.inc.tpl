@@ -390,7 +390,11 @@
 </div>
 
 <?php if($data_type==1 && empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map'])): /* spatial data - display map */ ?>
-
+<?php if($max_resolution): ?>
+<?php
+$js[] = 'map.setOptions({maxResolution:'.$max_resolution.'});';
+?>
+<?php endif; ?>
 <?php if(isset($basemaps)): ?>
 <?php foreach($basemaps as $basemap): ?>
 <?php
@@ -465,16 +469,19 @@ else document.getElementById("layerinactivenotice").style.display = "block";';
 ?>
 <?php if(isset($current_position)): ?>
 <?php $js[] = 'map.setCenter(new OpenLayers.LonLat('.$current_position['longitude'].','.$current_position['latitude'].'), '.$current_position['zoomlevel'].');'; ?>
+<?php elseif(isset($default_longitude) && isset($default_latitude) && isset($default_zoomlevel)): ?>
+<?php
+$js[] = 'map.setCenter(new OpenLayers.LonLat('.$default_longitude.','.$default_latitude.').transform(projData, projDisplay), '.$default_zoomlevel.');';
+?>
 <?php elseif($spatial_info['extent']): ?>
 <?php $js[] = 'extentLayer = new OpenLayers.Layer.Vector("Extent");
 var extent = new OpenLayers.Format.WKT({"internalProjection":projDisplay,"externalProjection":projData}).read("'.$spatial_info['extent'].'");
 extentLayer.addFeatures([extent]);
-map.zoomToExtent(extentLayer.getDataExtent());
-if(map.zoom > 17) map.zoomTo(17);'; ?>
+map.zoomToExtent(extentLayer.getDataExtent());'; ?>
 <?php else: ?>
-<?php $js[] = 'map.setCenter(new OpenLayers.LonLat('.$settings['default_longitude'].','.$settings['default_latitude'].').transform(projData, projDisplay), '.$settings['default_zoomlevel'].');'; ?>
+<?php
+$js[] = 'map.setCenter(new OpenLayers.LonLat('.$settings['default_longitude'].','.$settings['default_latitude'].').transform(projData, projDisplay), '.$settings['default_zoomlevel'].');'; ?>
 <?php endif; ?>
-
 <?php
 
 if($permission['write']) $feature_options = '<p class=\"fib-options\"><a class=\"btn btn-primary btn-xs\" href=\"'.BASE_URL.'?r=edit_data_item.edit&amp;data_id='.$table_id.'&amp;id="+feature.attributes.id+"\" title=\"'.$lang['edit'].'\"><span class=\"glyphicon glyphicon-pencil\"></span></a>&nbsp;<a class=\"btn btn-danger btn-xs\" href=\"'.BASE_URL.'?r=data.delete&amp;data_id='.$table_id.'&amp;id="+feature.attributes.id+"\" onclick=\"return delete_confirm(this, \''.rawurlencode($lang['delete_data_item_message']).'\')\" title=\"'.$lang['delete'].'\"><span class=\"glyphicon glyphicon-remove\"></span></a></p>';

@@ -260,8 +260,15 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
      $template->assign('readonly', $table_info['table']['readonly']);
      $template->assign('data_type', intval($table_info['table']['type']));
      $template->assign('geometry_type', intval($table_info['table']['geometry_type']));
-     $template->assign('min_scale', intval($table_info['table']['min_scale']));
-     $template->assign('max_scale', intval($table_info['table']['max_scale']));
+     if($table_info['table']['default_latitude']) $template->assign('default_latitude', $table_info['table']['default_latitude']);
+     #else $template->assign('default_latitude', $settings['default_latitude']);
+     if($table_info['table']['default_longitude']) $template->assign('default_longitude', $table_info['table']['default_longitude']);
+     #else $template->assign('default_longitude', $settings['default_longitude']);
+     if($table_info['table']['default_zoomlevel']) $template->assign('default_zoomlevel', $table_info['table']['default_zoomlevel']);
+     #else $template->assign('default_zoomlevel', $settings['default_zoomlevel']);
+     $template->assign('min_scale', floatval($table_info['table']['min_scale']));
+     $template->assign('max_scale', floatval($table_info['table']['max_scale']));
+     $template->assign('max_resolution', floatval($table_info['table']['max_resolution']));
      if($table_info['table']['simplification_tolerance_extent_factor']) $template->assign('redraw', true);
      $template->assign('layer_overview', intval($table_info['table']['layer_overview']));
      $template->assign('auxiliary_layer_1', intval($table_info['table']['auxiliary_layer_1']));

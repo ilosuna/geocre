@@ -310,6 +310,12 @@ if($permission->granted(Permission::USERS_GROUPS))
          
          if($notify_user)
           {
+           // set default language if user uses a different one:
+           if(isset($_SESSION[$settings['session_prefix'].'language']) && $_SESSION[$settings['session_prefix'].'language']!=$settings['language'])
+            {
+             require(BASE_PATH.'lang/'.$settings['language'].'.lang.php');
+            } 
+           
            require(BASE_PATH.'lib/phpmailer/class.phpmailer.php');
            $mail = new PHPMailer();
            $mail->CharSet = $lang['charset'];
@@ -324,6 +330,13 @@ if($permission->granted(Permission::USERS_GROUPS))
            $mail->Body = str_replace('[website_address]', BASE_URL, str_replace('[website_title]', $settings['website_title'], str_replace('[email]', $email, str_replace('[password]', $pw, str_replace('[user_name]', $name, $lang['add_user_notification_mail_text'])))));
            $mail->AddAddress($email);
            $mail->Send();          
+          
+           // reset language:
+           if(isset($_SESSION[$settings['session_prefix'].'language']) && $_SESSION[$settings['session_prefix'].'language']!=$settings['language'] && file_exists(BASE_PATH.'lang/'.$_SESSION[$settings['session_prefix'].'language'].'.lang.php'))
+            {
+             require(BASE_PATH.'lang/'.$_SESSION[$settings['session_prefix'].'language'].'.lang.php');
+            }           
+          
           }
        }
       

@@ -274,9 +274,12 @@
 </div>
 </form>
 
-
-
 <?php if($data_type==1 && empty($latlong_entry) && empty($_SESSION[$settings['session_prefix'].'usersettings']['disable_map'])): /* spatial data - display map:  */ ?>
+<?php if($max_resolution): ?>
+<?php
+$js[] = 'map.setOptions({maxResolution:'.$max_resolution.'});';
+?>
+<?php endif; ?>
 <?php if(isset($basemaps)): ?>
 <?php foreach($basemaps as $basemap): ?>
 <?php

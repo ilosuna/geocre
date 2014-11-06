@@ -170,6 +170,29 @@
 </div>
 
 <div class="form-group">
+<label for="default_latutude" class="col-md-2 control-label"><?php echo $lang['db_table_default_latlon_input_label']; ?></label>
+<div class="col-md-6">
+<div class="row">
+<div class="col-md-6">
+<input id="default_latutude" class="form-control" type="text" name="default_latitude" value="<?php if(isset($db_table['default_latitude'])) echo $db_table['default_latitude']; ?>" size="35">
+</div>
+<div class="col-md-6">
+<input id="default_longitude" class="form-control" type="text" name="default_longitude" value="<?php if(isset($db_table['default_longitude'])) echo $db_table['default_longitude']; ?>" size="35">
+</div>
+</div>
+<span class="help-block"><?php echo $lang['db_table_default_latlon_description']; ?></span>
+</div>
+</div>
+
+<div class="form-group">
+<label for="default_zoomlevel" class="col-md-2 control-label"><?php echo $lang['db_table_def_zoom_input_label']; ?></label>
+<div class="col-md-6">
+<input id="default_zoomlevel" class="form-control" type="text" name="default_zoomlevel" value="<?php if(isset($db_table['default_zoomlevel'])) echo $db_table['default_zoomlevel']; ?>">
+<span class="help-block"><?php echo $lang['db_table_def_zoom_description']; ?></span>
+</div>
+</div>
+
+<div class="form-group">
 <label for="min_scale" class="col-md-2 control-label"><?php echo $lang['db_table_scale_range_input_label']; ?></label>
 <div class="col-md-6">
 <div class="row">
@@ -181,6 +204,14 @@
 </div>
 </div>
 <span class="help-block"><?php echo $lang['db_table_scale_range_description']; ?></span>
+</div>
+</div>
+
+<div class="form-group">
+<label for="max_resolution" class="col-md-2 control-label"><?php echo $lang['db_table_max_res_input_label']; ?></label>
+<div class="col-md-6">
+<input id="max_resolution" class="form-control" type="text" name="max_resolution" value="<?php if(isset($db_table['max_resolution'])) echo $db_table['max_resolution']; ?>">
+<span class="help-block"><?php echo $lang['db_table_max_res_description']; ?></span>
 </div>
 </div>
 

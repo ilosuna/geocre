@@ -127,7 +127,7 @@ if($permission->granted(Permission::USER))
      if(isset($_GET['id']) && ($permission->granted(Permission::DATA_MANAGEMENT) || $permission->granted(Permission::DATA_ACCESS, intval($_GET['id']), Permission::MANAGE)))
       {
        // get table properties:
-       $dbr = Database::$connection->prepare("SELECT id, table_name, title, project, type, parent_table, geometry_type, latlong_entry, geometry_required, basemaps, min_scale, max_scale, simplification_tolerance, simplification_tolerance_extent_factor, layer_overview, boundary_layer, auxiliary_layer_1, status, readonly, data_images, item_images, description FROM ".$db_settings['data_models_table']." WHERE id=:id LIMIT 1");
+       $dbr = Database::$connection->prepare("SELECT id, table_name, title, project, type, parent_table, geometry_type, latlong_entry, geometry_required, basemaps, default_latitude, default_longitude, default_zoomlevel, min_scale, max_scale, max_resolution, simplification_tolerance, simplification_tolerance_extent_factor, layer_overview, boundary_layer, auxiliary_layer_1, status, readonly, data_images, item_images, description FROM ".$db_settings['data_models_table']." WHERE id=:id LIMIT 1");
        $dbr->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
        $dbr->execute();
        $data = $dbr->fetch();
@@ -143,8 +143,15 @@ if($permission->granted(Permission::USER))
          $db_table['latlong_entry'] = intval($data['latlong_entry']);
          $db_table['geometry_required'] = intval($data['geometry_required']);
          $db_table['basemaps'] = explode(',',$data['basemaps']);
+         if(is_null($data['default_latitude'])) $db_table['default_latitude'] = NULL;
+         else $db_table['default_latitude'] = floatval($data['default_latitude']);
+         if(is_null($data['default_longitude'])) $db_table['default_longitude'] = NULL;
+         else $db_table['default_longitude'] = floatval($data['default_longitude']);
+         if(is_null($data['default_zoomlevel'])) $db_table['default_zoomlevel'] = NULL;
+         else $db_table['default_zoomlevel'] = intval($data['default_zoomlevel']);
          $db_table['min_scale'] = floatval($data['min_scale']);
          $db_table['max_scale'] = floatval($data['max_scale']);
+         $db_table['max_resolution'] = floatval($data['max_resolution']);
          $db_table['simplification_tolerance'] = floatval($data['simplification_tolerance']);
          $db_table['simplification_tolerance_extent_factor'] = floatval($data['simplification_tolerance_extent_factor']);
          $db_table['layer_overview'] = intval($data['layer_overview']);
@@ -179,8 +186,12 @@ if($permission->granted(Permission::USER))
        $latlong_entry = isset($_POST['latlong_entry']) ? 1 : 0;
        $geometry_required = isset($_POST['geometry_required']) ? 1 : 0;
        $basemaps = isset($_POST['basemaps']) && is_array($_POST['basemaps']) ? implode(',',$_POST['basemaps']) : null;
+       $default_latitude = isset($_POST['default_latitude']) && $_POST['default_latitude'] ? floatval($_POST['default_latitude']) : NULL;
+       $default_longitude = isset($_POST['default_longitude']) && $_POST['default_longitude'] ? floatval($_POST['default_longitude']) : NULL;
+       $default_zoomlevel = isset($_POST['default_zoomlevel']) && $_POST['default_zoomlevel'] ? intval($_POST['default_zoomlevel']) : NULL;
        $min_scale = isset($_POST['min_scale']) ? floatval($_POST['min_scale']) : 0;
        $max_scale = isset($_POST['max_scale']) ? floatval($_POST['max_scale']) : 0;
+       $max_resolution = isset($_POST['max_resolution']) ? floatval($_POST['max_resolution']) : 0;
        $simplification_tolerance = isset($_POST['simplification_tolerance']) ? floatval($_POST['simplification_tolerance']) : 0;
        $simplification_tolerance_extent_factor = isset($_POST['simplification_tolerance_extent_factor']) ? floatval($_POST['simplification_tolerance_extent_factor']) : 0;
        $layer_overview = isset($_POST['layer_overview']) ? intval($_POST['layer_overview']) : 0;
@@ -230,7 +241,7 @@ if($permission->granted(Permission::USER))
         {
          if(isset($_POST['id'])) // edit
           {
-           $dbr = Database::$connection->prepare("UPDATE ".$db_settings['data_models_table']." SET last_editor=:last_editor, last_edited=NOW(), title=:title, project=:project, parent_table=:parent_table, geometry_type=:geometry_type, latlong_entry=:latlong_entry, geometry_required=:geometry_required, basemaps=:basemaps, min_scale=:min_scale, max_scale=:max_scale, simplification_tolerance=:simplification_tolerance, simplification_tolerance_extent_factor=:simplification_tolerance_extent_factor, layer_overview=:layer_overview, boundary_layer=:boundary_layer, auxiliary_layer_1=:auxiliary_layer_1, status=:status, readonly=:readonly, data_images=:data_images, item_images=:item_images, description=:description WHERE id=:id");
+           $dbr = Database::$connection->prepare("UPDATE ".$db_settings['data_models_table']." SET last_editor=:last_editor, last_edited=NOW(), title=:title, project=:project, parent_table=:parent_table, geometry_type=:geometry_type, latlong_entry=:latlong_entry, geometry_required=:geometry_required, basemaps=:basemaps, default_latitude=:default_latitude, default_longitude=:default_longitude, default_zoomlevel=:default_zoomlevel, min_scale=:min_scale, max_scale=:max_scale, max_resolution=:max_resolution, simplification_tolerance=:simplification_tolerance, simplification_tolerance_extent_factor=:simplification_tolerance_extent_factor, layer_overview=:layer_overview, boundary_layer=:boundary_layer, auxiliary_layer_1=:auxiliary_layer_1, status=:status, readonly=:readonly, data_images=:data_images, item_images=:item_images, description=:description WHERE id=:id");
            $dbr->bindParam(':last_editor', $_SESSION[$settings['session_prefix'].'auth']['id'], PDO::PARAM_INT);
            #$dbr->bindParam(':table_name', $table_name, PDO::PARAM_STR);
            $dbr->bindParam(':title', $title, PDO::PARAM_STR);
@@ -241,9 +252,16 @@ if($permission->granted(Permission::USER))
            $dbr->bindParam(':latlong_entry', $latlong_entry, PDO::PARAM_INT);
            $dbr->bindParam(':geometry_required', $geometry_required, PDO::PARAM_INT);
            if($basemaps) $dbr->bindParam(':basemaps', $basemaps, PDO::PARAM_STR);
-           else $dbr->bindValue(':basemaps', null, PDO::PARAM_NULL);
+           else $dbr->bindValue(':basemaps', NULL, PDO::PARAM_NULL);
+           if(is_null($default_latitude)) $dbr->bindValue(':default_latitude', NULL, PDO::PARAM_NULL);
+           else $dbr->bindParam(':default_latitude', $default_latitude, PDO::PARAM_STR);
+           if(is_null($default_longitude)) $dbr->bindValue(':default_longitude', NULL, PDO::PARAM_NULL);
+           else $dbr->bindParam(':default_longitude', $default_longitude, PDO::PARAM_STR);
+           if(is_null($default_zoomlevel)) $dbr->bindValue(':default_zoomlevel', NULL, PDO::PARAM_NULL);
+           else $dbr->bindParam(':default_zoomlevel', $default_zoomlevel, PDO::PARAM_STR);
            $dbr->bindParam(':min_scale', $min_scale, PDO::PARAM_STR);
            $dbr->bindParam(':max_scale', $max_scale, PDO::PARAM_STR);
+           $dbr->bindParam(':max_resolution', $max_resolution, PDO::PARAM_STR);
            $dbr->bindParam(':simplification_tolerance', $simplification_tolerance, PDO::PARAM_STR);
            $dbr->bindParam(':simplification_tolerance_extent_factor', $simplification_tolerance_extent_factor, PDO::PARAM_STR);
            $dbr->bindParam(':layer_overview', $layer_overview, PDO::PARAM_INT);
@@ -277,7 +295,7 @@ if($permission->granted(Permission::USER))
            #$row = $dbr->fetch();
            #if(isset($row['sequence'])) $new_sequence = $row['sequence'] + 1;
            $new_sequence = 1;
-           $dbr = Database::$connection->prepare("INSERT INTO ".$db_settings['data_models_table']." (sequence, creator, created, table_name, title, project, type, parent_table, geometry_type, latlong_entry, geometry_required, basemaps, min_scale, max_scale, simplification_tolerance, simplification_tolerance_extent_factor, layer_overview, boundary_layer, auxiliary_layer_1, status, readonly, data_images, item_images, description) VALUES (:sequence, :creator, NOW(), :table_name, :title, :project, :type, :parent_table, :geometry_type, :latlong_entry, :geometry_required, :basemaps, :min_scale, :max_scale, :simplification_tolerance, :simplification_tolerance_extent_factor, :layer_overview, :boundary_layer, :auxiliary_layer_1, :status, :readonly, :data_images, :item_images, :description)");
+           $dbr = Database::$connection->prepare("INSERT INTO ".$db_settings['data_models_table']." (sequence, creator, created, table_name, title, project, type, parent_table, geometry_type, latlong_entry, geometry_required, basemaps, default_latitude, default_longitude, default_zoomlevel, min_scale, max_scale, max_resolution, simplification_tolerance, simplification_tolerance_extent_factor, layer_overview, boundary_layer, auxiliary_layer_1, status, readonly, data_images, item_images, description) VALUES (:sequence, :creator, NOW(), :table_name, :title, :project, :type, :parent_table, :geometry_type, :latlong_entry, :geometry_required, :basemaps, :default_latitude, :default_longitude, :default_zoomlevel, :min_scale, :max_scale, :max_resolution, :simplification_tolerance, :simplification_tolerance_extent_factor, :layer_overview, :boundary_layer, :auxiliary_layer_1, :status, :readonly, :data_images, :item_images, :description)");
            $dbr->bindParam(':sequence', $new_sequence, PDO::PARAM_INT);
            $dbr->bindParam(':creator', $_SESSION[$settings['session_prefix'].'auth']['id'], PDO::PARAM_INT);
            $dbr->bindParam(':table_name', $table_name, PDO::PARAM_STR);
@@ -291,8 +309,15 @@ if($permission->granted(Permission::USER))
            $dbr->bindValue(':geometry_required', 1, PDO::PARAM_INT);
            if($basemaps) $dbr->bindParam(':basemaps', $basemaps, PDO::PARAM_STR);
            else $dbr->bindValue(':basemaps', null, PDO::PARAM_NULL);
+           if(is_null($default_latitude)) $dbr->bindValue(':default_latitude', NULL, PDO::PARAM_NULL);
+           else $dbr->bindParam(':default_latitude', $default_latitude, PDO::PARAM_STR);
+           if(is_null($default_longitude)) $dbr->bindValue(':default_longitude', NULL, PDO::PARAM_NULL);
+           else $dbr->bindParam(':default_longitude', $default_longitude, PDO::PARAM_STR);
+           if(is_null($default_zoomlevel)) $dbr->bindValue(':default_zoomlevel', NULL, PDO::PARAM_NULL);
+           else $dbr->bindParam(':default_zoomlevel', $default_zoomlevel, PDO::PARAM_STR);
            $dbr->bindParam(':min_scale', $min_scale, PDO::PARAM_STR);
            $dbr->bindParam(':max_scale', $max_scale, PDO::PARAM_STR);
+           $dbr->bindParam(':max_resolution', $max_resolution, PDO::PARAM_STR);
            $dbr->bindParam(':simplification_tolerance', $simplification_tolerance, PDO::PARAM_STR);
            $dbr->bindParam(':simplification_tolerance_extent_factor', $simplification_tolerance_extent_factor, PDO::PARAM_STR);
            $dbr->bindParam(':layer_overview', $layer_overview, PDO::PARAM_INT);        
@@ -337,8 +362,12 @@ if($permission->granted(Permission::USER))
              $db_table['latlong_entry'] =  intval($latlong_entry);
              $db_table['geometry_required'] =  intval($geometry_required);
              $db_table['basemaps'] = explode(',', $basemaps);
-             $db_table['min_scale'] =  intval($min_scale);
-             $db_table['max_scale'] =  intval($max_scale);
+             $db_table['default_latitude'] =  floatval($default_latitude);
+             $db_table['default_longitude'] =  floatval($default_longitude);
+             $db_table['default_zoomlevel'] =  intval($default_zoomlevel);
+             $db_table['min_scale'] =  floatval($min_scale);
+             $db_table['max_scale'] =  floatval($max_scale);
+             $db_table['max_resolution'] =  floatval($max_resolution);
              $db_table['simplification_tolerance'] =  floatval($simplification_tolerance);
              $db_table['simplification_tolerance_extent_factor'] = floatval($simplification_tolerance_extent_factor);
              $db_table['layer_overview'] = intval($layer_overview);
@@ -1095,7 +1124,7 @@ if($permission->granted(Permission::USER))
      if(isset($_REQUEST['id']) && $permission->granted(Permission::DATA_MANAGEMENT))
       {
        // check if data model to be copied exists:
-       $dbr = Database::$connection->prepare("SELECT id, title, project, type, geometry_type, latlong_entry, geometry_required, basemaps, min_scale, max_scale, simplification_tolerance, simplification_tolerance_extent_factor, layer_overview, boundary_layer, auxiliary_layer_1, status, readonly, data_images, item_images FROM ".$db_settings['data_models_table']." WHERE id=:id LIMIT 1");
+       $dbr = Database::$connection->prepare("SELECT id, title, project, type, geometry_type, latlong_entry, geometry_required, basemaps, default_latitude, default_longitude, default_zoomlevel, min_scale, max_scale, max_resolution, simplification_tolerance, simplification_tolerance_extent_factor, layer_overview, boundary_layer, auxiliary_layer_1, status, readonly, data_images, item_images FROM ".$db_settings['data_models_table']." WHERE id=:id LIMIT 1");
        $dbr->bindParam(':id', $_REQUEST['id'], PDO::PARAM_INT);
        $dbr->execute();
        $data = $dbr->fetch();
@@ -1169,7 +1198,7 @@ if($permission->granted(Permission::USER))
 
            // save data model:
            $new_sequence = 1;
-           $dbr = Database::$connection->prepare("INSERT INTO ".$db_settings['data_models_table']." (sequence, creator, created, table_name, title, project, type, parent_table, geometry_type, latlong_entry, geometry_required, basemaps, min_scale, max_scale, simplification_tolerance, simplification_tolerance_extent_factor, layer_overview, boundary_layer, auxiliary_layer_1, status, readonly, data_images, item_images, description) VALUES (:sequence, :creator, NOW(), :table_name, :title, :project, :type, 0, :geometry_type, :latlong_entry, :geometry_required, :basemaps, :min_scale, :max_scale, :simplification_tolerance, :simplification_tolerance_extent_factor, :layer_overview, :boundary_layer, :auxiliary_layer_1, :status, :readonly, :data_images, :item_images, :description)");
+           $dbr = Database::$connection->prepare("INSERT INTO ".$db_settings['data_models_table']." (sequence, creator, created, table_name, title, project, type, parent_table, geometry_type, latlong_entry, geometry_required, basemaps, min_scale, max_scale, max_resolution, simplification_tolerance, simplification_tolerance_extent_factor, layer_overview, boundary_layer, auxiliary_layer_1, status, readonly, data_images, item_images, description) VALUES (:sequence, :creator, NOW(), :table_name, :title, :project, :type, 0, :geometry_type, :latlong_entry, :geometry_required, :basemaps, :default_latitude, :default_logngitude, :default_zoomlevel, :min_scale, :max_scale, :max_resolution, :simplification_tolerance, :simplification_tolerance_extent_factor, :layer_overview, :boundary_layer, :auxiliary_layer_1, :status, :readonly, :data_images, :item_images, :description)");
            $dbr->bindParam(':sequence', $new_sequence, PDO::PARAM_INT);
            $dbr->bindParam(':creator', $_SESSION[$settings['session_prefix'].'auth']['id'], PDO::PARAM_INT);
            $dbr->bindParam(':table_name', $table_name, PDO::PARAM_STR);
@@ -1180,8 +1209,12 @@ if($permission->granted(Permission::USER))
            $dbr->bindParam(':latlong_entry', $data['latlong_entry'], PDO::PARAM_INT);
            $dbr->bindParam(':geometry_required', $data['geometry_required'], PDO::PARAM_INT);
            $dbr->bindParam(':basemaps', $data['basemaps'], PDO::PARAM_STR);
+           $dbr->bindParam(':default_latitude', $data['default_latitude'], PDO::PARAM_STR);
+           $dbr->bindParam(':default_longitude', $data['default_longitude'], PDO::PARAM_STR);
+           $dbr->bindParam(':default_zoomlevel', $data['default_zoomlevel'], PDO::PARAM_STR);
            $dbr->bindParam(':min_scale', $data['min_scale'], PDO::PARAM_STR);
            $dbr->bindParam(':max_scale', $data['max_scale'], PDO::PARAM_STR);
+           $dbr->bindParam(':max_resolution', $data['max_resolution'], PDO::PARAM_STR);
            $dbr->bindParam(':simplification_tolerance', $data['simplification_tolerance'], PDO::PARAM_STR);
            $dbr->bindParam(':simplification_tolerance_extent_factor', $data['simplification_tolerance_extent_factor'], PDO::PARAM_STR);
            $dbr->bindParam(':layer_overview', $data['layer_overview'], PDO::PARAM_INT);        
