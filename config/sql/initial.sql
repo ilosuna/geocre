@@ -19,6 +19,10 @@ CREATE TABLE geocre_data_models
   auxiliary_layer_2 integer DEFAULT 0,
   auxiliary_layer_3 integer DEFAULT 0,
   layer_overview smallint NOT NULL DEFAULT 0,
+  max_resolution double precision DEFAULT 0,
+  default_latitude double precision,
+  default_longitude double precision,
+  default_zoomlevel integer,  
   min_scale double precision DEFAULT 0,
   max_scale double precision DEFAULT 0,
   project integer DEFAULT 0,
@@ -292,14 +296,14 @@ INSERT INTO geocre_settings (name, value) VALUES ('email_smtp_port', '587');
 INSERT INTO geocre_settings (name, value) VALUES ('email_smtp_username', '');
 INSERT INTO geocre_settings (name, value) VALUES ('feedback', '');
 INSERT INTO geocre_settings (name, value) VALUES ('feedback_message_maxlength', '10000');
-INSERT INTO geocre_settings (name, value) VALUES ('footer', '&copy 2014 Your Organization');
+INSERT INTO geocre_settings (name, value) VALUES ('footer', '');
 INSERT INTO geocre_settings (name, value) VALUES ('gallery_thumbnail_width', '170');
 INSERT INTO geocre_settings (name, value) VALUES ('gallery_thumbnail_height', '170');
 INSERT INTO geocre_settings (name, value) VALUES ('gallery_thumbnail_quality', '80');
 INSERT INTO geocre_settings (name, value) VALUES ('gallery_image_width', '800');
 INSERT INTO geocre_settings (name, value) VALUES ('gallery_image_height', '700');
 INSERT INTO geocre_settings (name, value) VALUES ('gallery_image_quality', '85');
-INSERT INTO geocre_settings (name, value) VALUES ('index_page_content', '<h1>Welcome to geoCRE!</h1><p><strong>geoCRE</strong> is a collaborative research environment for geographic research purposes developed at the Department of Physical Geography, University of Freiburg.</p>');
+INSERT INTO geocre_settings (name, value) VALUES ('index_page_content', '<h1>Welcome to geoCRE!</h1><p><strong>geoCRE</strong> is a collaborative research environment for geographic research purposes developed at the Department of Physical Geography, University of Freiburg.</p> <p><a href="./about" class="btn btn-primary btn-lg">More about geoCRE &raquo;</a></p>');
 INSERT INTO geocre_settings (name, value) VALUES ('index_page_title', 'Welcome!');
 INSERT INTO geocre_settings (name, value) VALUES ('items_per_page', '20');
 INSERT INTO geocre_settings (name, value) VALUES ('language', 'english');
@@ -313,7 +317,7 @@ INSERT INTO geocre_settings (name, value) VALUES ('min_pw_length', '8');
 INSERT INTO geocre_settings (name, value) VALUES ('min_pw_length', '8');
 INSERT INTO geocre_settings (name, value) VALUES ('photo_upload_directory', '');
 INSERT INTO geocre_settings (name, value) VALUES ('register_code', '');
-INSERT INTO geocre_settings (name, value) VALUES ('register_mode', '1');
+INSERT INTO geocre_settings (name, value) VALUES ('register_mode', '0');
 INSERT INTO geocre_settings (name, value) VALUES ('register_notification', '1');
 INSERT INTO geocre_settings (name, value) VALUES ('session_prefix', 'geocre_');
 INSERT INTO geocre_settings (name, value) VALUES ('time_zone', 'Europe/Berlin');
