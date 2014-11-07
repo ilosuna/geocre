@@ -251,7 +251,7 @@ if(isset($_REQUEST['data_id']) && ($permission->granted(Permission::DATA_MANAGEM
      // check geometry and get area/perimeter/length:
      if($table_info['table']['type']==1)
       {
-       if(isset($_POST['data']['_latitude']) && isset($_POST['data']['_longitude']))
+       if(isset($_POST['data']['_latitude']) && $_POST['data']['_latitude'] && isset($_POST['data']['_longitude']) && $_POST['data']['_longitude'])
         {
          if(is_numeric($_POST['data']['_latitude'])
          && floatval($_POST['data']['_latitude'])>=-90
