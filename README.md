@@ -1,7 +1,7 @@
 geoCRE
 ======
 
-<a href="http://geocre.net/">geoCRE</a> is a collaborative research environment for geographic research purposes developed at the Department of Physical Geography, University of Freiburg.
+<a href="http://geocre.net/">geoCRE</a> is a collaborative research environment for geographic research purposes.
 
 System requirements
 -------------------
