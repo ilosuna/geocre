@@ -1,7 +1,7 @@
 geoCRE
 ======
 
-<a href="http://geocre.net/">geoCRE</a> is a collaborative research environment for geographic research purposes.
+<a href="https://geocre.hoschek.com/">geoCRE</a> is a collaborative research environment for geographic research purposes.
 
 System requirements
 -------------------
